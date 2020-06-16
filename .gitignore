@@ -1,0 +1,13 @@
+# Targets
+*.a
+tests/test_suite
+demo/poisson
+
+# Vim Swap
+*.swp
+
+# CMake temp files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile

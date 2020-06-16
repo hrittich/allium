@@ -1,0 +1,8 @@
+#ifndef CHIVE_CONFIG_HPP
+#define CHIVE_CONFIG_HPP
+
+#cmakedefine CHIVE_USE_PETSC
+#cmakedefine CHIVE_GLOBAL_SIZE_T @CHIVE_GLOBAL_SIZE_T@
+#cmakedefine CHIVE_BOUND_CHECKS
+
+#endif
