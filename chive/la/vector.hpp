@@ -7,7 +7,7 @@
 #include <chive/mpi/comm.hpp>
 
 namespace chive {
-  template <typename NumberT>
+  template <typename NumberT, typename StorageT>
   class VectorSlice;
 
   class VectorSpec : public std::enable_shared_from_this<VectorSpec> {
@@ -28,62 +28,72 @@ namespace chive {
       size_t local_size;
   };
 
-  template <typename T> struct real_part_t {};
-  template <> struct real_part_t<float> { typedef float type; };
-  template <> struct real_part_t<double> { typedef double type; };
-  template <typename T> struct real_part_t<std::complex<T>> { typedef T type; };
+#if 1
+  template <typename T> struct real_part {};
+  template <> struct real_part<float> { typedef float type; };
+  template <> struct real_part<double> { typedef double type; };
+  template <typename T> struct real_part<std::complex<T>> { typedef T type; };
+
+  template <typename T>
+  using real_part_t = typename real_part<T>::type;
+#endif
 
   template <typename NumberT>
-  class Vector {
+  class VectorStorage {
     public:
-      using Number = NumberT;
-      using Real = typename real_part_t<Number>::type;
+      template <typename N, typename S> friend class VectorSlice;
 
-      virtual void add(const Vector& rhs) = 0;
+      using Number = NumberT;
+      using Real = real_part_t<Number>;
+
+      VectorStorage(VectorSpec spec) : spec(spec) {}
+
+      virtual void add(const VectorStorage& rhs) = 0;
       virtual void scale(const Number& factor) = 0;
       virtual Real l2_norm() const = 0;
 
-      virtual std::unique_ptr<VectorSlice<Number>> local_slice() = 0;
-  };
-
-  template <typename StoragePtrT>
-  class Vector_ {
-    public:
-      template <typename OtherPtrT>
-      friend class Vector_;
-
-      Vector_(const StoragePtrT& ptr) : ptr(ptr) {}
-      Vector_(StoragePtrT&& ptr) : ptr(std::move(ptr)) {}
-
-      template <typename OtherPtrT>
-      Vector_(const Vector_<OtherPtrT>& vec) : ptr(vec.ptr) {}
-
-      template <typename OtherPtrT>
-      Vector_& operator= (const Vector_<OtherPtrT>& vec) {
-        ptr = vec->ptr;
-        return *this;
-      }
-
-      template <typename OtherPtrT>
-      Vector_(Vector_<OtherPtrT>&& vec) : ptr(std::move(vec.ptr)) {}
-
-      template <typename OtherPtrT>
-      Vector_& operator= (Vector_<OtherPtrT>&& vec) {
-        ptr = std::move(vec->ptr);
-        return *this;
-      }
+      VectorSpec get_spec() { return spec; }
+    protected:
+      virtual Number* aquire_data_ptr() = 0;
+      virtual void release_data_ptr(Number* data) = 0;
 
     private:
-      StoragePtrT ptr;
+      VectorSpec spec;
   };
 
-  template <typename NumberT>
+  template <typename NumberT, typename StorageT = VectorStorage<NumberT>>
+  class Vector {
+    public:
+      using Number = NumberT;
+      using Real = real_part_t<Number>;
+      using Slice = VectorSlice<NumberT, StorageT>;
+
+      Vector(std::shared_ptr<StorageT>& ptr) : ptr(ptr) {}
+
+      Vector(const Vector&) = default;
+      Vector& operator= (const Vector&) = default;
+      Vector(Vector&&) = default;
+      Vector& operator= (Vector&&) = default;
+
+      std::shared_ptr<StorageT> get_storage() { return ptr; }
+    private:
+      std::shared_ptr<StorageT> ptr;
+  };
+
+  template <typename NumberT, typename StorageT = VectorStorage<NumberT>>
   class VectorSlice {
     public:
-      using Number = typename Vector<NumberT>::Number;
-      using Real = typename Vector<NumberT>::Real;
+      using Number = typename Vector<NumberT, StorageT>::Number;
+      using Real = typename Vector<NumberT, StorageT>::Real;
 
-      VectorSlice();
+      VectorSlice(std::shared_ptr<StorageT> ptr) : ptr(ptr) {
+        data = ptr->aquire_data_ptr();
+        size = ptr->get_spec().get_local_size();
+      }
+
+      ~VectorSlice() {
+        ptr->release_data_ptr(data);
+      }
 
       Number& operator[] (size_t index) {
         #ifdef CHIVE_BOUND_CHECKS
@@ -103,12 +113,23 @@ namespace chive {
     protected:
       Number* data;
       size_t size;
+    private:
+      std::shared_ptr<StorageT> ptr;
   };
 
-  template <typename NumberT>
-  VectorSlice<NumberT>::VectorSlice()
-    : data(nullptr), size(0)
-  {}
+  template <typename StorageT>
+    VectorSlice<typename StorageT::Number, StorageT>
+    local_slice(std::shared_ptr<StorageT> ptr)
+  {
+    return VectorSlice<typename StorageT::Number, StorageT>(ptr);
+  }
+
+  template <typename StorageT>
+    VectorSlice<typename StorageT::Number, StorageT>
+    local_slice(Vector<typename StorageT::Number, StorageT> vec)
+  {
+    return local_slice(vec->get_storage());
+  }
 
 }
 

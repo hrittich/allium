@@ -22,9 +22,10 @@ include_directories("${MPI_CXX_INCLUDE_DIRS}")
 list(APPEND LINK_OPTIONS ${MPI_CXX_LINK_FLAGS})
 list(APPEND LIBRARIES ${MPI_CXX_LIBRARIES})
 
-# Find PETSc
+# PkgConfig
 find_package(PkgConfig)
 
+# Find PETSc
 if(PKG_CONFIG_FOUND)
   pkg_check_modules(PETSC PETSc)
 
@@ -33,7 +34,12 @@ if(PKG_CONFIG_FOUND)
   list(APPEND LINK_OPTIONS ${PETSC_LDFLAGS})
   list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
   set(CHIVE_USE_PETSC ON)
+endif()
 
+# Find Eigen3
+if (PKG_CONFIG_FOUND)
+  pkg_check_modules(EIGEN eigen3)
+  include_directories(${EIGEN_INCLUDE_DIRS})
 endif()
 
 # General Config

@@ -7,8 +7,8 @@ namespace chive {
 
   using petsc::chkerr;
 
-  PetscVector::PetscVector(VectorSpec spec)
-    : spec(spec)
+  PetscVectorStorage::PetscVectorStorage(VectorSpec spec)
+    : VectorStorage(spec)
   {
     PetscErrorCode ierr;
 
@@ -19,10 +19,10 @@ namespace chive {
 
   }
 
-  void PetscVector::add(const Vector& rhs) {
+  void PetscVectorStorage::add(const VectorStorage& rhs) {
     PetscErrorCode ierr;
 
-    const PetscVector* petsc_rhs = dynamic_cast<const PetscVector*>(&rhs);
+    const PetscVectorStorage* petsc_rhs = dynamic_cast<const PetscVectorStorage*>(&rhs);
     if (petsc_rhs != nullptr) {
       ierr = VecAXPY(ptr, 1.0, petsc_rhs->ptr); chkerr(ierr);
     } else {
@@ -30,13 +30,13 @@ namespace chive {
     }
   }
 
-  void PetscVector::scale(const Number& factor) {
+  void PetscVectorStorage::scale(const Number& factor) {
     PetscErrorCode ierr;
 
     ierr = VecScale(ptr, factor); chkerr(ierr);
   }
 
-  PetscVector::Real PetscVector::l2_norm() const {
+  PetscVectorStorage::Real PetscVectorStorage::l2_norm() const {
     PetscErrorCode ierr;
     Real result;
 
@@ -45,27 +45,18 @@ namespace chive {
     return result;
   }
 
-  std::unique_ptr<VectorSlice<PetscVector::Number>> PetscVector::local_slice() {
-    auto slice = std::make_unique<PetscVectorSlice>(shared_from_this());
-    return slice;
-  }
-
-  //=== PetscVectorSlice =====================================================
-
-  PetscVectorSlice::PetscVectorSlice(std::shared_ptr<PetscVector> vec)
-    : vec(vec)
-  {
+  PetscVectorStorage::Number* PetscVectorStorage::aquire_data_ptr() {
     PetscErrorCode ierr;
 
-    ierr = VecGetArray(vec->ptr, &data); chkerr(ierr);
-    size = vec->spec.get_local_size();
+    Number *result;
+    ierr = VecGetArray(ptr, &result); chkerr(ierr);
+    return result;
   }
 
-  PetscVectorSlice::~PetscVectorSlice()
-  {
+  void PetscVectorStorage::release_data_ptr(Number* data) {
     PetscErrorCode ierr;
 
-    ierr = VecRestoreArray(vec->ptr, &data); chkerr(ierr);
+    ierr = VecRestoreArray(ptr, &data); chkerr(ierr);
   }
 
 }
