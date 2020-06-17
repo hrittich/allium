@@ -1,7 +1,11 @@
 # Targets
 *.a
+*.so
 tests/test_suite
 demo/poisson
+contrib/googletest
+contrib/eigen
+contrib/pybind11
 
 # Vim Swap
 *.swp

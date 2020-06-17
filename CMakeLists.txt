@@ -1,14 +1,27 @@
 cmake_minimum_required(VERSION 3.13)
 
+add_subdirectory(contrib)
+
 # Options
 
 set(CHIVE_GLOBAL_SIZE_T "size_t"
     CACHE STRING "Type of the size of global quantities, e.g., vectors")
 option(CHIVE_BOUND_CHECKS "Perform bound checks on array accesses" OFF)
 
+# Find Python
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_FOUND)
+  # Default to Python 3
+  # Later calls to the deprecated module FindPythonInterp will use
+  # this Python executable
+  set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE} CACHE PATH
+      "Path to the Python executable.")
+endif()
+
 # Configure GoogleTest
 
-set(GTEST_SRC_DIR "/usr/src/googletest" CACHE PATH "Source dir of googletest.")
+set(GTEST_SRC_DIR "${CMAKE_BINARY_DIR}/contrib/googletest"
+    CACHE PATH "Source dir of googletest.")
 add_subdirectory(${GTEST_SRC_DIR} "${CMAKE_BINARY_DIR}/contrib/googletest")
 include_directories("${GTEST_SRC_DIR}/googletest/include")
 set(GTEST_LIBRARIES "gtest")
@@ -36,11 +49,12 @@ if(PKG_CONFIG_FOUND)
   set(CHIVE_USE_PETSC ON)
 endif()
 
-# Find Eigen3
-if (PKG_CONFIG_FOUND)
-  pkg_check_modules(EIGEN eigen3)
-  include_directories(${EIGEN_INCLUDE_DIRS})
-endif()
+# Eigen3
+include_directories(${CMAKE_BINARY_DIR}/contrib/eigen)
+
+# pybind11
+add_subdirectory(${CMAKE_BINARY_DIR}/contrib/pybind11)
+
 
 # General Config
 
@@ -52,6 +66,7 @@ include_directories("${CMAKE_SOURCE_DIR}")
 add_link_options(${LINK_OPTIONS})
 
 add_subdirectory(chive)
+add_subdirectory(python)
 add_subdirectory(demo)
 add_subdirectory(tests)
 
