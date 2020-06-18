@@ -17,6 +17,25 @@ if(Python3_FOUND)
   set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE} CACHE PATH
       "Path to the Python executable.")
 endif()
+find_package(PythonInterp)
+
+# Find mpi4py
+if(NOT MPI4PY_INCLUDE_DIRS)
+  execute_process(
+    COMMAND ${PYTHON_EXECUTABLE} -c "import mpi4py; print(mpi4py.get_include())"
+    RESULTS_VARIABLE MPI4PY_RESULT
+    OUTPUT_VARIABLE MPI4PY_INCLUDE_DIRS)
+
+  if(MPI4PY_RESULT EQUAL 0)
+    string(STRIP ${MPI4PY_INCLUDE_DIRS} MPI4PY_INCLUDE_DIRS)
+    message(STATUS "Found mpi4py include dir: ${MPI4PY_INCLUDE_DIRS}")
+  else()
+    set(MPI4PY_INCLUDE_DIRS NOTFOUND)
+    message(SEND_ERROR "Could not find mpi4py include dir.")
+  endif()
+  set(MPI4PY_INCLUDE_DIRS ${MPI4PY_INCLUDE_DIRS} CACHE PATH "mpi4py include directory" FORCE)
+endif()
+include_directories(${MPI4PY_INCLUDE_DIRS})
 
 # Configure GoogleTest
 
@@ -57,6 +76,7 @@ add_subdirectory(${CMAKE_BINARY_DIR}/contrib/pybind11)
 
 
 # General Config
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # The CHIVE_LIBRARIES variable will be populated in the subdirectories.
 set(CHIVE_LIBRARIES "")

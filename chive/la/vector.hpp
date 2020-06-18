@@ -10,7 +10,7 @@ namespace chive {
   template <typename NumberT, typename StorageT>
   class VectorSlice;
 
-  class VectorSpec : public std::enable_shared_from_this<VectorSpec> {
+  class VectorSpec  { //: public std::enable_shared_from_this<VectorSpec> {
     public:
       VectorSpec(const VectorSpec&) = default;
       VectorSpec(VectorSpec&&) = default;
@@ -68,7 +68,7 @@ namespace chive {
       using Real = real_part_t<Number>;
       using Slice = VectorSlice<NumberT, StorageT>;
 
-      Vector(std::shared_ptr<StorageT>& ptr) : ptr(ptr) {}
+      Vector(const std::shared_ptr<StorageT>& ptr) : ptr(ptr) {}
 
       Vector(const Vector&) = default;
       Vector& operator= (const Vector&) = default;
