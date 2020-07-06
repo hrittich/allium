@@ -6,8 +6,7 @@
 #include "vector.hpp"
 
 namespace chive {
-
-  class PetscVectorStorage
+  class PetscVectorStorage final
       : public VectorStorage<PetscScalar>,
         public std::enable_shared_from_this<PetscVectorStorage>
   {
@@ -26,8 +25,6 @@ namespace chive {
     private:
       PetscObjectPtr<Vec> ptr;
   };
-
-
 }
 
 #endif

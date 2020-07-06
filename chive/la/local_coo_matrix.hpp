@@ -6,22 +6,34 @@
 
 namespace chive {
   template <typename NumberT>
-  class LocalCooMatrix {
+  class MatrixEntry {
     public:
-      struct Entry {
-        global_size_t row;
-        global_size_t col;
-        NumberT value;
-      };
+      MatrixEntry(global_size_t row, global_size_t col, NumberT value)
+        : row(row), col(col), value(value) {}
 
-      void add(global_size_t row, global_size_t col, NumberT value) {
-        entries.push_back(Entry{ row, col, value });
+      bool operator==(const MatrixEntry& rhs) const {
+        return (row == rhs.row && col == rhs.col && value == rhs.value);
       }
 
-      const std::vector<Entry> get_entries() const& { return entries; }
-      const std::vector<Entry> get_entries() && { return std::move(entries); }
+      global_size_t get_row() { return row; }
+      global_size_t get_col() { return col; }
+      NumberT get_value() { return value; }
     private:
-      std::vector<Entry> entries;
+      global_size_t row, col;
+      NumberT value;
+  };
+
+  template <typename NumberT>
+  class LocalCooMatrix {
+    public:
+      void add(global_size_t row, global_size_t col, NumberT value) {
+        entries.push_back(MatrixEntry<NumberT>(row, col, value));
+      }
+
+      const std::vector<MatrixEntry<NumberT>> get_entries() const& { return entries; }
+      const std::vector<MatrixEntry<NumberT>> get_entries() && { return std::move(entries); }
+    private:
+      std::vector<MatrixEntry<NumberT>> entries;
   };
 
 }

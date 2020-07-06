@@ -6,12 +6,12 @@
 
 namespace chive {
   template <typename NumberT>
-  class EigenVectorStorage : public VectorStorage<NumberT>
+  class EigenVectorStorage final : public VectorStorage<NumberT>
   {
     public:
       template <typename N, typename S> friend class VectorSlice;
 
-      using EVector = Eigen::Matrix<NumberT, Eigen::Dynamic, 1>;
+      using BaseVector = Eigen::Matrix<NumberT, Eigen::Dynamic, 1>;
       using typename VectorStorage<NumberT>::Number;
       using Real = real_part_t<NumberT>;
 
@@ -28,7 +28,7 @@ namespace chive {
       void release_data_ptr(Number* data) override;
 
     private:
-      EVector vec;
+      BaseVector vec;
   };
 
   template <typename N>

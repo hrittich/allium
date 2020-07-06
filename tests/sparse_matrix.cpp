@@ -4,12 +4,14 @@
 using namespace chive;
 
 TEST(SparseMatrix, Create) {
-  SparseMatrix<double> mat(std::make_shared<EigenSparseMatrixStorage<double>>());
+  VectorSpec spec(MpiComm::world(), 1, 1);
+  EigenSparseMatrix<double> mat(spec, spec);
 
   LocalCooMatrix<double> lmat;
-  lmat.add(0,0, 2);
-  lmat.add(0,1, -1);
+  lmat.add(0, 0, 2);
 
-  mat.add(lmat);
+  mat.set_entries(lmat);
+
+  ASSERT_EQ(lmat.get_entries(), mat.get_entries().get_entries());
 }
 

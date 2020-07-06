@@ -23,11 +23,15 @@ class VectorStorageTest : public ::testing::Test {
 TYPED_TEST_CASE(VectorStorageTest, VectorStorageTypes);
 
 TYPED_TEST(VectorStorageTest, Create) {
+  using Number = typename TestFixture::Number;
+  
   MpiComm comm = MpiComm::world();
 
   VectorSpec vspec(comm, 1, 1);
 
   TypeParam v(vspec);
+
+  Vector<Number, TypeParam> v2(vspec);
 }
 
 TYPED_TEST(VectorStorageTest, Fill) {
