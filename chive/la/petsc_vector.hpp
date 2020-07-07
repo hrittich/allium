@@ -11,7 +11,7 @@ namespace chive {
         public std::enable_shared_from_this<PetscVectorStorage>
   {
     public:
-      template <typename N, typename S> friend class VectorSlice;
+      template <typename S> friend class VectorSlice;
 
       PetscVectorStorage(VectorSpec spec);
 
@@ -25,6 +25,8 @@ namespace chive {
     private:
       PetscObjectPtr<Vec> ptr;
   };
+
+  using PetscVector = VectorBase<PetscVectorStorage>;
 }
 
 #endif

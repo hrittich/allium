@@ -2,6 +2,7 @@
 #define CHIVE_LA_EIGEN_SPARSE_MATRIX_HPP
 
 #include "sparse_matrix.hpp"
+#include "eigen_vector.hpp"
 #include <Eigen/Sparse>
 
 namespace chive {
@@ -46,6 +47,9 @@ namespace chive {
   template <typename N>
   class EigenSparseMatrixStorage final : public SparseMatrixStorage<N> {
     public:
+      using NativeVector = EigenVector<N>;
+      using SparseMatrixStorage<N>::get_row_spec;
+
       EigenSparseMatrixStorage(VectorSpec rows, VectorSpec cols)
         : SparseMatrixStorage<N>(rows, cols),
           mat(rows.get_global_size(), cols.get_global_size()) {}
@@ -71,12 +75,22 @@ namespace chive {
         return lmat;
       }
 
+      Vector<N> vec_mult(const Vector<N>& v) override {
+        auto ptr = std::dynamic_pointer_cast<EigenVectorStorage<N>> (v.get_storage());
+        if (!ptr)
+          throw std::logic_error("Not implemented");
+
+        NativeVector ret(get_row_spec());
+        ret.get_storage()->native() = mat * (ptr->native());
+        return ret;
+      }
+
     private:
       Eigen::SparseMatrix<N> mat;
   };
 
   template <typename N>
-  using EigenSparseMatrix = EigenSparseMatrixStorage<N>;
+  using EigenSparseMatrix = SparseMatrixBase<EigenSparseMatrixStorage<N>>;
 }
 
 #endif

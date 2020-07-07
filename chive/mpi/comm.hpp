@@ -8,6 +8,10 @@ namespace chive {
     public:
       MpiComm(::MPI_Comm handle);
 
+      bool operator!= (const MpiComm& other) {
+        return handle != other.handle;
+      }
+
       static MpiComm world();
 
       int get_rank();

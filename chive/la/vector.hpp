@@ -7,7 +7,7 @@
 #include <chive/mpi/comm.hpp>
 
 namespace chive {
-  template <typename NumberT, typename StorageT>
+  template <typename StorageT>
   class VectorSlice;
 
   class VectorSpec final { //: public std::enable_shared_from_this<VectorSpec> {
@@ -41,7 +41,7 @@ namespace chive {
   template <typename NumberT>
   class VectorStorage {
     public:
-      template <typename N, typename S> friend class VectorSlice;
+      template <typename S> friend class VectorSlice;
 
       using Number = NumberT;
       using Real = real_part_t<Number>;
@@ -61,33 +61,36 @@ namespace chive {
       VectorSpec spec;
   };
 
-  template <typename NumberT, typename StorageT = VectorStorage<NumberT>>
-  class Vector {
+  template <typename StorageT>
+  class VectorBase {
     public:
-      using Number = NumberT;
+      using Storage = StorageT;
+      using Number = typename Storage::Number;
       using Real = real_part_t<Number>;
-      using Slice = VectorSlice<NumberT, StorageT>;
+      using Slice = VectorSlice<Storage>;
 
-      explicit Vector(VectorSpec spec) : ptr(std::make_shared<StorageT>(spec)) {};
-      explicit Vector(const std::shared_ptr<StorageT>& ptr) : ptr(ptr) {}
+      template <typename S2>
+      VectorBase(const VectorBase<S2>& other) : ptr(other.get_storage()) {}
 
-      Vector(const Vector&) = default;
-      Vector& operator= (const Vector&) = default;
-      Vector(Vector&&) = default;
-      Vector& operator= (Vector&&) = default;
+      explicit VectorBase(VectorSpec spec) : ptr(std::make_shared<StorageT>(spec)) {};
+      explicit VectorBase(const std::shared_ptr<StorageT>& ptr) : ptr(ptr) {}
 
-      std::shared_ptr<StorageT> get_storage() { return ptr; }
+      std::shared_ptr<StorageT> get_storage() const { return ptr; }
     private:
       std::shared_ptr<StorageT> ptr;
   };
 
-  template <typename NumberT, typename StorageT = VectorStorage<NumberT>>
+  template <typename N>
+  using Vector = VectorBase<VectorStorage<N>>;
+
+  template <typename StorageT>
   class VectorSlice final {
     public:
-      using Number = typename Vector<NumberT, StorageT>::Number;
-      using Real = typename Vector<NumberT, StorageT>::Real;
+      using Storage = StorageT;
+      using Number = typename StorageT::Number;
+      using Real = typename StorageT::Real;
 
-      VectorSlice(std::shared_ptr<StorageT> ptr) : ptr(ptr) {
+      explicit VectorSlice(std::shared_ptr<StorageT> ptr) : ptr(ptr) {
         data = ptr->aquire_data_ptr();
         size = ptr->get_spec().get_local_size();
       }
@@ -119,17 +122,17 @@ namespace chive {
   };
 
   template <typename StorageT>
-    VectorSlice<typename StorageT::Number, StorageT>
+    VectorSlice<StorageT>
     local_slice(std::shared_ptr<StorageT> ptr)
   {
-    return VectorSlice<typename StorageT::Number, StorageT>(ptr);
+    return VectorSlice<StorageT>(ptr);
   }
 
   template <typename StorageT>
-    VectorSlice<typename StorageT::Number, StorageT>
-    local_slice(Vector<typename StorageT::Number, StorageT> vec)
+    VectorSlice<StorageT>
+    local_slice(VectorBase<StorageT> vec)
   {
-    return local_slice(vec->get_storage());
+    return local_slice(vec.get_storage());
   }
 
 }

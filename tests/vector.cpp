@@ -15,7 +15,7 @@ typedef
   VectorStorageTypes;
 
 template <typename T>
-class VectorStorageTest : public ::testing::Test {
+class VectorStorageTest : public testing::Test {
   public:
     using Number = typename T::Number;
 };
@@ -24,14 +24,14 @@ TYPED_TEST_CASE(VectorStorageTest, VectorStorageTypes);
 
 TYPED_TEST(VectorStorageTest, Create) {
   using Number = typename TestFixture::Number;
-  
+
   MpiComm comm = MpiComm::world();
 
   VectorSpec vspec(comm, 1, 1);
 
   TypeParam v(vspec);
 
-  Vector<Number, TypeParam> v2(vspec);
+  VectorBase<TypeParam> v2(vspec);
 }
 
 TYPED_TEST(VectorStorageTest, Fill) {
@@ -43,12 +43,12 @@ TYPED_TEST(VectorStorageTest, Fill) {
   auto v = std::make_shared<TypeParam>(vspec);
 
   {
-    auto v_loc = VectorSlice<Number>(v);
+    auto v_loc = VectorSlice<TypeParam>(v);
     v_loc[0] = 1.0;
   }
 
   {
-    auto v_loc = VectorSlice<Number>(v);
+    auto v_loc = VectorSlice<TypeParam>(v);
     EXPECT_EQ(v_loc[0], 1.0);
   }
 

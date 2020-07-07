@@ -3,6 +3,7 @@ add_library(chive_la
   local_coo_matrix.hpp
   sparse_matrix.cpp sparse_matrix.hpp
   petsc_vector.cpp petsc_vector.hpp
+  petsc_sparse_matrix.cpp petsc_sparse_matrix.hpp
   petsc_object_ptr.hpp
   petsc_util.hpp)
 list(APPEND CHIVE_LIBRARIES chive_la)
