@@ -13,17 +13,17 @@ namespace chive {
       using Real = real_part_t<N>;
 
       SparseMatrixStorage(VectorSpec rows, VectorSpec cols)
-        : row_spec(rows), col_spec(cols) {}
+        : m_row_spec(rows), m_col_spec(cols) {}
 
       virtual void set_entries(LocalCooMatrix<N> mat) = 0;
       virtual LocalCooMatrix<N> get_entries() = 0;
       virtual Vector<N> vec_mult(const Vector<N>& v) = 0;
 
-      VectorSpec get_row_spec() { return row_spec; }
-      VectorSpec get_col_spec() { return col_spec; }
+      VectorSpec row_spec() { return m_row_spec; }
+      VectorSpec col_spec() { return m_col_spec; }
     private:
-      VectorSpec row_spec;
-      VectorSpec col_spec;
+      VectorSpec m_row_spec;
+      VectorSpec m_col_spec;
   };
 
   template <typename StorageT>

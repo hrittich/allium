@@ -53,18 +53,17 @@ namespace chive {
   {
     PetscErrorCode ierr;
 
-    if (get_row_spec().get_comm() != get_col_spec().get_comm()) {
+    if (row_spec().get_comm() != col_spec().get_comm()) {
       throw std::runtime_error(
-        "PETSc requires the row and column "
-        "communicator to be the same");
+        "PETSc requires the row and column communicator to be the same");
     }
 
     // ToDo: Create interface to d_nz and o_nz
-    ierr = MatCreateAIJ(get_row_spec().get_comm().get_handle(), // comm,
-                        get_row_spec().get_local_size(), // local rows
-                        get_col_spec().get_local_size(), // local cols
-                        get_row_spec().get_global_size(), // global rows
-                        get_col_spec().get_global_size(),  // global cols
+    ierr = MatCreateAIJ(row_spec().get_comm().get_handle(), // comm,
+                        row_spec().get_local_size(), // local rows
+                        col_spec().get_local_size(), // local cols
+                        row_spec().get_global_size(), // global rows
+                        col_spec().get_global_size(),  // global cols
                         10, // d_nz
                         NULL, // d_nnz
                         10, // o_nz,
@@ -101,5 +100,23 @@ namespace chive {
 
     return lmat;
   }
+
+  Vector<PetscScalar>
+    PetscSparseMatrixStorage::vec_mult(const Vector<Number>& v)
+  {
+    PetscErrorCode ierr;
+
+    auto v_store = std::dynamic_pointer_cast<const PetscVectorStorage>(v.storage());
+    if (!v_store)
+      throw std::runtime_error("Not implemented");
+
+    NativeVector w(row_spec());
+
+    ierr = MatMult(ptr, v_store->native(), w.storage()->native()); chkerr(ierr);
+
+    return w;
+  }
+
+
 }
 

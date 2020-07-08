@@ -7,8 +7,7 @@
 
 namespace chive {
   class PetscVectorStorage final
-      : public VectorStorage<PetscScalar>,
-        public std::enable_shared_from_this<PetscVectorStorage>
+      : public VectorStorage<PetscScalar>
   {
     public:
       template <typename S> friend class VectorSlice;
@@ -19,6 +18,7 @@ namespace chive {
       void scale(const Number& factor) override;
       Real l2_norm() const override;
 
+      PetscObjectPtr<Vec> native() const { return ptr; }
     protected:
       Number* aquire_data_ptr() override;
       void release_data_ptr(Number* data) override;

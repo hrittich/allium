@@ -48,7 +48,8 @@ namespace chive {
   class EigenSparseMatrixStorage final : public SparseMatrixStorage<N> {
     public:
       using NativeVector = EigenVector<N>;
-      using SparseMatrixStorage<N>::get_row_spec;
+      using SparseMatrixStorage<N>::row_spec;
+      using SparseMatrixStorage<N>::col_spec;
 
       EigenSparseMatrixStorage(VectorSpec rows, VectorSpec cols)
         : SparseMatrixStorage<N>(rows, cols),
@@ -76,12 +77,13 @@ namespace chive {
       }
 
       Vector<N> vec_mult(const Vector<N>& v) override {
-        auto ptr = std::dynamic_pointer_cast<EigenVectorStorage<N>> (v.get_storage());
+        auto ptr = std::dynamic_pointer_cast<const EigenVectorStorage<N>> (v.storage());
         if (!ptr)
           throw std::logic_error("Not implemented");
 
-        NativeVector ret(get_row_spec());
-        ret.get_storage()->native() = mat * (ptr->native());
+        NativeVector ret(row_spec());
+        ret.storage()->native()
+          = mat * (std::const_pointer_cast<EigenVectorStorage<N>>(ptr)->native());
         return ret;
       }
 

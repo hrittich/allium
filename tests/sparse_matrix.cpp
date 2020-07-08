@@ -55,5 +55,38 @@ TYPED_TEST(SparseMatrixTest, MatVecMult)
   }
 
   auto w = mat * v;
+
+  { auto loc = local_slice(w);
+    ASSERT_EQ(loc[0], 30.0);
+  }
+}
+
+TYPED_TEST(SparseMatrixTest, MatVecMult2)
+{
+  using Number = typename TypeParam::Number;
+  using NativeVector = typename TypeParam::Storage::NativeVector;
+
+  VectorSpec spec(MpiComm::world(), 2, 2);
+  TypeParam mat(spec, spec);
+
+  LocalCooMatrix<Number> lmat;
+  lmat.add(0, 0, 1);
+  lmat.add(0, 1, 5);
+  lmat.add(1, 0, 2);
+  lmat.add(1, 1, 3);
+  mat.set_entries(lmat);
+
+  NativeVector v(spec);
+  { auto loc = local_slice(v);
+    loc[0] = 3;
+    loc[1] = -1;
+  }
+
+  auto w = mat * v;
+
+  { auto loc = local_slice(w);
+    ASSERT_EQ(loc[0], -2.0);
+    ASSERT_EQ(loc[1], 3.0);
+  }
 }
 

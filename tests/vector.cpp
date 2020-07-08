@@ -54,7 +54,7 @@ TYPED_TEST(VectorStorageTest, Fill) {
 
   #ifdef CHIVE_BOUND_CHECKS
   {
-    auto v_loc = VectorSlice<Number>(v);
+    auto v_loc = VectorSlice<TypeParam>(v);
     try {
       v_loc[1] = 1;
       FAIL() << "Expected out-of-bound exception";
@@ -70,8 +70,8 @@ TYPED_TEST(VectorStorageTest, Add) {
   auto w = std::make_shared<TypeParam>(vspec);
 
   {
-    auto v_loc = local_slice(v);
-    auto w_loc = local_slice(w);
+    auto v_loc = VectorSlice<TypeParam>(v);
+    auto w_loc = VectorSlice<TypeParam>(w);
 
     v_loc[0] = 2;
     w_loc[0] = 3;
@@ -80,7 +80,7 @@ TYPED_TEST(VectorStorageTest, Add) {
   v->add(*w);
 
   {
-    auto v_loc = local_slice(v);
+    auto v_loc = VectorSlice<TypeParam>(v);
 
     EXPECT_EQ(v_loc[0], 5.0);
   }
@@ -92,14 +92,14 @@ TYPED_TEST(VectorStorageTest, Scale) {
   auto v = std::make_shared<TypeParam>(vspec);
 
   {
-    auto loc = local_slice(v);
+    auto loc = VectorSlice<TypeParam>(v);
     loc[0] = 2;
   }
 
   v->scale(3);
 
   {
-    auto loc = local_slice(v);
+    auto loc = VectorSlice<TypeParam>(v);
     EXPECT_EQ(loc[0], 6.0);
   }
 }
@@ -110,7 +110,7 @@ TYPED_TEST(VectorStorageTest, Norm) {
   auto v = std::make_shared<TypeParam>(vspec);
 
   {
-    auto loc = local_slice(v);
+    auto loc = VectorSlice<TypeParam>(v);
     loc[0] = 1;
     loc[1] = 1;
     loc[2] = 1;
@@ -119,6 +119,26 @@ TYPED_TEST(VectorStorageTest, Norm) {
 
   EXPECT_EQ(v->l2_norm(), 2.0);
 }
+
+TYPED_TEST(VectorStorageTest, Assign) {
+  auto comm = MpiComm::world();
+  VectorSpec vspec(comm, 1, 1);
+  auto v = VectorBase<TypeParam>(vspec);
+  auto w = VectorBase<TypeParam>();
+
+  {
+    auto loc = local_slice(v);
+    loc[0] = 1;
+  }
+
+  w.assign(v);
+
+  {
+    auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 1.0);
+  }
+}
+
 
 
 

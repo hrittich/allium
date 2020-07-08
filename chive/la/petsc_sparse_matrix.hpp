@@ -17,9 +17,7 @@ namespace chive {
       void set_entries(LocalCooMatrix<Number> mat);
       LocalCooMatrix<Number> get_entries();
 
-      Vector<PetscScalar> vec_mult(const Vector<Number>& v) override {
-        throw std::logic_error("Not implemented");
-      }
+      Vector<PetscScalar> vec_mult(const Vector<Number>& v) override;
 
     private:
       PetscObjectPtr<Mat> ptr;
