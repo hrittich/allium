@@ -33,6 +33,9 @@ namespace chive {
       using Number = typename StorageT::Number;
       using Real = typename StorageT::Real;
 
+      template <typename S2>
+      SparseMatrixBase(SparseMatrixBase<S2>&& other) : ptr(other.storage()) {}
+
       SparseMatrixBase(VectorSpec rows, VectorSpec cols)
         : ptr(std::make_shared<StorageT>(rows, cols)) {}
       SparseMatrixBase(const std::shared_ptr<StorageT>& ptr) : ptr(ptr) {}
@@ -49,6 +52,8 @@ namespace chive {
         return ptr->vec_mult(rhs);
       }
 
+      std::shared_ptr<Storage> storage() { return ptr; }
+      std::shared_ptr<const Storage> storage() const { return ptr; }
     private:
       std::shared_ptr<StorageT> ptr;
   };

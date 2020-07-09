@@ -16,7 +16,9 @@ namespace chive {
 
       void add(const VectorStorage& rhs) override;
       void scale(const Number& factor) override;
+      Number dot(const VectorStorage<Number>& rhs) override; 
       Real l2_norm() const override;
+      std::shared_ptr<VectorStorage<Number>> allocate(VectorSpec spec) override;
 
       PetscObjectPtr<Vec> native() const { return ptr; }
     protected:

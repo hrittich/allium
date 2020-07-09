@@ -1,8 +1,9 @@
-#ifndef CHIVE_LA_EIGEN_VECTOR
-#define CHIVE_LA_EIGEN_VECTOR
+#ifndef CHIVE_LA_EIGEN_VECTOR_HPP
+#define CHIVE_LA_EIGEN_VECTOR_HPP
 
-#include <Eigen/Core>
+#include <chive/util/extern.hpp>
 #include "vector.hpp"
+#include <Eigen/Core>
 
 namespace chive {
   template <typename NumberT>
@@ -17,12 +18,14 @@ namespace chive {
 
       explicit EigenVectorStorage(VectorSpec spec)
         : VectorStorage<NumberT>(spec),
-          vec(spec.get_global_size())
+          vec(spec.global_size())
       {}
 
       void add(const VectorStorage<NumberT>& rhs) override;
       void scale(const Number& factor) override;
+      NumberT dot(const VectorStorage<NumberT>& rhs) override;
       Real l2_norm() const override;
+      std::shared_ptr<VectorStorage<NumberT>> allocate(VectorSpec spec) override;
 
       BaseVector& native() { return vec; }
     protected:
@@ -36,40 +39,10 @@ namespace chive {
   template <typename N>
   using EigenVector = VectorBase<EigenVectorStorage<N>>;
 
-  template <typename N>
-  void EigenVectorStorage<N>::add(const VectorStorage<N>& rhs)
-  {
-    const EigenVectorStorage* eigen_rhs
-      = dynamic_cast<const EigenVectorStorage*>(&rhs);
-    if (eigen_rhs != nullptr) {
-      vec += eigen_rhs->vec;
-    } else {
-      throw std::logic_error("Not implemented");
-    }
-  }
-
-  template <typename Number>
-  void EigenVectorStorage<Number>::scale(const Number& factor) {
-    vec *= factor;
-  }
-
-  template <typename Number>
-    real_part_t<Number>
-    EigenVectorStorage<Number>::l2_norm() const
-  {
-    return vec.norm();
-  }
-
-  template <typename Number>
-    typename VectorStorage<Number>::Number* EigenVectorStorage<Number>::aquire_data_ptr()
-  {
-    return vec.data();
-  }
-
-  template <typename Number>
-    void EigenVectorStorage<Number>::release_data_ptr(Number* data)
-  {}
-
+  #define CHIVE_EIGEN_VECTOR_DECL(T, N) \
+    T class EigenVectorStorage<N>; \
+    T class VectorBase<EigenVectorStorage<N>>;
+  CHIVE_EXTERN(CHIVE_EIGEN_VECTOR_DECL)
 }
 
 #endif

@@ -53,7 +53,7 @@ namespace chive {
 
       EigenSparseMatrixStorage(VectorSpec rows, VectorSpec cols)
         : SparseMatrixStorage<N>(rows, cols),
-          mat(rows.get_global_size(), cols.get_global_size()) {}
+          mat(rows.global_size(), cols.global_size()) {}
 
       void set_entries(LocalCooMatrix<N> lmat) override {
         auto entries = std::move(lmat).get_entries();

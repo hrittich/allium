@@ -12,9 +12,9 @@ namespace chive {
   {
     PetscErrorCode ierr;
 
-    ierr = VecCreateMPI(spec.get_comm().get_handle(),
-                        spec.get_local_size(),
-                        spec.get_global_size(),
+    ierr = VecCreateMPI(spec.comm().get_handle(),
+                        spec.local_size(),
+                        spec.global_size(),
                         ptr.writable_ptr()); chkerr(ierr);
 
   }
@@ -36,6 +36,20 @@ namespace chive {
     ierr = VecScale(ptr, factor); chkerr(ierr);
   }
 
+  PetscVectorStorage::Number
+    PetscVectorStorage::dot(const VectorStorage<Number>& rhs) {
+      PetscErrorCode ierr;
+
+      const PetscVectorStorage* petsc_rhs = dynamic_cast<const PetscVectorStorage*>(&rhs);
+      if (petsc_rhs != nullptr) {
+        PetscScalar result;
+        ierr = VecDot(ptr, petsc_rhs->ptr, &result), chkerr(ierr);
+        return result;
+      } else {
+        throw std::logic_error("Not implemented");
+      }
+    }
+
   PetscVectorStorage::Real PetscVectorStorage::l2_norm() const {
     PetscErrorCode ierr;
     Real result;
@@ -44,6 +58,11 @@ namespace chive {
 
     return result;
   }
+
+  std::shared_ptr<VectorStorage<PetscVectorStorage::Number>>
+    PetscVectorStorage::allocate(VectorSpec spec) {
+      throw std::logic_error("Not implemented");
+    }
 
   PetscVectorStorage::Number* PetscVectorStorage::aquire_data_ptr() {
     PetscErrorCode ierr;

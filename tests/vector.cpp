@@ -124,7 +124,7 @@ TYPED_TEST(VectorStorageTest, Assign) {
   auto comm = MpiComm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = VectorBase<TypeParam>(vspec);
-  auto w = VectorBase<TypeParam>();
+  auto w = VectorBase<TypeParam>(vspec);
 
   {
     auto loc = local_slice(v);
@@ -139,6 +139,41 @@ TYPED_TEST(VectorStorageTest, Assign) {
   }
 }
 
+TYPED_TEST(VectorStorageTest, CastToGeneric) {
+  using Number = typename TypeParam::Number;
 
+  auto comm = MpiComm::world();
+  VectorSpec vspec(comm, 1, 1);
+  auto v = VectorBase<TypeParam>(vspec);
+  auto v_gen = Vector<Number>(v);
+}
+
+TYPED_TEST(VectorStorageTest, SetZero) {
+  auto comm = MpiComm::world();
+  VectorSpec vspec(comm, 1, 1);
+  auto v = VectorBase<TypeParam>(vspec);
+
+  v.set_zero();
+  {
+    auto loc = local_slice(v);
+    EXPECT_EQ(loc[0], 0.0);
+  }
+}
+
+TYPED_TEST(VectorStorageTest, Dot) {
+  auto comm = MpiComm::world();
+  VectorSpec vspec(comm, 1, 1);
+  auto v = VectorBase<TypeParam>(vspec);
+  auto w = VectorBase<TypeParam>(vspec);
+
+  // todo: test with complex numbers
+
+  { auto loc = local_slice(v);
+    loc[0] = 2; }
+  { auto loc = local_slice(w);
+    loc[0] = 3; }
+
+  EXPECT_EQ(v.dot(w), 6.0);
+}
 
 

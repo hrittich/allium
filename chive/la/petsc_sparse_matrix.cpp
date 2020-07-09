@@ -53,17 +53,17 @@ namespace chive {
   {
     PetscErrorCode ierr;
 
-    if (row_spec().get_comm() != col_spec().get_comm()) {
+    if (row_spec().comm() != col_spec().comm()) {
       throw std::runtime_error(
         "PETSc requires the row and column communicator to be the same");
     }
 
     // ToDo: Create interface to d_nz and o_nz
-    ierr = MatCreateAIJ(row_spec().get_comm().get_handle(), // comm,
-                        row_spec().get_local_size(), // local rows
-                        col_spec().get_local_size(), // local cols
-                        row_spec().get_global_size(), // global rows
-                        col_spec().get_global_size(),  // global cols
+    ierr = MatCreateAIJ(row_spec().comm().get_handle(), // comm,
+                        row_spec().local_size(), // local rows
+                        col_spec().local_size(), // local cols
+                        row_spec().global_size(), // global rows
+                        col_spec().global_size(),  // global cols
                         10, // d_nz
                         NULL, // d_nnz
                         10, // o_nz,

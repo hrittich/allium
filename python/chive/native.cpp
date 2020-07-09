@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <chive/la/vector.hpp>
 #include <chive/la/eigen_vector.hpp>
+#include <chive/la/sparse_matrix.hpp>
+#include <chive/la/eigen_sparse_matrix.hpp>
 
 namespace py = pybind11;
 
@@ -56,23 +58,26 @@ PYBIND11_MODULE(native, m)
   py::class_<chive::MpiComm>(m, "MpiComm")
     .def(py::init<mpi4py_comm>())
     .def_static("world", &chive::MpiComm::world)
-    .def("get_rank", &chive::MpiComm::get_rank)
-    .def("get_size", &chive::MpiComm::get_size)
-    .def("get_handle",
+    .def("rank", &chive::MpiComm::get_rank)
+    .def("size", &chive::MpiComm::get_size)
+    .def("handle",
          [](chive::MpiComm self) -> mpi4py_comm
          { return self.get_handle(); });
 
   py::class_<chive::VectorSpec>(m, "VectorSpec")
     .def(py::init<chive::MpiComm, chive::global_size_t, size_t>())
-    .def("get_global_size", &chive::VectorSpec::get_global_size)
-    .def("get_local_size", &chive::VectorSpec::get_local_size);
+    .def("global_size", &chive::VectorSpec::global_size)
+    .def("local_size", &chive::VectorSpec::local_size);
 
   py::class_<chive::Vector<double>>(m, "VectorD")
-    .def(py::init([](chive::VectorSpec spec) {
-           return
-             chive::Vector<double>(
-               std::make_shared<chive::EigenVectorStorage<double>>(spec));
-         }));
+    .def(py::init([] (chive::VectorSpec spec) {
+                    return chive::EigenVector<double>(spec);
+                  }));
+
+  py::class_<chive::SparseMatrix<double>>(m, "SparseMatrixD")
+    .def(py::init([] (chive::VectorSpec row_spec, chive::VectorSpec col_spec) {
+                    return chive::EigenSparseMatrix<double>(row_spec, col_spec);
+                  }));
 
 }
 
