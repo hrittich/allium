@@ -8,7 +8,7 @@ namespace chive {
   using petsc::chkerr;
 
   PetscVectorStorage::PetscVectorStorage(VectorSpec spec)
-    : VectorStorage(spec)
+    : VectorStorageBase(spec)
   {
     PetscErrorCode ierr;
 
@@ -58,11 +58,6 @@ namespace chive {
 
     return result;
   }
-
-  std::shared_ptr<VectorStorage<PetscVectorStorage::Number>>
-    PetscVectorStorage::allocate(VectorSpec spec) {
-      throw std::logic_error("Not implemented");
-    }
 
   PetscVectorStorage::Number* PetscVectorStorage::aquire_data_ptr() {
     PetscErrorCode ierr;

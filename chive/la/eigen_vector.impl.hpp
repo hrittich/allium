@@ -38,12 +38,6 @@ namespace chive {
     return vec.norm();
   }
 
-  template <typename N>
-    std::shared_ptr<VectorStorage<N>>
-    EigenVectorStorage<N>::allocate(VectorSpec spec) {
-      throw std::logic_error("Not implemented");
-    }
-
   template <typename Number>
     typename VectorStorage<Number>::Number* EigenVectorStorage<Number>::aquire_data_ptr()
   {

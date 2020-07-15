@@ -43,18 +43,18 @@ TYPED_TEST(VectorStorageTest, Fill) {
   auto v = std::make_shared<TypeParam>(vspec);
 
   {
-    auto v_loc = VectorSlice<TypeParam>(v);
+    auto v_loc = VectorSlice<Number>(v);
     v_loc[0] = 1.0;
   }
 
   {
-    auto v_loc = VectorSlice<TypeParam>(v);
+    auto v_loc = VectorSlice<Number>(v);
     EXPECT_EQ(v_loc[0], 1.0);
   }
 
   #ifdef CHIVE_BOUND_CHECKS
   {
-    auto v_loc = VectorSlice<TypeParam>(v);
+    auto v_loc = VectorSlice<Number>(v);
     try {
       v_loc[1] = 1;
       FAIL() << "Expected out-of-bound exception";
@@ -64,14 +64,16 @@ TYPED_TEST(VectorStorageTest, Fill) {
 }
 
 TYPED_TEST(VectorStorageTest, Add) {
+  using Number = typename TypeParam::Number;
+
   auto comm = MpiComm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = std::make_shared<TypeParam>(vspec);
   auto w = std::make_shared<TypeParam>(vspec);
 
   {
-    auto v_loc = VectorSlice<TypeParam>(v);
-    auto w_loc = VectorSlice<TypeParam>(w);
+    auto v_loc = VectorSlice<Number>(v);
+    auto w_loc = VectorSlice<Number>(w);
 
     v_loc[0] = 2;
     w_loc[0] = 3;
@@ -80,37 +82,41 @@ TYPED_TEST(VectorStorageTest, Add) {
   v->add(*w);
 
   {
-    auto v_loc = VectorSlice<TypeParam>(v);
+    auto v_loc = VectorSlice<Number>(v);
 
     EXPECT_EQ(v_loc[0], 5.0);
   }
 }
 
 TYPED_TEST(VectorStorageTest, Scale) {
+  using Number = typename TypeParam::Number;
+
   auto comm = MpiComm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = std::make_shared<TypeParam>(vspec);
 
   {
-    auto loc = VectorSlice<TypeParam>(v);
+    auto loc = VectorSlice<Number>(v);
     loc[0] = 2;
   }
 
   v->scale(3);
 
   {
-    auto loc = VectorSlice<TypeParam>(v);
+    auto loc = VectorSlice<Number>(v);
     EXPECT_EQ(loc[0], 6.0);
   }
 }
 
 TYPED_TEST(VectorStorageTest, Norm) {
+  using Number = typename TypeParam::Number;
+
   auto comm = MpiComm::world();
   VectorSpec vspec(comm, 4, 4);
   auto v = std::make_shared<TypeParam>(vspec);
 
   {
-    auto loc = VectorSlice<TypeParam>(v);
+    auto loc = VectorSlice<Number>(v);
     loc[0] = 1;
     loc[1] = 1;
     loc[2] = 1;

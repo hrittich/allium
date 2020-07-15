@@ -8,8 +8,9 @@
 #include <chive/mpi/comm.hpp>
 
 namespace chive {
-  template <typename StorageT>
-  class VectorSlice;
+  template <typename, bool> class VectorSlice;
+
+  class BaseTag {};
 
   class VectorSpec final { //: public std::enable_shared_from_this<VectorSpec> {
     public:
@@ -43,34 +44,112 @@ namespace chive {
   template <typename T>
   using real_part_t = typename real_part<T>::type;
 
-  template <typename NumberT>
-  class VectorStorage
-    : public std::enable_shared_from_this<VectorStorage<NumberT>> {
+  /** Abstract base class for any vector storage. */
+  template <typename N>
+  class VectorStorage {
     public:
-      template <typename S> friend class VectorSlice;
+      template <typename, bool> friend class VectorSlice;
 
-      using Number = NumberT;
+      // type traits
+      using Number = N;
       using Real = real_part_t<Number>;
-
-      using std::enable_shared_from_this<VectorStorage<NumberT>>::shared_from_this;
 
       VectorStorage(VectorSpec spec) : m_spec(spec) {}
 
+      // Public virtual vector interface
       virtual void add(const VectorStorage& rhs) = 0;
       virtual void scale(const Number& factor) = 0;
       virtual Real l2_norm() const = 0;
       virtual Number dot(const VectorStorage& rhs) = 0;
-      virtual std::shared_ptr<VectorStorage> allocate(VectorSpec spec) = 0;
 
-      virtual void assign(std::shared_ptr<const VectorStorage> rhs);
+      virtual void assign(std::shared_ptr<const VectorStorage> rhs) = 0;
+      virtual std::unique_ptr<VectorStorage> allocate(VectorSpec spec, BaseTag = {}) = 0;
 
       VectorSpec spec() const { return m_spec; }
     protected:
+      // Private virtual interface
       virtual Number* aquire_data_ptr() = 0;
       virtual void release_data_ptr(Number* data) = 0;
 
     private:
       VectorSpec m_spec;
+  };
+
+  template <typename N, bool is_const=false>
+  class VectorSlice final {
+    public:
+      using Storage = typename std::conditional<is_const,
+                                                const VectorStorage<N>,
+                                                VectorStorage<N>>::type;
+      using Number = typename Storage::Number;
+      using Real = typename Storage::Real;
+      using Reference = typename std::conditional<is_const,
+                                                  Number,
+                                                  Number&>::type;
+      using MutableStorage = typename std::remove_const<Storage>::type;
+
+      explicit VectorSlice(const std::shared_ptr<Storage>& ptr) : ptr(ptr) {
+        data = std::const_pointer_cast<MutableStorage>(ptr)
+               ->aquire_data_ptr();
+        m_size = ptr->spec().local_size();
+      }
+
+      ~VectorSlice() {
+        std::const_pointer_cast<MutableStorage>(ptr)->release_data_ptr(data);
+      }
+
+      Reference operator[] (size_t index) {
+        #ifdef CHIVE_BOUND_CHECKS
+          if (index >= m_size) {
+            throw std::logic_error("Index out of bounds.");
+          }
+        #endif
+
+        return data[index];
+      }
+
+      size_t size() const { return m_size; }
+
+      //Number* get_data() { return data; }
+    protected:
+      Number* data;
+      size_t m_size;
+    private:
+      std::shared_ptr<Storage> ptr;
+  };
+
+  template <typename Derived, typename N>
+  class VectorStorageBase
+    : public VectorStorage<N>,
+      public std::enable_shared_from_this<Derived> {
+    public:
+      using typename VectorStorage<N>::Number;
+      using typename VectorStorage<N>::Real;
+
+      using VectorStorage<N>::spec;
+      using std::enable_shared_from_this<Derived>::shared_from_this;
+
+      VectorStorageBase(VectorSpec spec) : VectorStorage<N>(spec) {}
+
+      std::unique_ptr<Derived> allocate(VectorSpec spec) {
+        return std::make_unique<Derived>(spec);
+      }
+      std::unique_ptr<VectorStorage<N>> allocate(VectorSpec spec, BaseTag) override {
+        return allocate(spec);
+      }
+
+      void assign(std::shared_ptr<const VectorStorage<N>> other)
+      {
+        auto ptr = shared_from_this();
+        auto this_loc = VectorSlice<N>(ptr);
+        auto other_loc = VectorSlice<N, true>(other);
+
+        assert(this_loc.size() == other_loc.size());
+
+        for (size_t i_element=0; i_element < other_loc.size(); ++i_element) {
+          this_loc[i_element] = other_loc[i_element];
+        }
+      }
   };
 
   template <typename StorageT>
@@ -90,7 +169,10 @@ namespace chive {
       explicit VectorBase(std::shared_ptr<StorageT> ptr) : ptr(ptr) {}
 
       template <typename S2>
-      void assign(const VectorBase<S2>& other);
+      void assign(const VectorBase<S2>& other)
+      {
+        ptr->assign(other.storage());
+      }
 
       VectorSpec spec() const { return ptr->spec(); }
 
@@ -98,7 +180,15 @@ namespace chive {
       std::shared_ptr<const StorageT> storage() const { return ptr; }
 
       VectorBase uninitialized_like() const {
-        return VectorBase(std::dynamic_pointer_cast<Storage>(ptr->allocate(spec())));
+        return VectorBase(std::shared_ptr<StorageT>(ptr->allocate(spec())));
+      }
+
+      void set_zero()
+      {
+        auto loc = VectorSlice<Number>(ptr);
+        for (size_t i_loc=0; i_loc < loc.size(); ++i_loc) {
+          loc[i_loc] = 0;
+        }
       }
 
       VectorBase<VectorStorage<Number>> zeros_like() const {
@@ -106,8 +196,6 @@ namespace chive {
         v.set_zero();
         return v;
       }
-
-      void set_zero();
 
       VectorBase operator+ (const VectorBase& rhs) const {
         VectorBase aux(rhs.uninitialized_like());
@@ -147,47 +235,6 @@ namespace chive {
   template <typename N>
   using Vector = VectorBase<VectorStorage<N>>;
 
-  template <typename S>
-  class VectorSlice final {
-    public:
-      using Storage = S;
-      using Number = typename S::Number;
-      using Real = typename S::Real;
-      using Reference = typename std::conditional<std::is_const<S>::value,
-                                                  Number,
-                                                  Number&>::type;
-      using MutableStorage = typename std::remove_const<S>::type;
-
-      explicit VectorSlice(const std::shared_ptr<S>& ptr) : ptr(ptr) {
-        data = std::const_pointer_cast<MutableStorage>(ptr)
-               ->aquire_data_ptr();
-        m_size = ptr->spec().local_size();
-      }
-
-      ~VectorSlice() {
-        std::const_pointer_cast<MutableStorage>(ptr)->release_data_ptr(data);
-      }
-
-      Reference operator[] (size_t index) {
-        #ifdef CHIVE_BOUND_CHECKS
-          if (index >= m_size) {
-            throw std::logic_error("Index out of bounds.");
-          }
-        #endif
-
-        return data[index];
-      }
-
-      size_t size() const { return m_size; }
-
-      //Number* get_data() { return data; }
-    protected:
-      Number* data;
-      size_t m_size;
-    private:
-      std::shared_ptr<S> ptr;
-  };
-
   template <typename T, typename F>
   T vector_cast(const F& other) {
     auto ptr = std::dynamic_pointer_cast<typename T::Storage>(other.storage());
@@ -202,47 +249,9 @@ namespace chive {
   }
 
   template <typename S>
-    VectorSlice<S> local_slice(VectorBase<S> vec)
+    VectorSlice<typename S::Number> local_slice(VectorBase<S> vec)
   {
-    return VectorSlice<S>(vec.storage());
-  }
-
-  template <typename N>
-  void VectorStorage<N>::assign(std::shared_ptr<const VectorStorage> other)
-  {
-    auto ptr = shared_from_this();
-    auto this_loc = VectorSlice<VectorStorage<N>>(ptr);
-    auto other_loc = VectorSlice<const VectorStorage<N>>(other);
-
-    assert(this_loc.size() == other_loc.size());
-
-    for (size_t i_element=0; i_element < other_loc.size(); ++i_element) {
-      this_loc[i_element] = other_loc[i_element];
-    }
-  }
-
-  template <typename S>
-  template <typename S2>
-  void VectorBase<S>::assign(const VectorBase<S2>& other)
-  {
-    assert(ptr);
-    assert(other.ptr);
-
-    // check that the vectors have the same size allocation
-    if (spec() != other.spec()) {
-      throw std::logic_error("Cannot assign a vector with a different "
-                             "specification");
-    }
-    ptr->assign(other.storage());
-  }
-
-  template <typename S>
-  void VectorBase<S>::set_zero()
-  {
-    auto loc = local_slice(*this);
-    for (size_t i_loc=0; i_loc < loc.size(); ++i_loc) {
-      loc[i_loc] = 0;
-    }
+    return VectorSlice<typename S::Number>(vec.storage());
   }
 
 }

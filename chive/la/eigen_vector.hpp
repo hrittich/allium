@@ -7,17 +7,16 @@
 
 namespace chive {
   template <typename NumberT>
-  class EigenVectorStorage final : public VectorStorage<NumberT>
+  class EigenVectorStorage final
+    : public VectorStorageBase<EigenVectorStorage<NumberT>, NumberT>
   {
     public:
-      template <typename S> friend class VectorSlice;
-
       using BaseVector = Eigen::Matrix<NumberT, Eigen::Dynamic, 1>;
       using typename VectorStorage<NumberT>::Number;
       using Real = real_part_t<NumberT>;
 
       explicit EigenVectorStorage(VectorSpec spec)
-        : VectorStorage<NumberT>(spec),
+        : VectorStorageBase<EigenVectorStorage<NumberT>, NumberT>(spec),
           vec(spec.global_size())
       {}
 
@@ -25,9 +24,12 @@ namespace chive {
       void scale(const Number& factor) override;
       NumberT dot(const VectorStorage<NumberT>& rhs) override;
       Real l2_norm() const override;
-      std::shared_ptr<VectorStorage<NumberT>> allocate(VectorSpec spec) override;
 
       BaseVector& native() { return vec; }
+
+      EigenVectorStorage* allocate(VectorSpec spec) {
+        return new EigenVectorStorage(spec);
+      }
     protected:
       Number* aquire_data_ptr() override;
       void release_data_ptr(Number* data) override;
