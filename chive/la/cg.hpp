@@ -7,10 +7,16 @@
 
 namespace chive {
   template <typename N>
-    Vector<N> cg(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol = 1e-6);
+    Vector<N> cg_(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol = 1e-6);
+
+  template <typename Mat, typename... Args>
+    Vector<typename Mat::Number> cg(Mat mat, Args&&... args)
+    {
+      return cg_<typename Mat::Number>(mat, std::forward<Args>(args)...);
+    }
 
   #define CHIVE_CG_DECL(T, N) \
-    T Vector<N> cg<N>(SparseMatrix<N>, Vector<N>, real_part_t<N>);
+    T Vector<N> cg_<N>(SparseMatrix<N>, Vector<N>, real_part_t<N>);
   CHIVE_EXTERN(CHIVE_CG_DECL)
 }
 

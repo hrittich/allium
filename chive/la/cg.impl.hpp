@@ -5,7 +5,7 @@
 namespace chive {
 
   template <typename N>
-    Vector<N> cg(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol)
+    Vector<N> cg_(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol)
   {
     using Number = N;
     using Real = real_part_t<N>;

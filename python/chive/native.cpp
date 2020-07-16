@@ -76,7 +76,9 @@ PYBIND11_MODULE(native, m)
 
   py::class_<chive::SparseMatrix<double>>(m, "SparseMatrixD")
     .def(py::init([] (chive::VectorSpec row_spec, chive::VectorSpec col_spec) {
-                    return chive::EigenSparseMatrix<double>(row_spec, col_spec);
+                    return
+                      chive::SparseMatrix<double>(
+                        chive::EigenSparseMatrix<double>(row_spec, col_spec));
                   }));
 
 }

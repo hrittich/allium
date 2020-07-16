@@ -3,6 +3,7 @@ add_executable(test_suite
   vector.cpp
   sparse_matrix.cpp
   petsc.cpp
-  eigen.cpp)
+  eigen.cpp
+  cg.cpp)
 target_link_libraries(test_suite ${GTEST_LIBRARIES} ${LIBRARIES} ${CHIVE_LIBRARIES})
 

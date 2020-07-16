@@ -34,7 +34,7 @@ namespace chive {
       using Real = typename StorageT::Real;
 
       template <typename S2>
-      SparseMatrixBase(SparseMatrixBase<S2>&& other) : ptr(other.storage()) {}
+      SparseMatrixBase(SparseMatrixBase<S2> other) : ptr(other.storage()) {}
 
       SparseMatrixBase(VectorSpec rows, VectorSpec cols)
         : ptr(std::make_shared<StorageT>(rows, cols)) {}

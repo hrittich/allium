@@ -6,35 +6,12 @@
 #include <cassert>
 #include <chive/util/types.hpp>
 #include <chive/mpi/comm.hpp>
+#include "vector_spec.hpp"
 
 namespace chive {
   template <typename, bool> class VectorSlice;
 
   class BaseTag {};
-
-  class VectorSpec final { //: public std::enable_shared_from_this<VectorSpec> {
-    public:
-      VectorSpec(const VectorSpec&) = default;
-      VectorSpec(VectorSpec&&) = default;
-      VectorSpec(MpiComm comm, global_size_t global_size, size_t local_size);
-
-      VectorSpec& operator= (const VectorSpec&) = default;
-      VectorSpec& operator= (VectorSpec&&) = default;
-
-      bool operator!= (const VectorSpec& other) {
-        return (m_comm != other.m_comm)
-               || (m_global_size != other.m_global_size)
-               || (m_local_size != other.m_local_size);
-      }
-
-      MpiComm comm() { return m_comm; }
-      global_size_t global_size() { return m_global_size; }
-      size_t local_size() { return m_local_size; }
-    private:
-      MpiComm m_comm;
-      global_size_t m_global_size;
-      size_t m_local_size;
-  };
 
   template <typename T> struct real_part {};
   template <> struct real_part<float> { typedef float type; };
@@ -46,7 +23,7 @@ namespace chive {
 
   /** Abstract base class for any vector storage. */
   template <typename N>
-  class VectorStorage {
+  class VectorStorage : public std::enable_shared_from_this<VectorStorage<N>> {
     public:
       template <typename, bool> friend class VectorSlice;
 
@@ -55,6 +32,7 @@ namespace chive {
       using Real = real_part_t<Number>;
 
       VectorStorage(VectorSpec spec) : m_spec(spec) {}
+      virtual ~VectorStorage() {}
 
       // Public virtual vector interface
       virtual void add(const VectorStorage& rhs) = 0;
@@ -120,14 +98,13 @@ namespace chive {
 
   template <typename Derived, typename N>
   class VectorStorageBase
-    : public VectorStorage<N>,
-      public std::enable_shared_from_this<Derived> {
+    : public VectorStorage<N> {
     public:
       using typename VectorStorage<N>::Number;
       using typename VectorStorage<N>::Real;
 
       using VectorStorage<N>::spec;
-      using std::enable_shared_from_this<Derived>::shared_from_this;
+      using VectorStorage<N>::shared_from_this;
 
       VectorStorageBase(VectorSpec spec) : VectorStorage<N>(spec) {}
 
@@ -205,7 +182,6 @@ namespace chive {
       }
 
       VectorBase operator- (const VectorBase& rhs) const {
-        // important todo: does this change rhs???
         VectorBase aux(rhs.uninitialized_like());
         aux.assign(rhs);
         aux.ptr->scale(-1);
@@ -235,25 +211,11 @@ namespace chive {
   template <typename N>
   using Vector = VectorBase<VectorStorage<N>>;
 
-  template <typename T, typename F>
-  T vector_cast(const F& other) {
-    auto ptr = std::dynamic_pointer_cast<typename T::Storage>(other.storage());
-
-    if (ptr) {
-      return T(ptr);
-    } else {
-      T vec(other.spec());
-      vec.assign(other);
-      return vec;
-    }
-  }
-
   template <typename S>
     VectorSlice<typename S::Number> local_slice(VectorBase<S> vec)
   {
     return VectorSlice<typename S::Number>(vec.storage());
   }
-
 }
 
 #endif

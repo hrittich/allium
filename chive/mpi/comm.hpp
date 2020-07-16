@@ -2,6 +2,7 @@
 #define CHIVE_MPI_COMM_HPP
 
 #include <mpi.h>
+#include <vector>
 
 namespace chive {
   class MpiComm {
@@ -16,6 +17,10 @@ namespace chive {
 
       int get_rank();
       int get_size();
+
+      void barrier(void);
+
+      std::vector<long long> sum_exscan(std::vector<long long> buf);
 
       MPI_Comm get_handle() { return handle; }
     private:
