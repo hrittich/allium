@@ -3,6 +3,16 @@
 namespace chive {
 
   template <typename N>
+    EigenVectorStorage<N>::EigenVectorStorage(VectorSpec spec)
+      : VectorStorageBase<EigenVectorStorage<N>, N>(spec),
+        vec(spec.global_size())
+    {
+      if (spec.comm().get_size() != 1) {
+        throw std::logic_error("Objects of type EigenVector cannot be distributed.");
+      }
+    }
+
+  template <typename N>
   void EigenVectorStorage<N>::add(const VectorStorage<N>& rhs)
   {
     const EigenVectorStorage* eigen_rhs

@@ -15,10 +15,7 @@ namespace chive {
       using typename VectorStorage<NumberT>::Number;
       using Real = real_part_t<NumberT>;
 
-      explicit EigenVectorStorage(VectorSpec spec)
-        : VectorStorageBase<EigenVectorStorage<NumberT>, NumberT>(spec),
-          vec(spec.global_size())
-      {}
+      explicit EigenVectorStorage(VectorSpec spec);
 
       void add(const VectorStorage<NumberT>& rhs) override;
       void scale(const Number& factor) override;
