@@ -1,8 +1,4 @@
 #include "util.hpp"
 
-namespace chive {
-
-
-
-}
+namespace chive {}
 

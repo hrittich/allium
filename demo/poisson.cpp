@@ -6,7 +6,6 @@
 #include <chive/mpi/comm.hpp>
 #include <chive/la/vector.hpp>
 #include <chive/la/sparse_matrix.hpp>
-#include <chive/la/petsc_sparse_matrix.hpp>
 #include <chive/la/cg.hpp>
 
 using namespace chive;
@@ -35,7 +34,7 @@ int main(int argc, char** argv) {
     << " [" << spec.local_start() << ", " << spec.local_end() << ")"
     << std::endl;
 
-  LocalCooMatrix<PetscScalar> lmat;
+  LocalCooMatrix<std::complex<double>> lmat;
 
   for (global_size_t i = spec.local_start(); i < spec.local_end(); ++i) {
     if (i > 0) {
@@ -47,10 +46,10 @@ int main(int argc, char** argv) {
     }
   }
 
-  PetscSparseMatrix mat(spec, spec);
+  auto mat = make_sparse_matrix<std::complex<double>>(spec, spec);
   mat.set_entries(lmat);
 
-  PetscVector v(spec);
+  auto v = make_vector<std::complex<double>>(spec);
   {
     auto v_loc = local_slice(v);
     for (global_size_t i_glob = spec.local_start(); i_glob < spec.local_end(); i_glob++)

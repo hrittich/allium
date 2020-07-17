@@ -59,7 +59,14 @@ namespace chive {
   };
 
   template <typename N>
-  using SparseMatrix = SparseMatrixBase<SparseMatrixStorage<N>>;
+    using SparseMatrix = SparseMatrixBase<SparseMatrixStorage<N>>;
+
+  template <typename N>
+    SparseMatrix<N> make_sparse_matrix(VectorSpec row_spec, VectorSpec col_spec);
+
+  #define CHIVE_LA_SPARSE_MATRIX_DECL(T, N) \
+    T SparseMatrix<N> make_sparse_matrix(VectorSpec row_spec, VectorSpec col_spec);
+  CHIVE_EXTERN(CHIVE_LA_SPARSE_MATRIX_DECL)
 }
 
 #endif

@@ -5,6 +5,7 @@
 #include <complex>
 #include <cassert>
 #include <chive/util/types.hpp>
+#include <chive/util/extern.hpp>
 #include <chive/mpi/comm.hpp>
 #include "vector_spec.hpp"
 
@@ -216,6 +217,13 @@ namespace chive {
   {
     return VectorSlice<typename S::Number>(vec.storage());
   }
+
+  template <typename N>
+  Vector<N> make_vector(VectorSpec spec);
+
+  #define CHIVE_LA_VECTOR_DECL(T, N) \
+    T Vector<N> make_vector(VectorSpec);
+  CHIVE_EXTERN(CHIVE_LA_VECTOR_DECL)
 }
 
 #endif

@@ -1,6 +1,6 @@
 add_library(chive_la
   vector_spec.cpp vector_spec.hpp
-  vector.cpp vector.hpp
+  vector.cpp vector.impl.hpp vector.hpp
   local_coo_matrix.hpp
   sparse_matrix.cpp sparse_matrix.hpp
   eigen_vector.cpp eigen_vector.impl.hpp eigen_vector.hpp

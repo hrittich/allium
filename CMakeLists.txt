@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.13)
 add_subdirectory(contrib)
 
 # Options
-
 set(CHIVE_GLOBAL_SIZE_T "size_t"
     CACHE STRING "Type of the size of global quantities, e.g., vectors")
 option(CHIVE_BOUND_CHECKS "Perform bound checks on array accesses" OFF)
@@ -66,6 +65,8 @@ if(PKG_CONFIG_FOUND)
   list(APPEND LINK_OPTIONS ${PETSC_LDFLAGS})
   list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
   set(CHIVE_USE_PETSC ON)
+
+  set(PROPOSED_DEFAULT_BACKEND "PETSC")
 endif()
 
 # Eigen3
@@ -74,6 +75,20 @@ include_directories(${CMAKE_BINARY_DIR}/contrib/eigen)
 # pybind11
 add_subdirectory(${CMAKE_BINARY_DIR}/contrib/pybind11)
 
+
+# Default linear algebra backend
+if(NOT PROPOSED_DEFAULT_BACKEND)
+  set(PROPOSED_DEFAULT_BACKEND "EIGEN")
+endif()
+set(CHIVE_DEFAULT_BACKEND ${PROPOSED_DEFAULT_BACKEND}
+    CACHE STRING "Default linear algebra backend = \"EIGEN\"|\"PETSC\"")
+if(CHIVE_DEFAULT_BACKEND STREQUAL "EIGEN")
+  set(CHIVE_DEFAULT_BACKEND_EIGEN TRUE)
+elseif(CHIVE_DEFAULT_BACKEND STREQUAL "PETSC")
+  set(CHIVE_DEFAULT_BACKEND_PETSC TRUE)
+else()
+  message(SEND_ERROR "Invalid default backend.")
+endif()
 
 # General Config
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
