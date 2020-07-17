@@ -1,5 +1,7 @@
 #include "petsc_vector.hpp"
 
+#ifdef CHIVE_USE_PETSC
+
 #include <petscsys.h>
 #include "petsc_util.hpp"
 
@@ -75,3 +77,4 @@ namespace chive {
 
 }
 
+#endif

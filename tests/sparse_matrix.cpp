@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <chive/config.hpp>
 #include <chive/la/eigen_sparse_matrix.hpp>
 #include <chive/la/petsc_sparse_matrix.hpp>
 
@@ -6,10 +7,12 @@ using namespace chive;
 
 typedef
   testing::Types<
-    EigenSparseMatrix<double>,
-    EigenSparseMatrix<std::complex<double>>,
-    PetscSparseMatrix>
-  MatrixStorageTypes;
+    EigenSparseMatrix<double>
+    , EigenSparseMatrix<std::complex<double>>
+    #ifdef CHIVE_USE_PETSC
+    , PetscSparseMatrix
+    #endif
+    > MatrixStorageTypes;
 
 template <typename S>
 class SparseMatrixTest : public testing::Test {

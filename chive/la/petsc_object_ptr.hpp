@@ -2,6 +2,9 @@
 #define CHIVE_LA_PETSC_OBJECT_PTR_HPP
 
 #include <chive/config.hpp>
+
+#ifdef CHIVE_USE_PETSC
+
 #include <petscmat.h>
 #include <petscvec.h>
 #include <petscksp.h>
@@ -126,4 +129,5 @@ class PetscObjectPtr {
     T value;
 };
 
+#endif
 #endif

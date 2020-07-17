@@ -1,6 +1,10 @@
 #ifndef CHIVE_LA_PETSC_SPARSE_MATRIX_HPP
 #define CHIVE_LA_PETSC_SPARSE_MATRIX_HPP
 
+#include <chive/config.hpp>
+
+#ifdef CHIVE_USE_PETSC
+
 #include "sparse_matrix.hpp"
 #include "petsc_util.hpp"
 #include "petsc_object_ptr.hpp"
@@ -26,4 +30,5 @@ namespace chive {
   using PetscSparseMatrix = SparseMatrixBase<PetscSparseMatrixStorage>;
 }
 
+#endif
 #endif

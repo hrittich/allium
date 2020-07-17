@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <chive/config.hpp>
 #include <chive/la/vector.hpp>
 #include <chive/la/petsc_vector.hpp>
 #include <chive/la/eigen_vector.hpp>
@@ -9,9 +10,12 @@ using namespace chive;
 // Types to test
 typedef
   testing::Types<
-    EigenVectorStorage<double>,
-    EigenVectorStorage<std::complex<double>>,
-    PetscVectorStorage>
+    EigenVectorStorage<double>
+    , EigenVectorStorage<std::complex<double>>
+    #ifdef CHIVE_USE_PETSC
+      , PetscVectorStorage
+    #endif
+    >
   VectorStorageTypes;
 
 template <typename T>

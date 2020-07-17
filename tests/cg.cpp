@@ -8,15 +8,15 @@ using namespace chive;
 
 TEST(CG, solve1)
 {
-  using Number = PetscVector::Number;
+  using Number = std::complex<double>;
 
   VectorSpec spec(MpiComm::world(), 1, 1);
-  PetscVector v(spec);
+  auto v = make_vector<Number>(spec);
 
   LocalCooMatrix<Number> coo;
   coo.add(0, 0, 5);
 
-  PetscSparseMatrix mat(spec, spec);
+  auto mat = make_sparse_matrix<Number>(spec, spec);
   mat.set_entries(coo);
 
   { auto loc = local_slice(v);
@@ -32,10 +32,10 @@ TEST(CG, solve1)
 
 TEST(CG, solve4)
 {
-  using Number = PetscVector::Number;
+  using Number = std::complex<double>;
 
   VectorSpec spec(MpiComm::world(), 4, 4);
-  PetscVector v(spec);
+  auto v = make_vector<Number>(spec);
 
   LocalCooMatrix<Number> coo;
   coo.add(0, 0,  2);
@@ -52,7 +52,7 @@ TEST(CG, solve4)
   coo.add(3, 2, -1);
   coo.add(3, 3,  2);
 
-  PetscSparseMatrix mat(spec, spec);
+  auto mat = make_sparse_matrix<Number>(spec, spec);
   mat.set_entries(coo);
 
   { auto loc = local_slice(v);

@@ -1,5 +1,7 @@
 #include "petsc_sparse_matrix.hpp"
 
+#ifdef CHIVE_USE_PETSC
+
 namespace chive {
   using namespace petsc;
 
@@ -116,7 +118,6 @@ namespace chive {
 
     return w;
   }
-
-
 }
 
+#endif

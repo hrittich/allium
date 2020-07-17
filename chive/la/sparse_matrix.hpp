@@ -1,6 +1,8 @@
 #ifndef CHIVE_LA_SPARSE_MATRIX_HPP
 #define CHIVE_LA_SPARSE_MATRIX_HPP
 
+#include <chive/config.hpp>
+
 #include "local_coo_matrix.hpp"
 #include "vector.hpp"
 #include <memory>

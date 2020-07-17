@@ -1,6 +1,10 @@
 #ifndef CHIVE_LA_PETSC_VECTOR_HPP
 #define CHIVE_LA_PETSC_VECTOR_HPP
 
+#include <chive/config.hpp>
+
+#ifdef CHIVE_USE_PETSC
+
 #include "petsc_object_ptr.hpp"
 #include <petscvec.h>
 #include "vector.hpp"
@@ -28,4 +32,5 @@ namespace chive {
   using PetscVector = VectorBase<PetscVectorStorage>;
 }
 
+#endif
 #endif
