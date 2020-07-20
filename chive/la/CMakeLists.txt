@@ -8,7 +8,8 @@ add_library(chive_la
   petsc_sparse_matrix.cpp petsc_sparse_matrix.hpp
   petsc_object_ptr.hpp
   petsc_util.hpp
-  cg.cpp cg.impl.hpp cg.hpp)
+  cg.cpp cg.impl.hpp cg.hpp
+  gmres.cpp gmres.impl.hpp gmres.hpp)
 
 list(APPEND CHIVE_LIBRARIES chive_la)
 set(CHIVE_LIBRARIES ${CHIVE_LIBRARIES} PARENT_SCOPE)
