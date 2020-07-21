@@ -10,8 +10,8 @@ namespace chive {
    * plane to the vector u.
    *
    * The numbers c and s are the sin and cos of the corresponding angle. */
-  template <typename N>
-    void gmres_rotate(size_t i1, size_t i2, real_part_t<N> c, real_part_t<N> s, LocalVector<N>& u)
+  template <typename N, typename V>
+    void gmres_rotate(size_t i1, size_t i2, real_part_t<N> c, real_part_t<N> s, V& u)
   {
     using Number = N;
 
@@ -21,6 +21,76 @@ namespace chive {
     u[i1] = new_entry1;
     u[i2] = new_entry2;
   }
+
+  /** Incrementally computes the QR decomposition of an upper Hessenberg
+   * matrix. */
+  template <typename N>
+  class HessenbergQr {
+    public:
+      using Number = N;
+      using Real = real_part_t<N>;
+
+      HessenbergQr(Number first_rhs_entry);
+
+      void add_column(LocalVector<N> next_column, Number next_rhs_entry);
+
+      /** The residual norm of the least-squares problem. */
+      Real residual_norm() const;
+    private:
+      std::vector<LocalVector<N>> m_r_columns;  // columns of the matrix R
+      std::vector<Real> m_cos_list;
+      std::vector<Real> m_sin_list;
+      std::vector<Number> m_rhs;
+  };
+
+  template <typename N>
+  HessenbergQr<N>::HessenbergQr(Number first_rhs_entry)
+    : m_rhs({first_rhs_entry})
+  {}
+
+  template <typename N>
+  void HessenbergQr<N>::add_column(LocalVector<N> next_column, Number next_rhs_entry)
+  {
+    size_t n_columns = m_r_columns.size();
+
+    assert(next_column.nrows() == n_columns + 2);
+
+    // First, apply previous rotations to the new column
+    for (size_t i_rot = 0; i_rot < n_columns; ++i_rot) {
+      gmres_rotate(i_rot, i_rot+1, m_cos_list[i_rot], m_sin_list[i_rot], next_column);
+    }
+
+    // Second, compute the new rotation coefficients
+
+    // Currently, we assume that the last entry in the next_column is a real
+    // number, which is true for the GMRES method.
+    assert(std::imag(next_column[n_columns+1]) == 0.0);
+
+    Number r = next_column[n_columns];
+    Real h = std::real(next_column[n_columns+1]);
+
+    Real new_c = r / sqrt(r*r + h*h);
+    Real new_s = -h / sqrt(r*r + h*h);
+
+    m_cos_list.push_back(new_c);
+    m_sin_list.push_back(new_s);
+
+    // Third, apply new rotation
+    gmres_rotate(n_columns, n_columns+1, new_c, new_s, next_column);
+
+    // Fourth, apply the new rotation to rhs
+    m_rhs.push_back(next_rhs_entry);
+    gmres_rotate(n_columns, n_columns+1, new_c, new_s, m_rhs);
+  }
+
+  /** The residual norm of the least-squares problem. */
+  template <typename N>
+  typename HessenbergQr<N>::Real HessenbergQr<N>::residual_norm() const
+  {
+    size_t n_columns = m_r_columns.size();
+    return abs(m_rhs[n_columns]);
+  }
+
 
   template <typename N>
     Vector<N> gmres_inner(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> abs_tol, Vector<N> x0)
