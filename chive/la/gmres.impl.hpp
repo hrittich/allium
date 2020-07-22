@@ -6,17 +6,83 @@
 
 namespace chive {
 
+  /** Compute the Givens rotation coefficients. Only works for real numbers.
+   * Compute c, s, such that
+   *
+   * | c  -s |   | a |   | r |
+   * | s   c | * | b | = | 0 |
+   *
+   * */
+  template <typename N>
+    std::tuple<N, N> real_givens(N a, N b)
+  {
+    N c, s;
+
+    if (b == 0.0) {
+      c = 1;
+      s = 0;
+    } else {
+      if (std::abs(b) > std::abs(a)) {
+        N tau = -a/b;
+        s = 1.0 / sqrt(1.0 + tau*tau);
+        c = s * tau;
+      } else {
+        N tau = -b/a;
+        c = 1.0 / sqrt(1.0 + tau*tau);
+        s = c * tau;
+      }
+    }
+    return std::make_tuple(c, s);
+  }
+
+  template <typename N>
+    std::tuple<real_part_t<N>, N> givens(N a, N b)
+  {
+    auto c_s_alpha = real_givens(std::real(a), std::imag(a));
+    auto c_alpha = std::get<0>(c_s_alpha);
+    auto s_alpha = std::get<1>(c_s_alpha);
+    auto r_a = c_alpha * std::real(a) - s_alpha * std::imag(a);
+
+    auto c_s_beta = real_givens(std::real(b), std::imag(b));
+    auto c_beta = std::get<0>(c_s_beta);
+    auto s_beta = std::get<1>(c_s_beta);
+    auto r_b = c_beta * std::real(b) - s_beta * std::imag(b);
+
+    auto c_s_theta = real_givens(r_a, r_b);
+    auto c_theta = std::get<0>(c_s_theta);
+    auto s_theta = std::get<1>(c_s_theta);
+
+    auto c = c_theta;
+    auto s = s_theta * N(c_alpha*c_beta+s_alpha*s_beta,
+                         c_alpha*s_beta-c_beta*s_alpha);
+    return std::make_tuple(c, s);
+  }
+
+  template <> std::tuple<float, float> givens(float a, float b)
+  { return real_givens<float>(a, b); }
+  template <> std::tuple<double, double> givens(double a, double b)
+  { return real_givens<double>(a, b); }
+
+  template <typename N>
+  N conj(N z) {
+    return std::conj(z);
+  }
+  template <>
+  double conj(double z) { return z; }
+  template <>
+  float conj(float z) { return z; }
+
   /** Overrides u by the vector obtained by applying a rotation in the i1-i2
    * plane to the vector u.
    *
    * The numbers c and s are the sin and cos of the corresponding angle. */
   template <typename N, typename V>
-    void gmres_rotate(size_t i1, size_t i2, real_part_t<N> c, real_part_t<N> s, V& u)
+    void gmres_rotate(size_t i1, size_t i2, N c, N s, V& u)
   {
     using Number = N;
 
     Number new_entry1 = c * u[i1] - s * u[i2];
-    Number new_entry2 = s * u[i1] + c * u[i2];
+    Number new_entry2 = conj<N>(s) * u[i1] + c * u[i2];
 
     u[i1] = new_entry1;
     u[i2] = new_entry2;
@@ -42,8 +108,8 @@ namespace chive {
       Vector solution() const;
     private:
       std::vector<LocalVector<N>> m_r_columns;  // columns of the matrix R
-      std::vector<Real> m_cos_list;
-      std::vector<Real> m_sin_list;
+      std::vector<Number> m_cos_list;
+      std::vector<Number> m_sin_list;
       std::vector<Number> m_rhs;
   };
 
@@ -68,13 +134,14 @@ namespace chive {
 
     // Currently, we assume that the last entry in the next_column is a real
     // number, which is true for the GMRES method.
-    assert(std::imag(next_column[n_columns+1]) == 0.0);
+    //assert(std::imag(next_column[n_columns+1]) == 0.0);
 
     Number r = next_column[n_columns];
-    Real h = std::real(next_column[n_columns+1]);
+    Number h = next_column[n_columns+1];
 
-    Real new_c = r / sqrt(r*r + h*h);
-    Real new_s = -h / sqrt(r*r + h*h);
+    auto c_s_tpl = givens(r, h);
+    Number new_c = std::get<0>(c_s_tpl);
+    Number new_s = std::get<1>(c_s_tpl);
 
     m_cos_list.push_back(new_c);
     m_sin_list.push_back(new_s);
