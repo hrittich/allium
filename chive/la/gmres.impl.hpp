@@ -28,7 +28,8 @@ namespace chive {
   class HessenbergQr {
     public:
       using Number = N;
-      using Real = real_part_t<N>;
+      using Real = real_part_t<Number>;
+      using Vector = LocalVector<Number>;
 
       HessenbergQr(Number first_rhs_entry);
 
@@ -36,6 +37,9 @@ namespace chive {
 
       /** The residual norm of the least-squares problem. */
       Real residual_norm() const;
+
+      /** The solution vector. */
+      Vector solution() const;
     private:
       std::vector<LocalVector<N>> m_r_columns;  // columns of the matrix R
       std::vector<Real> m_cos_list;
@@ -57,7 +61,7 @@ namespace chive {
 
     // First, apply previous rotations to the new column
     for (size_t i_rot = 0; i_rot < n_columns; ++i_rot) {
-      gmres_rotate(i_rot, i_rot+1, m_cos_list[i_rot], m_sin_list[i_rot], next_column);
+      gmres_rotate<Number>(i_rot, i_rot+1, m_cos_list[i_rot], m_sin_list[i_rot], next_column);
     }
 
     // Second, compute the new rotation coefficients
@@ -76,11 +80,34 @@ namespace chive {
     m_sin_list.push_back(new_s);
 
     // Third, apply new rotation
-    gmres_rotate(n_columns, n_columns+1, new_c, new_s, next_column);
+    gmres_rotate<Number>(n_columns, n_columns+1, new_c, new_s, next_column);
 
     // Fourth, apply the new rotation to rhs
     m_rhs.push_back(next_rhs_entry);
-    gmres_rotate(n_columns, n_columns+1, new_c, new_s, m_rhs);
+    gmres_rotate<Number>(n_columns, n_columns+1, new_c, new_s, m_rhs);
+
+    // Store new column of R
+    m_r_columns.push_back(std::move(next_column));
+  }
+
+  template <typename N>
+  typename HessenbergQr<N>::Vector HessenbergQr<N>::solution() const
+  {
+    size_t n_columns = m_r_columns.size();
+
+    Vector result(n_columns);
+
+    // upper triangular backward solve
+    for (int i_row = n_columns-1; i_row >= 0; i_row--)
+    {
+      Number acc = m_rhs[i_row];
+      for (int i_col = i_row+1; i_col < n_columns; ++i_col) {
+        acc -= m_r_columns[i_col][i_row] * result[i_col];
+      }
+      result[i_row] = acc / m_r_columns[i_row][i_row];
+    }
+
+    return result;
   }
 
   /** The residual norm of the least-squares problem. */
@@ -93,7 +120,10 @@ namespace chive {
 
 
   template <typename N>
-    Vector<N> gmres_inner(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> abs_tol, Vector<N> x0)
+    Vector<N> gmres_inner(SparseMatrix<N> mat,
+                          Vector<N> rhs,
+                          real_part_t<N> abs_tol,
+                          Vector<N> x0)
   {
     using Number = N;
     using Real = real_part_t<Number>;
