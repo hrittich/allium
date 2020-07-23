@@ -14,10 +14,8 @@ namespace chive {
    *
    * */
   template <typename N>
-    std::tuple<N, N> real_givens(N a, N b)
+    void real_givens(N& c, N& s, N a, N b)
   {
-    N c, s;
-
     if (b == 0.0) {
       c = 1;
       s = 0;
@@ -32,36 +30,32 @@ namespace chive {
         s = c * tau;
       }
     }
-    return std::make_tuple(c, s);
   }
 
-  template <typename N>
-    std::tuple<real_part_t<N>, N> givens(N a, N b)
+  template <typename N> void givens(N& c, N& s, N a, N b)
   {
-    auto c_s_alpha = real_givens(std::real(a), std::imag(a));
-    auto c_alpha = std::get<0>(c_s_alpha);
-    auto s_alpha = std::get<1>(c_s_alpha);
+    using Real = real_part_t<N>;
+
+    Real c_alpha, s_alpha;
+    real_givens(c_alpha, s_alpha, std::real(a), std::imag(a));
     auto r_a = c_alpha * std::real(a) - s_alpha * std::imag(a);
 
-    auto c_s_beta = real_givens(std::real(b), std::imag(b));
-    auto c_beta = std::get<0>(c_s_beta);
-    auto s_beta = std::get<1>(c_s_beta);
+    Real c_beta, s_beta;
+    real_givens(c_beta, s_beta, std::real(b), std::imag(b));
     auto r_b = c_beta * std::real(b) - s_beta * std::imag(b);
 
-    auto c_s_theta = real_givens(r_a, r_b);
-    auto c_theta = std::get<0>(c_s_theta);
-    auto s_theta = std::get<1>(c_s_theta);
+    Real c_theta, s_theta;
+    real_givens(c_theta, s_theta, r_a, r_b);
 
-    auto c = c_theta;
-    auto s = s_theta * N(c_alpha*c_beta+s_alpha*s_beta,
-                         c_alpha*s_beta-c_beta*s_alpha);
-    return std::make_tuple(c, s);
+    c = c_theta;
+    s = s_theta * N(c_alpha*c_beta+s_alpha*s_beta,
+                    c_alpha*s_beta-c_beta*s_alpha);
   }
 
-  template <> std::tuple<float, float> givens(float a, float b)
-  { return real_givens<float>(a, b); }
-  template <> std::tuple<double, double> givens(double a, double b)
-  { return real_givens<double>(a, b); }
+  template <> void givens(float& c, float& s, float a, float b)
+  { return real_givens<float>(c, s, a, b); }
+  template <> void givens(double& c, double& s, double a, double b)
+  { return real_givens<double>(c, s, a, b); }
 
   template <typename N>
   N conj(N z) {
@@ -139,9 +133,8 @@ namespace chive {
     Number r = next_column[n_columns];
     Number h = next_column[n_columns+1];
 
-    auto c_s_tpl = givens(r, h);
-    Number new_c = std::get<0>(c_s_tpl);
-    Number new_s = std::get<1>(c_s_tpl);
+    Number new_c, new_s;
+    givens(new_c, new_s, r, h);
 
     m_cos_list.push_back(new_c);
     m_sin_list.push_back(new_s);
@@ -203,14 +196,10 @@ namespace chive {
     Real beta = r.l2_norm();
     krylov_base.push_back(r / beta);
 
-    std::vector<LocalVector<N>> upper_triangular;
-
-    std::vector<Real> c_list;
-    std::vector<Real> s_list;
+    HessenbergQr<N> qr(beta);
 
     size_t i_iteration = 0;
     while (true) {
-
       Vector<N> v_hat = mat * krylov_base.at(0);
 
       // current column of the Hessenberg matrix
@@ -229,26 +218,8 @@ namespace chive {
       // normalize new basis vector
       krylov_base.push_back(v_hat / hessenberg_extra);
 
-      // --- reduce to triangular form via rotations
-
-      // first, apply old rotations
-      for (size_t i_rot = 0; i_rot < i_iteration; ++i_rot) {
-        gmres_rotate(i_rot, i_rot+1, c_list[i_rot], s_list[i_rot], hessenberg_column);
-      }
-
-      Number r = hessenberg_column[i_iteration];
-      // second, compute new coefficients
-      Real new_c = r / sqrt(r*r + hessenberg_extra*hessenberg_extra);
-      Real new_s = -hessenberg_extra / sqrt(r*r + hessenberg_extra*hessenberg_extra);
-      c_list.push_back(new_c);
-      s_list.push_back(new_s);
-
-      // third, apply new rotation
-      gmres_rotate(i_iteration, i_iteration+1, new_c, new_s, hessenberg_column);
-
-      // fourth, apply new rotation to rhs
-      // todo: ...
-
+      // add new column to Hessenberg-QR decomposition and new RHS entry 0
+      qr.add_column(std::move(hessenberg_column), 0.0);
 
       ++i_iteration;
     }
@@ -258,8 +229,8 @@ namespace chive {
   /** Implementation of the GMRES algorithm.
    *
    * Saad, Y. & Schultz, M. H.
-   * GMRES: A generalized minimal residual algorithm for solving nonsymmetric 
-   * linear systems 
+   * GMRES: A generalized minimal residual algorithm for solving nonsymmetric
+   * linear systems
    * SIAM J. Sci. Statist. Comput., 1986, 7, 856-869
    */
   template <typename N>
