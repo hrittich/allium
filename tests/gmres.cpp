@@ -125,5 +125,73 @@ TEST(GMRES, HessenbergQrSolve4)
   EXPECT_DOUBLE_EQ(std::abs(solution[0] - 2.0), 0);
 }
 
+TEST(GMRES, InnerSolve1)
+{
+  using Number = std::complex<double>;
+
+  VectorSpec spec(MpiComm::world(), 1, 1);
+  auto v = make_vector<Number>(spec);
+
+  LocalCooMatrix<Number> coo;
+  coo.add(0, 0, 5);
+
+  auto mat = make_sparse_matrix<Number>(spec, spec);
+  mat.set_entries(coo);
+
+  { auto loc = local_slice(v);
+    loc[0] = 1;
+  }
+
+  auto x0 = make_vector<Number>(spec);
+  x0.set_zero();
+  auto w = gmres_inner(mat, v, 1e-6, 30, x0);
+
+  { auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 0.2);
+  }
+}
+
+TEST(CG, solve2)
+{
+  using Number = std::complex<double>;
+
+  VectorSpec spec(MpiComm::world(), 4, 4);
+  auto v = make_vector<Number>(spec);
+
+  LocalCooMatrix<Number> coo;
+  coo.add(0, 0,  2);
+  coo.add(0, 1, -1);
+
+  coo.add(1, 0, -1);
+  coo.add(1, 1,  2);
+  coo.add(1, 2, -1);
+
+  coo.add(2, 1, -1);
+  coo.add(2, 2,  2);
+  coo.add(2, 3, -1);
+
+  coo.add(3, 2, -1);
+  coo.add(3, 3,  2);
+
+  auto mat = make_sparse_matrix<Number>(spec, spec);
+  mat.set_entries(coo);
+
+  { auto loc = local_slice(v);
+    loc[0] = 1.0;
+    loc[1] = 0.0;
+    loc[2] = 0.0;
+    loc[3] = 1.0;
+  }
+
+  auto x0 = make_vector<Number>(spec);
+  x0.set_zero();
+  auto w = gmres_inner(mat, v, 1e-10, 30, x0);
+  { auto loc = local_slice(w);
+    EXPECT_LE(std::abs(loc[0] - 1.0), 1e-14);
+    EXPECT_LE(std::abs(loc[1] - 1.0), 1e-14);
+    EXPECT_LE(std::abs(loc[2] - 1.0), 1e-14);
+    EXPECT_LE(std::abs(loc[3] - 1.0), 1e-14);
+  }
+}
 
 

@@ -26,6 +26,6 @@ namespace chive {
         return make_vector_<N>(spec);
       }
   #else
-    #error "No default linear algebra backend"
+    #error "No default linear algebra backend specified."
   #endif
 }

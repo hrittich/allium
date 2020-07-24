@@ -73,7 +73,8 @@ endif()
 include_directories(${CMAKE_BINARY_DIR}/contrib/eigen)
 
 # pybind11
-add_subdirectory(${CMAKE_BINARY_DIR}/contrib/pybind11)
+add_subdirectory(${CMAKE_BINARY_DIR}/contrib/pybind11
+                 ${CMAKE_BINARY_DIR}/contrib/pybind11)
 
 
 # Default linear algebra backend

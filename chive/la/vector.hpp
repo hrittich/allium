@@ -176,18 +176,38 @@ namespace chive {
       }
 
       VectorBase operator+ (const VectorBase& rhs) const {
-        VectorBase aux(rhs.uninitialized_like());
+        VectorBase aux(uninitialized_like());
         aux.assign(*this);
         aux.ptr->add(*(rhs.ptr));
         return aux;
       }
 
       VectorBase operator- (const VectorBase& rhs) const {
-        VectorBase aux(rhs.uninitialized_like());
+        VectorBase aux(uninitialized_like());
         aux.assign(rhs);
         aux.ptr->scale(-1);
         aux.ptr->add(*ptr);
         return aux;
+      }
+
+      VectorBase operator/ (Number rhs) const {
+        VectorBase aux(uninitialized_like());
+        aux.assign(*this);
+        aux.ptr->scale(Number(1.0) / rhs);
+        return aux;
+      }
+
+      VectorBase& operator+= (const VectorBase& rhs) {
+        ptr->add(*rhs.ptr);
+        return *this;
+      }
+
+      VectorBase& operator-= (const VectorBase& rhs) {
+        VectorBase aux(rhs.uninitialized_like());
+        aux.assign(rhs);
+        aux.ptr->scale(-1);
+        (*this) += aux;
+        return *this;
       }
 
       Number dot(const VectorBase& rhs) const {

@@ -1,3 +1,6 @@
+#ifndef CHIVE_LA_GMRES_IMPL_HPP
+#define CHIVE_LA_GMRES_IMPL_HPP
+
 #include "gmres.hpp"
 
 #include "local_vector.hpp"
@@ -174,6 +177,7 @@ namespace chive {
   template <typename N>
   typename HessenbergQr<N>::Real HessenbergQr<N>::residual_norm() const
   {
+    assert(m_rhs.size() == m_r_columns.size()+1);
     size_t n_columns = m_r_columns.size();
     return abs(m_rhs[n_columns]);
   }
@@ -183,6 +187,7 @@ namespace chive {
     Vector<N> gmres_inner(SparseMatrix<N> mat,
                           Vector<N> rhs,
                           real_part_t<N> abs_tol,
+                          size_t max_iter,
                           Vector<N> x0)
   {
     using Number = N;
@@ -198,17 +203,18 @@ namespace chive {
 
     HessenbergQr<N> qr(beta);
 
-    size_t i_iteration = 0;
-    while (true) {
-      Vector<N> v_hat = mat * krylov_base.at(0);
+    for (size_t i_iteration = 0; i_iteration < max_iter; ++i_iteration) {
+      Vector<N> v_hat = mat * krylov_base.at(i_iteration);
 
       // current column of the Hessenberg matrix
       LocalVector<N> hessenberg_column(i_iteration + 2);
 
-      // orthogonalize and store coefficients
+      // orthogonalize and store coefficients using modified Gram-Schmidt
+      // todo: The last orthogonalization does not need to be computed.
+      //       Hence, we could save some work here.
       for (size_t i_base = 0; i_base <= i_iteration; ++i_base) {
         hessenberg_column[i_base] = v_hat.dot(krylov_base.at(i_base));
-        v_hat -= hessenberg_column[i_base] * krylov_base[i_base];
+        v_hat -= hessenberg_column[i_base] * krylov_base.at(i_base);
       }
 
       // entry (i_iteration+2, i_iteration+1) in the Hessenberg matrix
@@ -216,14 +222,27 @@ namespace chive {
       hessenberg_column[i_iteration+1] = hessenberg_extra;
 
       // normalize new basis vector
+      //
+      // todo: normalization can be avoided if the scaling coefficient is
+      //       stored instead
       krylov_base.push_back(v_hat / hessenberg_extra);
 
       // add new column to Hessenberg-QR decomposition and new RHS entry 0
       qr.add_column(std::move(hessenberg_column), 0.0);
 
-      ++i_iteration;
+      if (qr.residual_norm() <= abs_tol)
+        break;
     }
 
+    LocalVector<N> y = qr.solution();
+    // compute linear combination of basis vectors to approximate the
+    // solution of the LGS
+    assert(y.nrows() == krylov_base.size() - 1);
+    for (size_t i_base = 0; i_base < y.nrows(); ++i_base) {
+      x += y[i_base] * krylov_base[i_base];
+    }
+
+    return x;
   }
 
   /** Implementation of the GMRES algorithm.
@@ -248,3 +267,4 @@ namespace chive {
   }
 }
 
+#endif

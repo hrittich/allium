@@ -12,11 +12,11 @@ namespace chive {
       using Number = N;
       using Real = real_part_t<Number>;
 
-      LocalVector(size_t nrows)
+      explicit LocalVector(size_t nrows)
         : m_storage(nrows)
       {}
 
-      LocalVector(std::initializer_list<N> entries)
+      explicit LocalVector(std::initializer_list<N> entries)
         : m_storage(entries.size())
       {
         size_t i_entry = 0;
@@ -28,6 +28,10 @@ namespace chive {
 
       LocalVector& operator+= (const LocalVector& rhs) {
         m_storage += rhs.m_storage;
+      }
+
+      LocalVector& operator-= (const LocalVector& rhs) {
+        m_storage -= rhs.m_storage;
       }
 
       LocalVector& operator*= (Number rhs) {
@@ -52,7 +56,7 @@ namespace chive {
   };
 
   template <typename N>
-  LocalVector<N> operator* (N s, const Vector<N>& v) {
+  LocalVector<N> operator* (N s, const LocalVector<N>& v) {
     LocalVector<N> w = v;
     w *= s;
     return w;
