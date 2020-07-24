@@ -59,10 +59,35 @@ TYPED_TEST(VectorStorageTest, Fill) {
   #ifdef CHIVE_BOUND_CHECKS
   {
     auto v_loc = VectorSlice<Number>(v);
-    try {
-      v_loc[1] = 1;
-      FAIL() << "Expected out-of-bound exception";
-    } catch (...) {}
+    EXPECT_ANY_THROW(v_loc[1] = 1);
+  }
+  #endif
+}
+
+TYPED_TEST(VectorStorageTest, Initializer) {
+  using Number = typename TestFixture::Number;
+
+  auto comm = MpiComm::world();
+
+  VectorSpec vspec(comm, 3, 3);
+  auto v = std::make_shared<TypeParam>(vspec);
+
+  {
+    auto v_loc = VectorSlice<Number>(v);
+    v_loc = { 1.0, 3.0, 5.0 };
+  }
+
+  {
+    auto v_loc = VectorSlice<Number>(v);
+    EXPECT_EQ(v_loc[0], 1.0);
+    EXPECT_EQ(v_loc[1], 3.0);
+    EXPECT_EQ(v_loc[2], 5.0);
+  }
+
+  #ifdef CHIVE_BOUND_CHECKS
+  {
+    auto v_loc = VectorSlice<Number>(v);
+    EXPECT_ANY_THROW(v_loc = { 1.0 });
   }
   #endif
 }

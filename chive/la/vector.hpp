@@ -77,6 +77,20 @@ namespace chive {
         std::const_pointer_cast<MutableStorage>(ptr)->release_data_ptr(data);
       }
 
+      VectorSlice& operator= (const std::initializer_list<N>& rhs) {
+        #ifdef CHIVE_BOUND_CHECKS
+          if (rhs.size() != m_size) {
+            throw std::logic_error("Invalid length of initilizer list.");
+          }
+        #endif
+        size_t i_element = 0;
+        for (auto element : rhs) {
+          (*this)[i_element] = element;
+          ++i_element;
+        }
+        return *this;
+      }
+
       Reference operator[] (size_t index) {
         #ifdef CHIVE_BOUND_CHECKS
           if (index >= m_size) {
