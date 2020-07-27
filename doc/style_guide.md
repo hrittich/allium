@@ -67,7 +67,7 @@ The script `scripts/stub.py` can be used to generate new files.
 
 - Lines should be no longer than 80 characters.
 - Use 2 spaces to indent.
-- Curly braces add and remove one level of indentation, i.e., write
+- Curly braces add and remove *one* level of indentation, i.e., write
 
       if (a == b) {
         x = 42;
