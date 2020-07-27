@@ -1,4 +1,6 @@
-# Allium - **Al**gorithm **Li**brary for **U**pscaling **M**athematics
+# Allium - *Al*gorithm *Li*brary for *U*pscaling *M*athematics
+
+![Allium Logo](doc/logo_allium.png)
 
 ## Developer Quickstart
 
