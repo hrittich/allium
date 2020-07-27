@@ -1,7 +1,7 @@
+// File: apple_tree.hpp
 #ifndef APPLE_TREE_HPP
 #define APPLE_TREE_HPP
 
-// File: apple_tree.hpp
 #include <string>
 
 // Classes
