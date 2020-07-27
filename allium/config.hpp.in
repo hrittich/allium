@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#ifndef ALLIUM_CONFIG_HPP
+#define ALLIUM_CONFIG_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#cmakedefine ALLIUM_USE_PETSC
+#cmakedefine ALLIUM_GLOBAL_SIZE_T @ALLIUM_GLOBAL_SIZE_T@
+#cmakedefine ALLIUM_BOUND_CHECKS
 
-#include <allium/la/petsc_vector.hpp>
-
-using namespace allium;
-using Number = PetscVectorStorage::Number;
-
-// Special PETSc Tests ...
+#cmakedefine ALLIUM_DEFAULT_BACKEND_EIGEN
+#cmakedefine ALLIUM_DEFAULT_BACKEND_PETSC
 
 #endif

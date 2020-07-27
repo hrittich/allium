@@ -1,4 +1,4 @@
-# Chive - Framework for Distributed Numerical Computation
+# Allium - **Al**gorithm **Li**brary for **U**pscaling **M**athematics
 
 ## Developer Quickstart
 

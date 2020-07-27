@@ -15,8 +15,8 @@
 #include <gtest/gtest.h>
 
 #include <memory>
-#include <chive/la/eigen_vector.hpp>
+#include <allium/la/eigen_vector.hpp>
 
-using namespace chive;
+using namespace allium;
 
 // Special Eigen Tests...

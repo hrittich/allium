@@ -12,16 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#include "gmres.impl.hpp"
 
-#ifdef ALLIUM_USE_PETSC
-
-#include <allium/la/petsc_vector.hpp>
-
-using namespace allium;
-using Number = PetscVectorStorage::Number;
-
-// Special PETSc Tests ...
-
-#endif
+namespace allium {
+  ALLIUM_INSTANTIATE(ALLIUM_LA_GMRES_DECL)
+}

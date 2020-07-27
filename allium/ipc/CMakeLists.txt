@@ -12,4 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-add_subdirectory(allium)
+add_library(allium_ipc
+  init.cpp init.hpp
+  comm.cpp comm.hpp)
+list(APPEND ALLIUM_LIBRARIES allium_ipc)
+set(ALLIUM_LIBRARIES ${ALLIUM_LIBRARIES} PARENT_SCOPE)

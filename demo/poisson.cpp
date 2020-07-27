@@ -16,13 +16,13 @@
 #include <string>
 #include <cassert>
 
-#include <chive/main/init.hpp>
-#include <chive/ipc/comm.hpp>
-#include <chive/la/vector.hpp>
-#include <chive/la/sparse_matrix.hpp>
-#include <chive/la/cg.hpp>
+#include <allium/main/init.hpp>
+#include <allium/ipc/comm.hpp>
+#include <allium/la/vector.hpp>
+#include <allium/la/sparse_matrix.hpp>
+#include <allium/la/cg.hpp>
 
-using namespace chive;
+using namespace allium;
 
 int main(int argc, char** argv) {
   // Initialize the library, especially the IPC

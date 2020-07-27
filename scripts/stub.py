@@ -25,9 +25,9 @@ cn_words = re.findall('[A-Z][^A-Z]*', class_name)
 cn_lower = "_".join([ w.lower() for w in cn_words ])
 cn_upper = "_".join([ w.upper() for w in cn_words ])
 
-fn_source = f'chive/{module_name}/{cn_lower}.cpp'
-fn_header = f'chive/{module_name}/{cn_lower}.hpp'
-include_guard = f'CHIVE_{module_name.upper()}_{cn_upper}_HPP'
+fn_source = f'allium/{module_name}/{cn_lower}.cpp'
+fn_header = f'allium/{module_name}/{cn_lower}.hpp'
+include_guard = f'ALLIUM_{module_name.upper()}_{cn_upper}_HPP'
 
 license_header = f'''// Copyright {year} {author}
 //
@@ -53,7 +53,7 @@ with open(fn_source, 'x') as fp:
 
 #include "{cn_lower}.hpp"
 
-namespace chive {{
+namespace allium {{
 }}
 ''')
 
@@ -63,7 +63,7 @@ with open(fn_header, 'x') as fp:
 #ifndef {include_guard}
 #define {include_guard}
 
-namespace chive {{
+namespace allium {{
   class {class_name} {{
     public:
 

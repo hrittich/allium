@@ -1,4 +1,4 @@
-FROM chive-minimal
+FROM allium-minimal
 
 RUN \
  DEBIAN_FRONTEND=noninteractive apt-get install -y libatlas-base-dev gfortran pkg-config

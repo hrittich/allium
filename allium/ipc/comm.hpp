@@ -12,16 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#ifndef ALLIUM_IPC_COMM_HPP
+#define ALLIUM_IPC_COMM_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#include <mpi.h>
+#include <vector>
 
-#include <allium/la/petsc_vector.hpp>
+namespace allium {
+  /** The communicator class. */
+  class Comm {
+    public:
+      Comm(::MPI_Comm handle);
 
-using namespace allium;
-using Number = PetscVectorStorage::Number;
+      bool operator!= (const Comm& other) {
+        return m_handle != other.m_handle;
+      }
 
-// Special PETSc Tests ...
+      static Comm world();
+
+      int rank();
+      int size();
+
+      void barrier(void);
+
+      std::vector<long long> sum_exscan(std::vector<long long> buf);
+
+      MPI_Comm handle() { return m_handle; }
+    private:
+      MPI_Comm m_handle;
+  };
+}
 
 #endif

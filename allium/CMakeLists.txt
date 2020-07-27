@@ -12,4 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-add_subdirectory(allium)
+configure_file(config.hpp.in config.hpp)
+
+add_subdirectory(main)
+add_subdirectory(ipc)
+add_subdirectory(la)
+
+set(ALLIUM_LIBRARIES ${ALLIUM_LIBRARIES} PARENT_SCOPE)

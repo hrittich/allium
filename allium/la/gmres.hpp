@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#ifndef ALLIUM_LA_GMRES_HPP
+#define ALLIUM_LA_GMRES_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#include "vector.hpp"
+#include "sparse_matrix.hpp"
+#include <allium/util/extern.hpp>
 
-#include <allium/la/petsc_vector.hpp>
+namespace allium {
 
-using namespace allium;
-using Number = PetscVectorStorage::Number;
+  template <typename N>
+    Vector<N> gmres(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol = 1e-6);
 
-// Special PETSc Tests ...
+  #define ALLIUM_LA_GMRES_DECL(T, N) \
+    T Vector<N> gmres(SparseMatrix<N>, Vector<N>, real_part_t<N> tol);
+  ALLIUM_EXTERN(ALLIUM_LA_GMRES_DECL)
+}
 
 #endif

@@ -12,16 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#ifndef ALLIUM_LA_CG_HPP
+#define ALLIUM_LA_CG_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#include <allium/util/extern.hpp>
+#include "vector.hpp"
+#include "sparse_matrix.hpp"
 
-#include <allium/la/petsc_vector.hpp>
+namespace allium {
+  template <typename N>
+    Vector<N> cg_(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol = 1e-6);
 
-using namespace allium;
-using Number = PetscVectorStorage::Number;
+  template <typename Mat, typename... Args>
+    Vector<typename Mat::Number> cg(Mat mat, Args&&... args)
+    {
+      return cg_<typename Mat::Number>(mat, std::forward<Args>(args)...);
+    }
 
-// Special PETSc Tests ...
+  #define ALLIUM_CG_DECL(T, N) \
+    T Vector<N> cg_<N>(SparseMatrix<N>, Vector<N>, real_part_t<N>);
+  ALLIUM_EXTERN(ALLIUM_CG_DECL)
+}
 
 #endif

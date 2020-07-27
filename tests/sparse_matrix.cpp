@@ -13,17 +13,17 @@
 // limitations under the License.
 
 #include <gtest/gtest.h>
-#include <chive/config.hpp>
-#include <chive/la/eigen_sparse_matrix.hpp>
-#include <chive/la/petsc_sparse_matrix.hpp>
+#include <allium/config.hpp>
+#include <allium/la/eigen_sparse_matrix.hpp>
+#include <allium/la/petsc_sparse_matrix.hpp>
 
-using namespace chive;
+using namespace allium;
 
 typedef
   testing::Types<
     EigenSparseMatrix<double>
     , EigenSparseMatrix<std::complex<double>>
-    #ifdef CHIVE_USE_PETSC
+    #ifdef ALLIUM_USE_PETSC
     , PetscSparseMatrix
     #endif
     > MatrixStorageTypes;

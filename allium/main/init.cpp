@@ -12,16 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
+#include "init.hpp"
+
 #include <allium/config.hpp>
+#include <allium/la/petsc_util.hpp>
 
-#ifdef ALLIUM_USE_PETSC
+namespace allium {
+  #ifdef ALLIUM_USE_PETSC
+  using petsc::chkerr;
+  #endif
 
-#include <allium/la/petsc_vector.hpp>
+  Init::Init(int& argc, char** &argv)
+    : mpi(argc, argv)
+  {
+    #ifdef ALLIUM_USE_PETSC
+      PetscErrorCode ierr;
+      ierr = PetscInitialize(&argc, &argv, nullptr, nullptr); chkerr(ierr);
+    #endif
+  }
 
-using namespace allium;
-using Number = PetscVectorStorage::Number;
+  Init::~Init() {
+    #ifdef ALLIUM_USE_PETSC
+      PetscErrorCode ierr;
+      ierr = PetscFinalize(); chkerr(ierr);
+    #endif
+  }
+}
 
-// Special PETSc Tests ...
-
-#endif

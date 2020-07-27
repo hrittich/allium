@@ -33,6 +33,6 @@ ARGS+=" --volume $SOURCEDIR:/home/developer/source"
 TYPE=$1
 shift
 
-CID=$($SUDO docker create --rm -ti $ARGS chive-$TYPE $@) &&
+CID=$($SUDO docker create --rm -ti $ARGS allium-$TYPE $@) &&
 $SUDO docker start -i $CID
 

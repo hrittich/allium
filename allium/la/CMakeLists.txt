@@ -12,4 +12,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-add_subdirectory(allium)
+add_library(allium_la
+  vector_spec.cpp vector_spec.hpp
+  vector.cpp vector.impl.hpp vector.hpp
+  local_coo_matrix.hpp
+  sparse_matrix.cpp sparse_matrix.hpp
+  eigen_vector.cpp eigen_vector.impl.hpp eigen_vector.hpp
+  petsc_vector.cpp petsc_vector.hpp
+  petsc_sparse_matrix.cpp petsc_sparse_matrix.hpp
+  petsc_object_ptr.hpp
+  petsc_util.hpp
+  cg.cpp cg.impl.hpp cg.hpp
+  gmres.cpp gmres.impl.hpp gmres.hpp)
+
+list(APPEND ALLIUM_LIBRARIES allium_la)
+set(ALLIUM_LIBRARIES ${ALLIUM_LIBRARIES} PARENT_SCOPE)

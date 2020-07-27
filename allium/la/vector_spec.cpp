@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#include "vector_spec.hpp"
 
-#ifdef ALLIUM_USE_PETSC
+#include <iostream>
 
-#include <allium/la/petsc_vector.hpp>
+namespace allium {
+  VectorSpec::VectorSpec(Comm comm, size_t local_size, global_size_t global_size)
+    : m_comm(comm), m_global_size(global_size), m_local_size(local_size)
+  {
+    std::vector<long long> local_size_v = { local_size };
+    local_size_v = m_comm.sum_exscan(local_size_v);
 
-using namespace allium;
-using Number = PetscVectorStorage::Number;
+    m_local_start = local_size_v[0];
+    m_local_end = m_local_start + local_size;
+  }
 
-// Special PETSc Tests ...
 
-#endif
+}
+

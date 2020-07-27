@@ -6,7 +6,7 @@ demo/poisson
 contrib/googletest
 contrib/eigen
 contrib/pybind11
-chive/config.hpp
+allium/config.hpp
 
 # Vim Swap
 *.swp

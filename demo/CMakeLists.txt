@@ -13,5 +13,5 @@
 #  limitations under the License.
 
 add_executable(poisson poisson.cpp)
-target_link_libraries(poisson ${LIBRARIES} ${CHIVE_LIBRARIES})
+target_link_libraries(poisson ${LIBRARIES} ${ALLIUM_LIBRARIES})
 

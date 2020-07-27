@@ -14,19 +14,19 @@
 
 #include <gtest/gtest.h>
 
-#include <chive/config.hpp>
-#include <chive/la/vector.hpp>
-#include <chive/la/petsc_vector.hpp>
-#include <chive/la/eigen_vector.hpp>
+#include <allium/config.hpp>
+#include <allium/la/vector.hpp>
+#include <allium/la/petsc_vector.hpp>
+#include <allium/la/eigen_vector.hpp>
 
-using namespace chive;
+using namespace allium;
 
 // Types to test
 typedef
   testing::Types<
     EigenVectorStorage<double>
     , EigenVectorStorage<std::complex<double>>
-    #ifdef CHIVE_USE_PETSC
+    #ifdef ALLIUM_USE_PETSC
       , PetscVectorStorage
     #endif
     >
@@ -70,7 +70,7 @@ TYPED_TEST(VectorStorageTest, Fill) {
     EXPECT_EQ(v_loc[0], 1.0);
   }
 
-  #ifdef CHIVE_BOUND_CHECKS
+  #ifdef ALLIUM_BOUND_CHECKS
   {
     auto v_loc = VectorSlice<Number>(v);
     EXPECT_ANY_THROW(v_loc[1] = 1);
@@ -98,7 +98,7 @@ TYPED_TEST(VectorStorageTest, Initializer) {
     EXPECT_EQ(v_loc[2], 5.0);
   }
 
-  #ifdef CHIVE_BOUND_CHECKS
+  #ifdef ALLIUM_BOUND_CHECKS
   {
     auto v_loc = VectorSlice<Number>(v);
     EXPECT_ANY_THROW(v_loc = { 1.0 });

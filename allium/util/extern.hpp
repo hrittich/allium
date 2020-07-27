@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#ifndef ALLIUM_UTIL_EXTERN_HPP
+#define ALLIUM_UTIL_EXTERN_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#define ALLIUM_INSTANTIATE(DECL) \
+  DECL(template, float) \
+  DECL(template, std::complex<float>) \
+  DECL(template, double) \
+  DECL(template, std::complex<double>)
 
-#include <allium/la/petsc_vector.hpp>
-
-using namespace allium;
-using Number = PetscVectorStorage::Number;
-
-// Special PETSc Tests ...
+#define ALLIUM_EXTERN(DECL) \
+  DECL(extern template, float) \
+  DECL(extern template, std::complex<float>) \
+  DECL(extern template, double) \
+  DECL(extern template, std::complex<double>)
 
 #endif

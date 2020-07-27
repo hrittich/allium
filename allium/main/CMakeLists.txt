@@ -12,4 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-add_subdirectory(allium)
+add_library(allium_main
+  init.cpp init.hpp)
+list(APPEND ALLIUM_LIBRARIES allium_main)
+set(ALLIUM_LIBRARIES ${ALLIUM_LIBRARIES} PARENT_SCOPE)

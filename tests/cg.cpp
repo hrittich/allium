@@ -14,11 +14,11 @@
 
 #include <gtest/gtest.h>
 
-#include <chive/la/cg.hpp>
-#include <chive/la/petsc_vector.hpp>
-#include <chive/la/petsc_sparse_matrix.hpp>
+#include <allium/la/cg.hpp>
+#include <allium/la/petsc_vector.hpp>
+#include <allium/la/petsc_sparse_matrix.hpp>
 
-using namespace chive;
+using namespace allium;
 
 TEST(CG, solve1)
 {

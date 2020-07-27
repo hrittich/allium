@@ -12,16 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#ifndef ALLIUM_MAIN_INIT_HPP
+#define ALLIUM_MAIN_INIT_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#include <allium/ipc/init.hpp>
 
-#include <allium/la/petsc_vector.hpp>
+namespace allium {
+  class Init {
+    public:
+      Init(const Init&) = delete;
+      Init& operator=(const Init&) = delete;
 
-using namespace allium;
-using Number = PetscVectorStorage::Number;
+      Init(int& argc, char** &argv);
+      ~Init();
 
-// Special PETSc Tests ...
+    private:
+      IpcInit mpi;
+  };
+}
 
 #endif

@@ -12,16 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#include "init.hpp"
 
-#ifdef ALLIUM_USE_PETSC
+#include <mpi.h>
+#include <stdexcept>
 
-#include <allium/la/petsc_vector.hpp>
+namespace allium {
 
-using namespace allium;
-using Number = PetscVectorStorage::Number;
+  IpcInit* IpcInit::instance = nullptr;
 
-// Special PETSc Tests ...
+  IpcInit::IpcInit(int& argc, char** &argv) {
+    if (instance != nullptr) {
+      throw std::runtime_error("MPI is already initialized.");
+    }
 
-#endif
+    MPI_Init(&argc, &argv);
+  }
+
+  IpcInit::~IpcInit() {
+    MPI_Finalize();
+
+    instance = nullptr;
+  }
+
+}
+

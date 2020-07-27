@@ -12,16 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <allium/config.hpp>
+#include "cg.impl.hpp"
 
-#ifdef ALLIUM_USE_PETSC
+namespace allium {
+  ALLIUM_INSTANTIATE(ALLIUM_CG_DECL)
+}
 
-#include <allium/la/petsc_vector.hpp>
-
-using namespace allium;
-using Number = PetscVectorStorage::Number;
-
-// Special PETSc Tests ...
-
-#endif

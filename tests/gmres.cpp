@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #include <gtest/gtest.h>
-#include <chive/la/gmres.impl.hpp>
+#include <allium/la/gmres.impl.hpp>
 
-using namespace chive;
+using namespace allium;
 
 TEST(GMRES, Givens1)
 {

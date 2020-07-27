@@ -17,9 +17,9 @@ cmake_minimum_required(VERSION 3.13)
 add_subdirectory(contrib)
 
 # Options
-set(CHIVE_GLOBAL_SIZE_T "size_t"
+set(ALLIUM_GLOBAL_SIZE_T "size_t"
     CACHE STRING "Type of the size of global quantities, e.g., vectors")
-option(CHIVE_BOUND_CHECKS "Perform bound checks on array accesses" OFF)
+option(ALLIUM_BOUND_CHECKS "Perform bound checks on array accesses" OFF)
 
 # Find Python
 find_package(Python3 COMPONENTS Interpreter)
@@ -78,7 +78,7 @@ if(PKG_CONFIG_FOUND)
   include_directories(${PETSC_INCLUDE_DIRS})
   list(APPEND LINK_OPTIONS ${PETSC_LDFLAGS})
   list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
-  set(CHIVE_USE_PETSC ON)
+  set(ALLIUM_USE_PETSC ON)
 
   set(PROPOSED_DEFAULT_BACKEND "PETSC")
 endif()
@@ -95,12 +95,12 @@ add_subdirectory(${CMAKE_BINARY_DIR}/contrib/pybind11
 if(NOT PROPOSED_DEFAULT_BACKEND)
   set(PROPOSED_DEFAULT_BACKEND "EIGEN")
 endif()
-set(CHIVE_DEFAULT_BACKEND ${PROPOSED_DEFAULT_BACKEND}
+set(ALLIUM_DEFAULT_BACKEND ${PROPOSED_DEFAULT_BACKEND}
     CACHE STRING "Default linear algebra backend = \"EIGEN\"|\"PETSC\"")
-if(CHIVE_DEFAULT_BACKEND STREQUAL "EIGEN")
-  set(CHIVE_DEFAULT_BACKEND_EIGEN TRUE)
-elseif(CHIVE_DEFAULT_BACKEND STREQUAL "PETSC")
-  set(CHIVE_DEFAULT_BACKEND_PETSC TRUE)
+if(ALLIUM_DEFAULT_BACKEND STREQUAL "EIGEN")
+  set(ALLIUM_DEFAULT_BACKEND_EIGEN TRUE)
+elseif(ALLIUM_DEFAULT_BACKEND STREQUAL "PETSC")
+  set(ALLIUM_DEFAULT_BACKEND_PETSC TRUE)
 else()
   message(SEND_ERROR "Invalid default backend.")
 endif()
@@ -108,14 +108,14 @@ endif()
 # General Config
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# The CHIVE_LIBRARIES variable will be populated in the subdirectories.
-set(CHIVE_LIBRARIES "")
+# The ALLIUM_LIBRARIES variable will be populated in the subdirectories.
+set(ALLIUM_LIBRARIES "")
 
 add_compile_options(${COMPILE_OPTIONS})
 include_directories("${CMAKE_SOURCE_DIR}")
 add_link_options(${LINK_OPTIONS})
 
-add_subdirectory(chive)
+add_subdirectory(allium)
 add_subdirectory(python)
 add_subdirectory(demo)
 add_subdirectory(tests)

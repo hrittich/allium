@@ -10,9 +10,9 @@ fi
 
 #mkdir -p apt-cache
 
-$SUDO docker build -f "$DOCKERDIR/minimal_dev.dockerfile" -t chive-minimal "$DOCKERDIR"
-$SUDO docker build -f "$DOCKERDIR/full_dev.dockerfile" -t chive-full "$DOCKERDIR"
+$SUDO docker build -f "$DOCKERDIR/minimal_dev.dockerfile" -t allium-minimal "$DOCKERDIR"
+$SUDO docker build -f "$DOCKERDIR/full_dev.dockerfile" -t allium-full "$DOCKERDIR"
 
-#CID=$($SUDO docker create chive)
+#CID=$($SUDO docker create allium)
 #$SUDO docker cp $CID:/var/cache/apt apt-cache
 #$SUDO docker rm $CID

@@ -12,4 +12,5 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-add_subdirectory(allium)
+pybind11_add_module(native native.cpp)
+target_link_libraries(native PRIVATE ${LIBRARIES} ${ALLIUM_LIBRARIES})

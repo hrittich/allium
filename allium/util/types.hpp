@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
+#ifndef ALLIUM_UTIL_TYPES_HPP
+#define ALLIUM_UTIL_TYPES_HPP
+
+#include <cstdlib>
 #include <allium/config.hpp>
 
-#ifdef ALLIUM_USE_PETSC
+namespace allium {
 
-#include <allium/la/petsc_vector.hpp>
+  typedef ALLIUM_GLOBAL_SIZE_T global_size_t;
 
-using namespace allium;
-using Number = PetscVectorStorage::Number;
-
-// Special PETSc Tests ...
+}
 
 #endif
