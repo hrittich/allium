@@ -1,13 +1,7 @@
 #!/bin/bash
 SCRIPTDIR="$(cd "$(dirname "$0")" && pwd -P)"
 DOCKERDIR="$SCRIPTDIR/.."
-
-if (id -nG | grep docker > /dev/null); then
-  SUDO=""
-else
-  SUDO="sudo"
-fi
-
+source "$SCRIPTDIR/sudo.sh"
 #mkdir -p apt-cache
 
 $SUDO docker build -f "$DOCKERDIR/minimal_dev.dockerfile" -t allium-minimal "$DOCKERDIR"

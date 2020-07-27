@@ -1,12 +1,7 @@
 #!/bin/bash
 SCRIPTDIR="$(cd "$(dirname "$0")" && pwd -P)"
 SOURCEDIR="$(cd "$SCRIPTDIR" && cd ../../ && pwd -P)"
-
-if (id -nG | grep docker > /dev/null); then
-  SUDO=""
-else
-  SUDO="sudo"
-fi
+source "$SCRIPTDIR/sudo.sh"
 
 # Variables for the user creation
 USER_UID=$(id -u)

@@ -17,7 +17,14 @@ case "$1" in
   tests)
     exec sudo -HE -u developer container-tests.sh
   ;;
+  sh|bash)
+    # This section is needed for GitLab-CI and allows for execution of
+    # arbitrary scripts in the container.
+    # "$@" passes the arguments exactly as given
+    exec "$@"
+  ;;
   *)
-    echo "Needed argument: \"shell\"|\"tests\""
+    echo "Arguments needed : \"shell\"|\"tests\""
+    echo "Arguments given  : $@"
   ;;
 esac
