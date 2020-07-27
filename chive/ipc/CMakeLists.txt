@@ -12,8 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-add_library(chive_mpi
+add_library(chive_ipc
   init.cpp init.hpp
   comm.cpp comm.hpp)
-list(APPEND CHIVE_LIBRARIES chive_mpi)
+list(APPEND CHIVE_LIBRARIES chive_ipc)
 set(CHIVE_LIBRARIES ${CHIVE_LIBRARIES} PARENT_SCOPE)

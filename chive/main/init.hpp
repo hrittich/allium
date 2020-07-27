@@ -15,7 +15,7 @@
 #ifndef CHIVE_MAIN_INIT_HPP
 #define CHIVE_MAIN_INIT_HPP
 
-#include <chive/mpi/init.hpp>
+#include <chive/ipc/init.hpp>
 
 namespace chive {
   class Init {
@@ -27,7 +27,7 @@ namespace chive {
       ~Init();
 
     private:
-      MpiInit mpi;
+      IpcInit mpi;
   };
 }
 

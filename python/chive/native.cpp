@@ -69,17 +69,17 @@ PYBIND11_MODULE(native, m)
 
   m.doc() = "Chive"; // optional module docstring
 
-  py::class_<chive::MpiComm>(m, "MpiComm")
+  py::class_<chive::Comm>(m, "Comm")
     .def(py::init<mpi4py_comm>())
-    .def_static("world", &chive::MpiComm::world)
-    .def("rank", &chive::MpiComm::get_rank)
-    .def("size", &chive::MpiComm::get_size)
+    .def_static("world", &chive::Comm::world)
+    .def("rank", &chive::Comm::rank)
+    .def("size", &chive::Comm::size)
     .def("handle",
-         [](chive::MpiComm self) -> mpi4py_comm
-         { return self.get_handle(); });
+         [](chive::Comm self) -> mpi4py_comm
+         { return self.handle(); });
 
   py::class_<chive::VectorSpec>(m, "VectorSpec")
-    .def(py::init<chive::MpiComm, chive::global_size_t, size_t>())
+    .def(py::init<chive::Comm, chive::global_size_t, size_t>())
     .def("global_size", &chive::VectorSpec::global_size)
     .def("local_size", &chive::VectorSpec::local_size);
 

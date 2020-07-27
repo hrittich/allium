@@ -21,7 +21,7 @@ namespace chive {
       : VectorStorageBase<EigenVectorStorage<N>, N>(spec),
         vec(spec.global_size())
     {
-      if (spec.comm().get_size() != 1) {
+      if (spec.comm().size() != 1) {
         throw std::logic_error("Objects of type EigenVector cannot be distributed.");
       }
     }

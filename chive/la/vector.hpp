@@ -20,7 +20,6 @@
 #include <cassert>
 #include <chive/util/types.hpp>
 #include <chive/util/extern.hpp>
-#include <chive/mpi/comm.hpp>
 #include "vector_spec.hpp"
 
 namespace chive {
@@ -81,14 +80,31 @@ namespace chive {
                                                   Number&>::type;
       using MutableStorage = typename std::remove_const<Storage>::type;
 
-      explicit VectorSlice(const std::shared_ptr<Storage>& ptr) : ptr(ptr) {
-        data = std::const_pointer_cast<MutableStorage>(ptr)
-               ->aquire_data_ptr();
-        m_size = ptr->spec().local_size();
+      explicit VectorSlice(const std::shared_ptr<Storage>& ptr)
+        : m_data(nullptr), m_size(0)
+      {
+        reset(ptr);
       }
 
       ~VectorSlice() {
-        std::const_pointer_cast<MutableStorage>(ptr)->release_data_ptr(data);
+        release();
+      }
+
+      void reset(const std::shared_ptr<Storage>& ptr) {
+        release();
+
+        m_ptr = ptr;
+        m_data = std::const_pointer_cast<MutableStorage>(m_ptr)
+               ->aquire_data_ptr();
+        m_size = m_ptr->spec().local_size();
+      }
+
+      void release() {
+        if (m_data != nullptr) {
+          std::const_pointer_cast<MutableStorage>(m_ptr)->release_data_ptr(m_data);
+          m_data = nullptr;
+          m_size = 0;
+        }
       }
 
       VectorSlice& operator= (const std::initializer_list<N>& rhs) {
@@ -112,17 +128,15 @@ namespace chive {
           }
         #endif
 
-        return data[index];
+        return m_data[index];
       }
 
       size_t size() const { return m_size; }
-
-      //Number* get_data() { return data; }
     protected:
-      Number* data;
+      Number* m_data;
       size_t m_size;
     private:
-      std::shared_ptr<Storage> ptr;
+      std::shared_ptr<Storage> m_ptr;
   };
 
   template <typename Derived, typename N>

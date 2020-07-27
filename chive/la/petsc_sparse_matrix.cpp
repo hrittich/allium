@@ -75,7 +75,7 @@ namespace chive {
     }
 
     // ToDo: Create interface to d_nz and o_nz
-    ierr = MatCreateAIJ(row_spec().comm().get_handle(), // comm,
+    ierr = MatCreateAIJ(row_spec().comm().handle(), // comm,
                         row_spec().local_size(), // local rows
                         col_spec().local_size(), // local cols
                         row_spec().global_size(), // global rows

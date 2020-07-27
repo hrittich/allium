@@ -43,7 +43,7 @@ TYPED_TEST_CASE(VectorStorageTest, VectorStorageTypes);
 TYPED_TEST(VectorStorageTest, Create) {
   using Number = typename TestFixture::Number;
 
-  MpiComm comm = MpiComm::world();
+  Comm comm = Comm::world();
 
   VectorSpec vspec(comm, 1, 1);
 
@@ -55,7 +55,7 @@ TYPED_TEST(VectorStorageTest, Create) {
 TYPED_TEST(VectorStorageTest, Fill) {
   using Number = typename TestFixture::Number;
 
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
 
   VectorSpec vspec(comm, 1, 1);
   auto v = std::make_shared<TypeParam>(vspec);
@@ -81,7 +81,7 @@ TYPED_TEST(VectorStorageTest, Fill) {
 TYPED_TEST(VectorStorageTest, Initializer) {
   using Number = typename TestFixture::Number;
 
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
 
   VectorSpec vspec(comm, 3, 3);
   auto v = std::make_shared<TypeParam>(vspec);
@@ -109,7 +109,7 @@ TYPED_TEST(VectorStorageTest, Initializer) {
 TYPED_TEST(VectorStorageTest, Add) {
   using Number = typename TypeParam::Number;
 
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = std::make_shared<TypeParam>(vspec);
   auto w = std::make_shared<TypeParam>(vspec);
@@ -134,7 +134,7 @@ TYPED_TEST(VectorStorageTest, Add) {
 TYPED_TEST(VectorStorageTest, Scale) {
   using Number = typename TypeParam::Number;
 
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = std::make_shared<TypeParam>(vspec);
 
@@ -154,7 +154,7 @@ TYPED_TEST(VectorStorageTest, Scale) {
 TYPED_TEST(VectorStorageTest, Norm) {
   using Number = typename TypeParam::Number;
 
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
   VectorSpec vspec(comm, 4, 4);
   auto v = std::make_shared<TypeParam>(vspec);
 
@@ -170,7 +170,7 @@ TYPED_TEST(VectorStorageTest, Norm) {
 }
 
 TYPED_TEST(VectorStorageTest, Assign) {
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = VectorBase<TypeParam>(vspec);
   auto w = VectorBase<TypeParam>(vspec);
@@ -191,14 +191,14 @@ TYPED_TEST(VectorStorageTest, Assign) {
 TYPED_TEST(VectorStorageTest, CastToGeneric) {
   using Number = typename TypeParam::Number;
 
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = VectorBase<TypeParam>(vspec);
   auto v_gen = Vector<Number>(v);
 }
 
 TYPED_TEST(VectorStorageTest, SetZero) {
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = VectorBase<TypeParam>(vspec);
 
@@ -210,7 +210,7 @@ TYPED_TEST(VectorStorageTest, SetZero) {
 }
 
 TYPED_TEST(VectorStorageTest, Dot) {
-  auto comm = MpiComm::world();
+  auto comm = Comm::world();
   VectorSpec vspec(comm, 1, 1);
   auto v = VectorBase<TypeParam>(vspec);
   auto w = VectorBase<TypeParam>(vspec);

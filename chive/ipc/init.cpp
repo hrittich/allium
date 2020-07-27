@@ -19,9 +19,9 @@
 
 namespace chive {
 
-  MpiInit* MpiInit::instance = nullptr;
+  IpcInit* IpcInit::instance = nullptr;
 
-  MpiInit::MpiInit(int& argc, char** &argv) {
+  IpcInit::IpcInit(int& argc, char** &argv) {
     if (instance != nullptr) {
       throw std::runtime_error("MPI is already initialized.");
     }
@@ -29,7 +29,7 @@ namespace chive {
     MPI_Init(&argc, &argv);
   }
 
-  MpiInit::~MpiInit() {
+  IpcInit::~IpcInit() {
     MPI_Finalize();
 
     instance = nullptr;

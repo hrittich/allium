@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CHIVE_MPI_INIT_HPP
-#define CHIVE_MPI_INIT_HPP
+#ifndef CHIVE_IPC_INIT_HPP
+#define CHIVE_IPC_INIT_HPP
 
 namespace chive {
-  class MpiInit {
+  class IpcInit {
     public:
-      MpiInit(int& argc, char** &argv);
-      ~MpiInit();
+      IpcInit(int& argc, char** &argv);
+      ~IpcInit();
 
     private:
-      static MpiInit* instance;
+      static IpcInit* instance;
   };
 }
 

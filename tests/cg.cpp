@@ -24,7 +24,7 @@ TEST(CG, solve1)
 {
   using Number = std::complex<double>;
 
-  VectorSpec spec(MpiComm::world(), 1, 1);
+  VectorSpec spec(Comm::world(), 1, 1);
   auto v = make_vector<Number>(spec);
 
   LocalCooMatrix<Number> coo;
@@ -48,7 +48,7 @@ TEST(CG, solve4)
 {
   using Number = std::complex<double>;
 
-  VectorSpec spec(MpiComm::world(), 4, 4);
+  VectorSpec spec(Comm::world(), 4, 4);
   auto v = make_vector<Number>(spec);
 
   LocalCooMatrix<Number> coo;

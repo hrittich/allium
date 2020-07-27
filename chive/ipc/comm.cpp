@@ -16,34 +16,34 @@
 
 namespace chive {
 
-  MpiComm::MpiComm(::MPI_Comm handle)
-    : handle(handle)
+  Comm::Comm(::MPI_Comm handle)
+    : m_handle(handle)
   {}
 
-  MpiComm MpiComm::world() {
-    return MpiComm(MPI_COMM_WORLD);
+  Comm Comm::world() {
+    return Comm(MPI_COMM_WORLD);
   }
 
-  int MpiComm::get_rank() {
+  int Comm::rank() {
     int rank;
-    MPI_Comm_rank(handle, &rank);
+    MPI_Comm_rank(m_handle, &rank);
     return rank;
   }
 
-  int MpiComm::get_size() {
+  int Comm::size() {
     int size;
-    MPI_Comm_size(handle, &size);
+    MPI_Comm_size(m_handle, &size);
     return size;
   }
 
-  void MpiComm::barrier(void) {
-    MPI_Barrier(handle);
+  void Comm::barrier(void) {
+    MPI_Barrier(m_handle);
   }
 
-  std::vector<long long> MpiComm::sum_exscan(std::vector<long long> buf)
+  std::vector<long long> Comm::sum_exscan(std::vector<long long> buf)
   {
     std::vector<long long> result(buf.size());
-    MPI_Exscan(buf.data(), result.data(), buf.size(), MPI_LONG_LONG, MPI_SUM, handle);
+    MPI_Exscan(buf.data(), result.data(), buf.size(), MPI_LONG_LONG, MPI_SUM, m_handle);
     return result;
   }
 

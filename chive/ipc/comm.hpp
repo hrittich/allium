@@ -12,33 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CHIVE_MPI_COMM_HPP
-#define CHIVE_MPI_COMM_HPP
+#ifndef CHIVE_IPC_COMM_HPP
+#define CHIVE_IPC_COMM_HPP
 
 #include <mpi.h>
 #include <vector>
 
 namespace chive {
-  class MpiComm {
+  /** The communicator class. */
+  class Comm {
     public:
-      MpiComm(::MPI_Comm handle);
+      Comm(::MPI_Comm handle);
 
-      bool operator!= (const MpiComm& other) {
-        return handle != other.handle;
+      bool operator!= (const Comm& other) {
+        return m_handle != other.m_handle;
       }
 
-      static MpiComm world();
+      static Comm world();
 
-      int get_rank();
-      int get_size();
+      int rank();
+      int size();
 
       void barrier(void);
 
       std::vector<long long> sum_exscan(std::vector<long long> buf);
 
-      MPI_Comm get_handle() { return handle; }
+      MPI_Comm handle() { return m_handle; }
     private:
-      MPI_Comm handle;
+      MPI_Comm m_handle;
   };
 }
 

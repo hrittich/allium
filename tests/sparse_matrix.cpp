@@ -35,7 +35,7 @@ class SparseMatrixTest : public testing::Test {
 TYPED_TEST_CASE(SparseMatrixTest, MatrixStorageTypes);
 
 TYPED_TEST(SparseMatrixTest, Create) {
-  VectorSpec spec(MpiComm::world(), 1, 1);
+  VectorSpec spec(Comm::world(), 1, 1);
   TypeParam mat(spec, spec);
 }
 
@@ -43,7 +43,7 @@ TYPED_TEST(SparseMatrixTest, SetAndReadEntries)
 {
   using Number = typename TypeParam::Number;
 
-  VectorSpec spec(MpiComm::world(), 1, 1);
+  VectorSpec spec(Comm::world(), 1, 1);
   TypeParam mat(spec, spec);
 
   LocalCooMatrix<Number> lmat;
@@ -59,7 +59,7 @@ TYPED_TEST(SparseMatrixTest, MatVecMult)
   using Number = typename TypeParam::Number;
   using NativeVector = typename TypeParam::Storage::NativeVector;
 
-  VectorSpec spec(MpiComm::world(), 1, 1);
+  VectorSpec spec(Comm::world(), 1, 1);
   TypeParam mat(spec, spec);
 
   LocalCooMatrix<Number> lmat;
@@ -83,7 +83,7 @@ TYPED_TEST(SparseMatrixTest, MatVecMult2)
   using Number = typename TypeParam::Number;
   using NativeVector = typename TypeParam::Storage::NativeVector;
 
-  VectorSpec spec(MpiComm::world(), 2, 2);
+  VectorSpec spec(Comm::world(), 2, 2);
   TypeParam mat(spec, spec);
 
   LocalCooMatrix<Number> lmat;

@@ -28,7 +28,7 @@ namespace chive {
   {
     PetscErrorCode ierr;
 
-    ierr = VecCreateMPI(spec.comm().get_handle(),
+    ierr = VecCreateMPI(spec.comm().handle(),
                         spec.local_size(),
                         spec.global_size(),
                         ptr.writable_ptr()); chkerr(ierr);
