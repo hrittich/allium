@@ -69,9 +69,9 @@ namespace allium {
                     c_alpha*s_beta-c_beta*s_alpha);
   }
 
-  template <> void givens(float& c, float& s, float a, float b)
+  template <> inline void givens(float& c, float& s, float a, float b)
   { return real_givens<float>(c, s, a, b); }
-  template <> void givens(double& c, double& s, double a, double b)
+  template <> inline void givens(double& c, double& s, double a, double b)
   { return real_givens<double>(c, s, a, b); }
 
   template <typename N>
@@ -79,9 +79,9 @@ namespace allium {
     return std::conj(z);
   }
   template <>
-  double conj(double z) { return z; }
+  double inline conj(double z) { return z; }
   template <>
-  float conj(float z) { return z; }
+  float inline conj(float z) { return z; }
 
   /** Overrides u by the vector obtained by applying a rotation in the i1-i2
    * plane to the vector u.
@@ -198,26 +198,29 @@ namespace allium {
 
 
   template <typename N>
-    Vector<N> gmres_inner(SparseMatrix<N> mat,
-                          Vector<N> rhs,
-                          real_part_t<N> abs_tol,
-                          size_t max_iter,
-                          Vector<N> x0)
+    bool gmres_inner(Vector<N>& x,
+                     SparseMatrix<N> mat,
+                     Vector<N> residual,
+                     real_part_t<N> residual_norm,
+                     real_part_t<N> abs_tol,
+                     size_t max_iter)
   {
     using Number = N;
     using Real = real_part_t<Number>;
 
+    bool success = false;
+
     std::vector<Vector<N>> krylov_base;
 
-    auto x = x0;
-    auto r = rhs - mat * x;
-
-    Real beta = r.l2_norm();
-    krylov_base.push_back(r / beta);
+    Real beta = residual_norm;
+    krylov_base.push_back(residual / beta);
 
     HessenbergQr<N> qr(beta);
 
-    for (size_t i_iteration = 0; i_iteration < max_iter; ++i_iteration) {
+    for (size_t i_iteration = 0;
+         i_iteration < max_iter && !success;
+         ++i_iteration)
+    {
       Vector<N> v_hat = mat * krylov_base.at(i_iteration);
 
       // current column of the Hessenberg matrix
@@ -237,15 +240,15 @@ namespace allium {
 
       // normalize new basis vector
       //
-      // todo: normalization can be avoided if the scaling coefficient is
-      //       stored instead
+      // @todo: normalization can be avoided if the scaling coefficient is
+      //        stored instead
       krylov_base.push_back(v_hat / hessenberg_extra);
 
       // add new column to Hessenberg-QR decomposition and new RHS entry 0
       qr.add_column(std::move(hessenberg_column), 0.0);
 
       if (qr.residual_norm() <= abs_tol)
-        break;
+        success = true;
     }
 
     LocalVector<N> y = qr.solution();
@@ -256,7 +259,7 @@ namespace allium {
       x += y[i_base] * krylov_base[i_base];
     }
 
-    return x;
+    return success;
   }
 
   /** Implementation of the GMRES algorithm.
@@ -269,13 +272,28 @@ namespace allium {
   template <typename N>
     Vector<N> gmres(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol)
   {
+    // @todo: remove redundandent computation of the residual
     using Real = real_part_t<N>;
 
+    const size_t max_krylov_size = 30;
     auto x = rhs.zeros_like();
-    auto r = rhs - mat * x;
 
-    Real abs_tol = tol * r.l2_norm();
+    auto residual = rhs - mat * x;
+    auto residual_norm = residual.l2_norm();
 
+    Real abs_tol = tol * residual_norm;
+
+    while (true) {
+      if (residual_norm <= abs_tol)
+        break;
+
+      bool success = gmres_inner(x, mat, residual, residual_norm, abs_tol, max_krylov_size);
+      if (success)
+        break;
+
+      residual = rhs - mat * x;
+      residual_norm = residual.l2_norm();
+    }
 
     return x;
   }

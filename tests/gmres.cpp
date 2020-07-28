@@ -156,16 +156,14 @@ TEST(GMRES, InnerSolve1)
     loc[0] = 1;
   }
 
-  auto x0 = make_vector<Number>(spec);
-  x0.set_zero();
-  auto w = gmres_inner(mat, v, 1e-6, 30, x0);
+  auto w = gmres(mat, v, 1e-6);
 
   { auto loc = local_slice(w);
     EXPECT_EQ(loc[0], 0.2);
   }
 }
 
-TEST(CG, solve2)
+TEST(GMRES, solve2)
 {
   using Number = std::complex<double>;
 
@@ -197,9 +195,7 @@ TEST(CG, solve2)
     loc[3] = 1.0;
   }
 
-  auto x0 = make_vector<Number>(spec);
-  x0.set_zero();
-  auto w = gmres_inner(mat, v, 1e-10, 30, x0);
+  auto w = gmres(mat, v, 1e-10);
   { auto loc = local_slice(w);
     EXPECT_LE(std::abs(loc[0] - 1.0), 1e-14);
     EXPECT_LE(std::abs(loc[1] - 1.0), 1e-14);
@@ -207,5 +203,4 @@ TEST(CG, solve2)
     EXPECT_LE(std::abs(loc[3] - 1.0), 1e-14);
   }
 }
-
 
