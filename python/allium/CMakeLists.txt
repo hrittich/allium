@@ -12,5 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-pybind11_add_module(native native.cpp)
-target_link_libraries(native PRIVATE ${LIBRARIES} ${ALLIUM_LIBRARIES})
+if(ALLIUM_USE_PYTHON)
+  pybind11_add_module(native native.cpp)
+  target_link_libraries(native PRIVATE ${LIBRARIES} ${ALLIUM_LIBRARIES})
+endif()

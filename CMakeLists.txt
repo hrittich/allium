@@ -29,11 +29,13 @@ if(Python3_FOUND)
   # this Python executable
   set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE} CACHE PATH
       "Path to the Python executable.")
+
+  set(ALLIUM_USE_PYTHON ON CACHE BOOL "Build the Python extension")
 endif()
 find_package(PythonInterp)
 
 # Find mpi4py
-if(NOT MPI4PY_INCLUDE_DIRS)
+if(ALLIUM_USE_PYTHON AND (NOT MPI4PY_INCLUDE_DIRS))
   execute_process(
     COMMAND ${PYTHON_EXECUTABLE} -c "import mpi4py; print(mpi4py.get_include())"
     RESULTS_VARIABLE MPI4PY_RESULT
@@ -44,11 +46,15 @@ if(NOT MPI4PY_INCLUDE_DIRS)
     message(STATUS "Found mpi4py include dir: ${MPI4PY_INCLUDE_DIRS}")
   else()
     set(MPI4PY_INCLUDE_DIRS NOTFOUND)
-    message(SEND_ERROR "Could not find mpi4py include dir.")
+    message(WARNING "Could not find mpi4py include dir.")
   endif()
   set(MPI4PY_INCLUDE_DIRS ${MPI4PY_INCLUDE_DIRS} CACHE PATH "mpi4py include directory" FORCE)
 endif()
-include_directories(${MPI4PY_INCLUDE_DIRS})
+
+if(MPI4PY_INCLUDE_DIRS)
+  set(ALLIUM_USE_MPI4PY ON CACHE BOOL "Provide MPI4PY conversion macros.")
+  include_directories(${MPI4PY_INCLUDE_DIRS})
+endif()
 
 # Configure GoogleTest
 
@@ -71,14 +77,18 @@ list(APPEND LIBRARIES ${MPI_CXX_LIBRARIES})
 find_package(PkgConfig)
 
 # Find PETSc
+set(PETSC_FOUND FALSE)
 if(PKG_CONFIG_FOUND)
   pkg_check_modules(PETSC PETSc)
 
-  list(APPEND COMPILE_OPTIONS ${PETSC_CFLAGS})
-  include_directories(${PETSC_INCLUDE_DIRS})
-  list(APPEND LINK_OPTIONS ${PETSC_LDFLAGS})
-  list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
-  set(ALLIUM_USE_PETSC ON)
+  if(PETSC_FOUND)
+    list(APPEND COMPILE_OPTIONS ${PETSC_CFLAGS})
+    include_directories(${PETSC_INCLUDE_DIRS})
+    list(APPEND LINK_OPTIONS ${PETSC_LDFLAGS})
+    list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
+
+    set(ALLIUM_USE_PETSC ON CACHE BOOL "Use PETSc")
+  endif()
 
   set(PROPOSED_DEFAULT_BACKEND "PETSC")
 endif()
@@ -87,9 +97,10 @@ endif()
 include_directories(${CMAKE_BINARY_DIR}/contrib/eigen)
 
 # pybind11
-add_subdirectory(${CMAKE_BINARY_DIR}/contrib/pybind11
-                 ${CMAKE_BINARY_DIR}/contrib/pybind11)
-
+if(ALLIUM_USE_PYTHON)
+  add_subdirectory(${CMAKE_BINARY_DIR}/contrib/pybind11
+                   ${CMAKE_BINARY_DIR}/contrib/pybind11)
+endif()
 
 # Default linear algebra backend
 if(NOT PROPOSED_DEFAULT_BACKEND)

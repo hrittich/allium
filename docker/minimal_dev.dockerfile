@@ -7,9 +7,6 @@ RUN \
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libopenmpi-dev
 
-RUN \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y python3-dev python3-mpi4py
-
 RUN mkdir -p /home/developer
 
 COPY container-init.sh /usr/local/sbin

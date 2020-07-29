@@ -16,6 +16,8 @@
 #define ALLIUM_CONFIG_HPP
 
 #cmakedefine ALLIUM_USE_PETSC
+#cmakedefine ALLIUM_USE_PYTHON
+#cmakedefine ALLIUM_USE_MPI4PY
 #cmakedefine ALLIUM_GLOBAL_SIZE_T @ALLIUM_GLOBAL_SIZE_T@
 #cmakedefine ALLIUM_BOUND_CHECKS
 

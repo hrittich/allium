@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <allium/config.hpp>
 #include <pybind11/pybind11.h>
 
 #include <mpi.h>
-#include <mpi4py/mpi4py.h>
+
+#ifdef ALLIUM_USE_MPI4PY
+  #include <mpi4py/mpi4py.h>
+#endif // ALLIUM_USE_MPI4PY
 #include <cstdint>
 #include <allium/la/vector.hpp>
 #include <allium/la/eigen_vector.hpp>
@@ -24,6 +28,7 @@
 
 namespace py = pybind11;
 
+#ifdef ALLIUM_USE_MPI4PY
 struct mpi4py_comm {
   mpi4py_comm() = default;
   mpi4py_comm(MPI_Comm value) : value(value) {}
@@ -60,23 +65,28 @@ namespace pybind11 { namespace detail {
       }
   };
 }} // namespace pybind11::detail
+#endif // ALLIUM_USE_MPI4PY
 
 PYBIND11_MODULE(native, m)
 {
+  #ifdef ALLIUM_USE_MPI4PY
   if (import_mpi4py() < 0) {
     throw std::runtime_error("Could not load mpi4py.");
   }
+  #endif // ALLIUM_USE_MPI4PY
 
   m.doc() = "Algorithm Library for Upscaling Mathematics"; // optional module docstring
 
   py::class_<allium::Comm>(m, "Comm")
+  #ifdef ALLIUM_USE_MPI4PY
     .def(py::init<mpi4py_comm>())
-    .def_static("world", &allium::Comm::world)
-    .def("rank", &allium::Comm::rank)
-    .def("size", &allium::Comm::size)
     .def("handle",
          [](allium::Comm self) -> mpi4py_comm
-         { return self.handle(); });
+         { return self.handle(); })
+  #endif
+    .def_static("world", &allium::Comm::world)
+    .def("rank", &allium::Comm::rank)
+    .def("size", &allium::Comm::size);
 
   py::class_<allium::VectorSpec>(m, "VectorSpec")
     .def(py::init<allium::Comm, allium::global_size_t, size_t>())

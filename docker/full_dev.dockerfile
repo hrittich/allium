@@ -1,6 +1,9 @@
 FROM allium-minimal
 
 RUN \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y python3-dev python3-mpi4py
+
+RUN \
  DEBIAN_FRONTEND=noninteractive apt-get install -y libatlas-base-dev gfortran pkg-config
 
 WORKDIR /usr/local/src
