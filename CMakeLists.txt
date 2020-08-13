@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 cmake_minimum_required(VERSION 3.13)
+project(allium)
 
 add_subdirectory(contrib)
 
@@ -89,8 +90,6 @@ if(PKG_CONFIG_FOUND)
 
     set(ALLIUM_USE_PETSC ON CACHE BOOL "Use PETSc")
   endif()
-
-  set(PROPOSED_DEFAULT_BACKEND "PETSC")
 endif()
 
 # Eigen3
@@ -103,8 +102,9 @@ if(ALLIUM_USE_PYTHON)
 endif()
 
 # Default linear algebra backend
-if(NOT PROPOSED_DEFAULT_BACKEND)
-  set(PROPOSED_DEFAULT_BACKEND "EIGEN")
+set(PROPOSED_DEFAULT_BACKEND "EIGEN")
+if(ALLIUM_USE_PETSC)
+  set(PROPOSED_DEFAULT_BACKEND "PETSC")
 endif()
 set(ALLIUM_DEFAULT_BACKEND ${PROPOSED_DEFAULT_BACKEND}
     CACHE STRING "Default linear algebra backend = \"EIGEN\"|\"PETSC\"")
@@ -118,6 +118,7 @@ endif()
 
 # General Config
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+include_directories(${CMAKE_BINARY_DIR}) # Include for automatically generated files
 
 # The ALLIUM_LIBRARIES variable will be populated in the subdirectories.
 set(ALLIUM_LIBRARIES "")

@@ -18,6 +18,9 @@ cmake_install.cmake
 Makefile
 compile_commands.json
 
+# QtCreator Project file
+CMakeLists.txt.user
+
 # Python Cache
 __pycache__
 
