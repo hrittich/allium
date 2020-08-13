@@ -10,12 +10,12 @@ The easiest way to get started is to run Linux (e.g.,
 (For more information about the Docker images, see the [Docker
 Section](doc/docker.md) of the documentation.) Executing
 
-    $ docker/scripts/build.sh
+    $ scripts/docker-build.sh
 
 in a shell from the main source directory, builds the required images. You
 can then run the command
 
-    $ docker/scripts/start.sh full shell
+    $ scripts/docker-start.sh full shell
 
 to get shell access to a build environment. The source code is mounted into
 the `source` directory of the user's home directory of this environment.
@@ -31,6 +31,10 @@ Then, you can execute the first demo program, by executing
 
 Note that **everything you store outside of the `source` directory will be
 lost, when you exit the container**.
+
+## Full Developer Setup
+
+See [Kubuntu Developer Setup](doc/kubuntu_dev_setup.md).
 
 ## Installation
 

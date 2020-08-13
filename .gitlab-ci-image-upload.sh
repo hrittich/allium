@@ -1,9 +1,9 @@
 #!/bin/bash
 SCRIPTDIR="$(dirname $0)"
-source "$SCRIPTDIR/docker/scripts/sudo.sh"
+source "$SCRIPTDIR/scripts/docker-vars.sh"
 
 DOCKER_REPOSITORY="gitlab.version.fz-juelich.de:5555/rittich2/allium"
-VERSION="$(date +%Y-%m-%dT%H-%M)"
+VERSION="$(date +%Y-%m-%dT%H.%M)"
 
 docker/scripts/build.sh
 $SUDO docker image tag allium-minimal "${DOCKER_REPOSITORY}/allium-minimal:$VERSION" &&

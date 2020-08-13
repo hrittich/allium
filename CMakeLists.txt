@@ -102,12 +102,15 @@ if(ALLIUM_USE_PYTHON)
 endif()
 
 # Default linear algebra backend
-set(PROPOSED_DEFAULT_BACKEND "EIGEN")
-if(ALLIUM_USE_PETSC)
-  set(PROPOSED_DEFAULT_BACKEND "PETSC")
-endif()
-set(ALLIUM_DEFAULT_BACKEND ${PROPOSED_DEFAULT_BACKEND}
+set(ALLIUM_DEFAULT_BACKEND ""
     CACHE STRING "Default linear algebra backend = \"EIGEN\"|\"PETSC\"")
+if(NOT ALLIUM_DEFAULT_BACKEND)
+  set(ALLIUM_DEFAULT_BACKEND "EIGEN")
+  if(ALLIUM_USE_PETSC)
+    set(ALLIUM_DEFAULT_BACKEND "PETSC")
+  endif()
+endif()
+
 if(ALLIUM_DEFAULT_BACKEND STREQUAL "EIGEN")
   set(ALLIUM_DEFAULT_BACKEND_EIGEN TRUE)
 elseif(ALLIUM_DEFAULT_BACKEND STREQUAL "PETSC")
@@ -129,6 +132,5 @@ add_link_options(${LINK_OPTIONS})
 
 add_subdirectory(allium)
 add_subdirectory(python)
-add_subdirectory(demo)
 add_subdirectory(tests)
-
+add_subdirectory(demo)
