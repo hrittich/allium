@@ -13,7 +13,14 @@
 #  limitations under the License.
 
 cmake_minimum_required(VERSION 3.13)
-project(allium)
+project(allium
+  VERSION 0.1.0
+  DESCRIPTION "Parallel Computation Library"
+  LANGUAGES CXX)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+endif()
 
 add_subdirectory(contrib)
 
@@ -134,3 +141,19 @@ add_subdirectory(allium)
 add_subdirectory(python)
 add_subdirectory(tests)
 add_subdirectory(demo)
+
+# Print Configuration Summary
+message(STATUS "--------------------------------------------")
+message(STATUS "                Summary")
+message(STATUS "--------------------------------------------")
+message(STATUS "  Default Backend     : ${ALLIUM_DEFAULT_BACKEND}")
+message(STATUS "  Global Index Type   : ${ALLIUM_GLOBAL_SIZE_T}")
+message(STATUS "  Bound Checks        : ${ALLIUM_BOUND_CHECKS}")
+message(STATUS "  Use PETSc           : ${ALLIUM_USE_PETSC}")
+message(STATUS "  Python Module       : ${ALLIUM_USE_PYTHON}")
+if(ALLIUM_USE_PYTHON)
+  message(STATUS "    Python Version    : ${Python3_VERSION}")
+  message(STATUS "    Use mpi4py        : ${ALLIUM_USE_MPI4PY}")
+endif()
+message(STATUS "--------------------------------------------")
+
