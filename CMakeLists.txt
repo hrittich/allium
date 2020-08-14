@@ -85,7 +85,6 @@ list(APPEND LIBRARIES ${MPI_CXX_LIBRARIES})
 find_package(PkgConfig)
 
 # Find PETSc
-set(PETSC_FOUND FALSE)
 if(PKG_CONFIG_FOUND)
   pkg_check_modules(PETSC PETSc)
 
@@ -143,17 +142,26 @@ add_subdirectory(tests)
 add_subdirectory(demo)
 
 # Print Configuration Summary
+
+function(show_status DESCRIPTION VARIABLE)
+  set(VALUE ${${VARIABLE}})
+  if("${VALUE}" STREQUAL "")
+    set(VALUE OFF)
+  endif()
+  message(STATUS "${DESCRIPTION} : ${VALUE}")
+endfunction()
+
 message(STATUS "--------------------------------------------")
 message(STATUS "                Summary")
 message(STATUS "--------------------------------------------")
-message(STATUS "  Default Backend     : ${ALLIUM_DEFAULT_BACKEND}")
-message(STATUS "  Global Index Type   : ${ALLIUM_GLOBAL_SIZE_T}")
-message(STATUS "  Bound Checks        : ${ALLIUM_BOUND_CHECKS}")
-message(STATUS "  Use PETSc           : ${ALLIUM_USE_PETSC}")
-message(STATUS "  Python Module       : ${ALLIUM_USE_PYTHON}")
+show_status("  Default Backend    " ALLIUM_DEFAULT_BACKEND)
+show_status("  Global Index Type  " ALLIUM_GLOBAL_SIZE_T)
+show_status("  Bound Checks       " ALLIUM_BOUND_CHECKS)
+show_status("  Use PETSc          " ALLIUM_USE_PETSC)
+show_status("  Python Module      " ALLIUM_USE_PYTHON)
 if(ALLIUM_USE_PYTHON)
-  message(STATUS "    Python Version    : ${Python3_VERSION}")
-  message(STATUS "    Use mpi4py        : ${ALLIUM_USE_MPI4PY}")
+  show_status("    Python Version   " Python3_VERSION)
+  show_status("    Use mpi4py       " ALLIUM_USE_MPI4PY)
 endif()
 message(STATUS "--------------------------------------------")
 
