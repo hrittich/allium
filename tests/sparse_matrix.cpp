@@ -67,9 +67,7 @@ TYPED_TEST(SparseMatrixTest, MatVecMult)
   mat.set_entries(lmat);
 
   NativeVector v(spec);
-  { auto loc = local_slice(v);
-    loc[0] = 15;
-  }
+  local_slice(v) = { 15 };
 
   auto w = mat * v;
 
@@ -94,10 +92,7 @@ TYPED_TEST(SparseMatrixTest, MatVecMult2)
   mat.set_entries(lmat);
 
   NativeVector v(spec);
-  { auto loc = local_slice(v);
-    loc[0] = 3;
-    loc[1] = -1;
-  }
+  local_slice(v) = { 3, -1 };
 
   auto w = mat * v;
 

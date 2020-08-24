@@ -20,33 +20,45 @@
 #include <Eigen/Core>
 
 namespace allium {
-  template <typename NumberT>
+  template <typename N>
   class EigenVectorStorage final
-    : public VectorStorageBase<EigenVectorStorage<NumberT>, NumberT>
+    : public VectorStorageTrait<EigenVectorStorage<N>, N>
   {
     public:
-      using BaseVector = Eigen::Matrix<NumberT, Eigen::Dynamic, 1>;
-      using typename VectorStorage<NumberT>::Number;
-      using Real = real_part_t<NumberT>;
+      template <typename> friend class LocalSlice;
+
+      using BaseVector = Eigen::Matrix<N, Eigen::Dynamic, 1>;
+      using typename VectorStorage<N>::Number;
+      using Real = real_part_t<N>;
 
       explicit EigenVectorStorage(VectorSpec spec);
+      EigenVectorStorage(const EigenVectorStorage& other);
 
-      void add(const VectorStorage<NumberT>& rhs) override;
-      void scale(const Number& factor) override;
-      NumberT dot(const VectorStorage<NumberT>& rhs) override;
+      using VectorStorageTrait<EigenVectorStorage, N>::operator+=;
+      EigenVectorStorage& operator+=(const EigenVectorStorage<N>& rhs);
+
+      EigenVectorStorage& operator*=(const N& factor) override;
+
+      using VectorStorageTrait<EigenVectorStorage, N>::dot;
+      N dot(const EigenVectorStorage& rhs) const;
       Real l2_norm() const override;
 
       BaseVector& native() { return vec; }
 
-      EigenVectorStorage* allocate(VectorSpec spec) {
-        return new EigenVectorStorage(spec);
-      }
     protected:
       Number* aquire_data_ptr() override;
       void release_data_ptr(Number* data) override;
 
     private:
       BaseVector vec;
+
+      VectorStorage<N>* allocate_like() const& override {
+        return new EigenVectorStorage(this->spec());
+      }
+
+      Cloneable* clone() const& override {
+        return new EigenVectorStorage(*this);
+      }
   };
 
   template <typename N>

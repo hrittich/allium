@@ -24,163 +24,59 @@ using namespace allium;
 // Types to test
 typedef
   testing::Types<
-    EigenVectorStorage<double>
-    , EigenVectorStorage<std::complex<double>>
+    EigenVector<double>
+    , EigenVector<std::complex<double>>
     #ifdef ALLIUM_USE_PETSC
-      , PetscVectorStorage
+      , PetscVector<double>
+      , PetscVector<std::complex<double>>
     #endif
     >
-  VectorStorageTypes;
+  VectorTypes;
 
 template <typename T>
-class VectorStorageTest : public testing::Test {
-  public:
-    using Number = typename T::Number;
+struct VectorTest : public testing::Test {
+  VectorTest()
+    : comm(Comm::world()),
+      spec_1d(comm, 1, 1),
+      spec_2d(comm, 2, 2)
+  {}
+
+  Comm comm;
+  VectorSpec spec_1d;
+  VectorSpec spec_2d;
 };
 
-TYPED_TEST_CASE(VectorStorageTest, VectorStorageTypes);
+TYPED_TEST_CASE(VectorTest, VectorTypes);
 
-TYPED_TEST(VectorStorageTest, Create) {
-  using Number = typename TestFixture::Number;
-
-  Comm comm = Comm::world();
-
-  VectorSpec vspec(comm, 1, 1);
-
-  TypeParam v(vspec);
-
-  VectorBase<TypeParam> v2(vspec);
-}
-
-TYPED_TEST(VectorStorageTest, Fill) {
-  using Number = typename TestFixture::Number;
-
-  auto comm = Comm::world();
-
-  VectorSpec vspec(comm, 1, 1);
-  auto v = std::make_shared<TypeParam>(vspec);
+TYPED_TEST(VectorTest, ReadWrite)
+{
+  TypeParam v(this->spec_1d);
 
   {
-    auto v_loc = VectorSlice<Number>(v);
+    auto v_loc = local_slice(v);
     v_loc[0] = 1.0;
   }
-
   {
-    auto v_loc = VectorSlice<Number>(v);
+    auto v_loc = local_slice(v);
     EXPECT_EQ(v_loc[0], 1.0);
   }
+}
 
+TYPED_TEST(VectorTest, BoundCheck)
+{
+  TypeParam v(this->spec_1d);
+  auto v_loc = local_slice(v);
   #ifdef ALLIUM_BOUND_CHECKS
-  {
-    auto v_loc = VectorSlice<Number>(v);
-    EXPECT_ANY_THROW(v_loc[1] = 1);
-  }
+    EXPECT_ANY_THROW(v_loc[1]);
   #endif
 }
 
-TYPED_TEST(VectorStorageTest, Initializer) {
-  using Number = typename TestFixture::Number;
+TYPED_TEST(VectorTest, CopyConstruct) {
+  auto v = TypeParam(this->spec_1d);
 
-  auto comm = Comm::world();
+  local_slice(v) = { 1.0 };
 
-  VectorSpec vspec(comm, 3, 3);
-  auto v = std::make_shared<TypeParam>(vspec);
-
-  {
-    auto v_loc = VectorSlice<Number>(v);
-    v_loc = { 1.0, 3.0, 5.0 };
-  }
-
-  {
-    auto v_loc = VectorSlice<Number>(v);
-    EXPECT_EQ(v_loc[0], 1.0);
-    EXPECT_EQ(v_loc[1], 3.0);
-    EXPECT_EQ(v_loc[2], 5.0);
-  }
-
-  #ifdef ALLIUM_BOUND_CHECKS
-  {
-    auto v_loc = VectorSlice<Number>(v);
-    EXPECT_ANY_THROW(v_loc = { 1.0 });
-  }
-  #endif
-}
-
-TYPED_TEST(VectorStorageTest, Add) {
-  using Number = typename TypeParam::Number;
-
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 1, 1);
-  auto v = std::make_shared<TypeParam>(vspec);
-  auto w = std::make_shared<TypeParam>(vspec);
-
-  {
-    auto v_loc = VectorSlice<Number>(v);
-    auto w_loc = VectorSlice<Number>(w);
-
-    v_loc[0] = 2;
-    w_loc[0] = 3;
-  }
-
-  v->add(*w);
-
-  {
-    auto v_loc = VectorSlice<Number>(v);
-
-    EXPECT_EQ(v_loc[0], 5.0);
-  }
-}
-
-TYPED_TEST(VectorStorageTest, Scale) {
-  using Number = typename TypeParam::Number;
-
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 1, 1);
-  auto v = std::make_shared<TypeParam>(vspec);
-
-  {
-    auto loc = VectorSlice<Number>(v);
-    loc[0] = 2;
-  }
-
-  v->scale(3);
-
-  {
-    auto loc = VectorSlice<Number>(v);
-    EXPECT_EQ(loc[0], 6.0);
-  }
-}
-
-TYPED_TEST(VectorStorageTest, Norm) {
-  using Number = typename TypeParam::Number;
-
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 4, 4);
-  auto v = std::make_shared<TypeParam>(vspec);
-
-  {
-    auto loc = VectorSlice<Number>(v);
-    loc[0] = 1;
-    loc[1] = 1;
-    loc[2] = 1;
-    loc[3] = 1;
-  }
-
-  EXPECT_EQ(v->l2_norm(), 2.0);
-}
-
-TYPED_TEST(VectorStorageTest, Assign) {
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 1, 1);
-  auto v = VectorBase<TypeParam>(vspec);
-  auto w = VectorBase<TypeParam>(vspec);
-
-  {
-    auto loc = local_slice(v);
-    loc[0] = 1;
-  }
-
-  w.assign(v);
+  TypeParam w(v);
 
   {
     auto loc = local_slice(w);
@@ -188,41 +84,229 @@ TYPED_TEST(VectorStorageTest, Assign) {
   }
 }
 
-TYPED_TEST(VectorStorageTest, CastToGeneric) {
-  using Number = typename TypeParam::Number;
+TYPED_TEST(VectorTest, MoveConstruct) {
+  auto v = TypeParam(this->spec_1d);
 
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 1, 1);
-  auto v = VectorBase<TypeParam>(vspec);
-  auto v_gen = Vector<Number>(v);
-}
+  local_slice(v) ={ 1.0 };
 
-TYPED_TEST(VectorStorageTest, SetZero) {
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 1, 1);
-  auto v = VectorBase<TypeParam>(vspec);
+  TypeParam w(std::move(v));
 
-  v.set_zero();
   {
-    auto loc = local_slice(v);
-    EXPECT_EQ(loc[0], 0.0);
+    auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 1.0);
   }
 }
 
-TYPED_TEST(VectorStorageTest, Dot) {
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 1, 1);
-  auto v = VectorBase<TypeParam>(vspec);
-  auto w = VectorBase<TypeParam>(vspec);
+TYPED_TEST(VectorTest, Assign) {
+  auto v = TypeParam(this->spec_1d);
+  auto w = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 1.0 };
+
+  w = v;
+
+  {
+    auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 1.0);
+  }
+}
+
+TYPED_TEST(VectorTest, LocalSliceAssign) {
+  auto v = TypeParam(this->spec_2d);
+  auto w = TypeParam(this->spec_2d);
+
+  local_slice(v) = { 1.0, 2.0 };
+  local_slice(w) = local_slice(v);
+  {
+    auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 1.0);
+    EXPECT_EQ(loc[1], 2.0);
+  }
+}
+
+TYPED_TEST(VectorTest, Move) {
+  auto v = TypeParam(this->spec_1d);
+  auto w = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 1.0 };
+
+  w = std::move(v);
+
+  {
+    auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 1.0);
+  }
+}
+
+TYPED_TEST(VectorTest, InitializerList) {
+  VectorSpec vspec(this->comm, 3, 3);
+  auto v = TypeParam(vspec);
+
+  {
+    auto v_loc = local_slice(v);
+    v_loc = { 1.0, 3.0, 5.0 };
+  }
+
+  {
+    auto v_loc = local_slice(v);
+    EXPECT_EQ(v_loc[0], 1.0);
+    EXPECT_EQ(v_loc[1], 3.0);
+    EXPECT_EQ(v_loc[2], 5.0);
+  }
+
+  {
+    auto v_loc = local_slice(v);
+    EXPECT_ANY_THROW(v_loc = { 1.0 });
+  }
+}
+
+TYPED_TEST(VectorTest, InplaceAdd) {
+  auto v = TypeParam(this->spec_1d);
+  auto w = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 2.0 };
+  local_slice(w) = { 3.0 };
+
+  v += w;
+
+  { auto v_loc = local_slice(v);
+    EXPECT_EQ(v_loc[0], 5.0);
+  }
+  { auto w_loc = local_slice(w);
+    EXPECT_EQ(w_loc[0], 3.0);
+  }
+}
+
+TYPED_TEST(VectorTest, Add) {
+  auto v = TypeParam(this->spec_1d);
+  auto w = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 2.0 };
+  local_slice(w) = { 3.0 };
+
+  auto u = v + w;
+
+  { auto v_loc = local_slice(v);
+    EXPECT_EQ(v_loc[0], 2.0);
+  }
+  { auto w_loc = local_slice(w);
+    EXPECT_EQ(w_loc[0], 3.0);
+  }
+  { auto u_loc = local_slice(u);
+    EXPECT_EQ(u_loc[0], 5.0);
+  }
+}
+
+TYPED_TEST(VectorTest, InplaceSub) {
+  auto v = TypeParam(this->spec_1d);
+  auto w = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 3.0 };
+  local_slice(w) = { 2.0 };
+
+  v -= w;
+
+  { auto v_loc = local_slice(v);
+    EXPECT_EQ(v_loc[0], 1.0);
+  }
+  { auto w_loc = local_slice(w);
+    EXPECT_EQ(w_loc[0], 2.0);
+  }
+}
+
+TYPED_TEST(VectorTest, Sub) {
+  auto v = TypeParam(this->spec_1d);
+  auto w = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 3.0 };
+  local_slice(w) = { 2.0 };
+
+  auto u = v - w;
+
+  { auto v_loc = local_slice(v);
+    EXPECT_EQ(v_loc[0], 3.0);
+  }
+  { auto w_loc = local_slice(w);
+    EXPECT_EQ(w_loc[0], 2.0);
+  }
+  { auto u_loc = local_slice(u);
+    EXPECT_EQ(u_loc[0], 1.0);
+  }
+}
+
+TYPED_TEST(VectorTest, InplaceScale) {
+  auto v = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 2.0 };
+
+  v *= 3;
+
+  {
+    auto loc = local_slice(v);
+    EXPECT_EQ(loc[0], 6.0);
+  }
+}
+
+TYPED_TEST(VectorTest, Scale) {
+  auto v = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 2.0 };
+
+  auto w = 3 * v;
+
+  { auto loc = local_slice(v);
+    EXPECT_EQ(loc[0], 2.0);
+  }
+  { auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 6.0);
+  }
+}
+
+TYPED_TEST(VectorTest, InplaceDiv) {
+  auto v = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 6.0 };
+
+  v /= 3;
+
+  {
+    auto loc = local_slice(v);
+    EXPECT_EQ(loc[0], 2.0);
+  }
+}
+
+TYPED_TEST(VectorTest, Div) {
+  auto v = TypeParam(this->spec_1d);
+
+  local_slice(v) = { 6.0 };
+
+  auto w = v / 3;
+
+  { auto loc = local_slice(v);
+    EXPECT_EQ(loc[0], 6.0);
+  }
+  { auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 2.0);
+  }
+}
+
+TYPED_TEST(VectorTest, Norm) {
+  VectorSpec spec(this->comm, 4, 4);
+  auto v = TypeParam(spec);
+  local_slice(v) = { 1.0, 1.0, 1.0, 1.0 };
+
+  EXPECT_EQ(v.l2_norm(), 2.0);
+}
+
+TYPED_TEST(VectorTest, Dot) {
+  auto v = TypeParam(this->spec_2d);
+  auto w = TypeParam(this->spec_2d);
 
   // todo: test with complex numbers
 
-  { auto loc = local_slice(v);
-    loc[0] = 2; }
-  { auto loc = local_slice(w);
-    loc[0] = 3; }
+  local_slice(v) = { 2, 4 };
+  local_slice(w) = { 3, 1 };
 
-  EXPECT_EQ(v.dot(w), 6.0);
+  EXPECT_EQ(v.dot(w), 10.0);
 }
-
 

@@ -18,7 +18,7 @@ namespace allium {
 
   template <typename N>
     EigenVectorStorage<N>::EigenVectorStorage(VectorSpec spec)
-      : VectorStorageBase<EigenVectorStorage<N>, N>(spec),
+      : VectorStorageTrait<EigenVectorStorage<N>, N>(spec),
         vec(spec.global_size())
     {
       if (spec.comm().size() != 1) {
@@ -27,32 +27,28 @@ namespace allium {
     }
 
   template <typename N>
-  void EigenVectorStorage<N>::add(const VectorStorage<N>& rhs)
-  {
-    const EigenVectorStorage* eigen_rhs
-      = dynamic_cast<const EigenVectorStorage*>(&rhs);
-    if (eigen_rhs != nullptr) {
-      vec += eigen_rhs->vec;
-    } else {
-      throw std::logic_error("Not implemented");
-    }
-  }
+    EigenVectorStorage<N>::EigenVectorStorage(const EigenVectorStorage& other)
+      : VectorStorageTrait<EigenVectorStorage, N>(other.spec()),
+        vec(other.vec)
+    {}
 
-  template <typename Number>
-  void EigenVectorStorage<Number>::scale(const Number& factor) {
-    vec *= factor;
+  template <typename N>
+  EigenVectorStorage<N>& EigenVectorStorage<N>::operator+=(const EigenVectorStorage<N>& rhs)
+  {
+    vec += rhs.vec;
+    return *this;
   }
 
   template <typename N>
-  N EigenVectorStorage<N>::dot(const VectorStorage<N>& rhs) {
-    const EigenVectorStorage* eigen_rhs
-      = dynamic_cast<const EigenVectorStorage*>(&rhs);
-    if (eigen_rhs != nullptr) {
-      // eigen has a dot product wich is linear in the FIRST argument
-      return eigen_rhs->vec.dot(vec);
-    } else {
-      throw std::logic_error("Not implemented");
-    }
+  EigenVectorStorage<N>& EigenVectorStorage<N>::operator*=(const N& factor) {
+    vec *= factor;
+    return *this;
+  }
+
+  template <typename N>
+  N EigenVectorStorage<N>::dot(const EigenVectorStorage<N>& rhs) const {
+    // eigen has a dot product wich is linear in the SECOND argument
+    return rhs.vec.dot(vec);
   }
 
   template <typename Number>

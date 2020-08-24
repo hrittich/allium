@@ -2,6 +2,7 @@
 SCRIPTDIR="$(cd "$(dirname "$0")" && pwd -P)"
 SOURCEDIR="$(cd "$SCRIPTDIR" && cd ../ && pwd -P)"
 source "$SCRIPTDIR/docker-vars.sh"
+DOCKER=${DOCKER:-docker}
 
 # Variables for the user creation
 USER_UID=$(id -u)

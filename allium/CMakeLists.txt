@@ -15,7 +15,8 @@
 configure_file(config.hpp.in config.hpp)
 
 add_subdirectory(main)
-add_subdirectory(ipc)
 add_subdirectory(la)
+add_subdirectory(ipc)
+add_subdirectory(util)
 
 set(ALLIUM_LIBRARIES ${ALLIUM_LIBRARIES} PARENT_SCOPE)

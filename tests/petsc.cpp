@@ -20,7 +20,6 @@
 #include <allium/la/petsc_vector.hpp>
 
 using namespace allium;
-using Number = PetscVectorStorage::Number;
 
 // Special PETSc Tests ...
 

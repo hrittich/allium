@@ -12,13 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#ifndef ALLIUM_UTIL_ASSERT_HPP
+#define ALLIUM_UTIL_ASSERT_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#include <stdexcept>
+#include <allium/config.hpp>
 
-#include <petscsys.h>
-#include "petsc_util.hpp"
+namespace allium {
+  class assertion_failed : public std::logic_error {
+  public:
+    using std::logic_error::logic_error;
+  };
+}
 
-namespace allium {}
+#ifdef ALLIUM_DEBUG
+  inline void allium_assert(bool cond, std::string msg = std::string()) {
+    if (!cond) {
+      throw allium::assertion_failed(msg);
+    }
+  }
+
+#else
+  #define allium_assert(...)
+#endif
+
 
 #endif

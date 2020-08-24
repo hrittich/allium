@@ -12,13 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#ifndef ALLIUM_UTIL_CRTP_HPP
+#define ALLIUM_UTIL_CRTP_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#include <memory>
 
-#include <petscsys.h>
-#include "petsc_util.hpp"
+namespace allium {
 
-namespace allium {}
+  template <typename T>
+  typename T::DerivedType& derived(T* p) {
+    return static_cast<typename T::DerivedType&>(*p);
+  }
+  template <typename T>
+  const typename T::DerivedType& derived(const T* p) {
+    return static_cast<const typename T::DerivedType&>(*p);
+  }
+
+  /** Trait that implements the self helper routine for the curiously
+   * recurring template pattern. */
+  template <typename Derived>
+  struct CrtpTrait {
+      using DerivedType = Derived;
+  };
+}
 
 #endif

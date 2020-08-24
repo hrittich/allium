@@ -16,6 +16,8 @@
 #define ALLIUM_LA_PETSC_UTIL_HPP
 
 #include <allium/config.hpp>
+#include <allium/ipc/comm.hpp>
+#include <allium/la/petsc_object_ptr.hpp>
 
 #ifdef ALLIUM_USE_PETSC
 #include <petscsys.h>
@@ -27,11 +29,28 @@ namespace allium {
     #ifdef ALLIUM_USE_PETSC
     inline void chkerr(PetscErrorCode ierr) {
       if (PetscUnlikely(ierr)) {
-        throw std::runtime_error("PETSc error");
+        const char* text = nullptr;
+        char* specific = nullptr;
+        if (PetscErrorMessage(ierr, &text, &specific) == 0) {
+          throw std::runtime_error("PETSc error");
+        } else {
+          std::stringstream msg;
+          msg << "PETSc error (" << text << "):" << specific;
+          throw std::runtime_error(msg.str());
+        }
       }
     }
-    #endif
 
+    PetscInt vec_local_size(PetscObjectPtr<Vec> vec);
+    PetscInt vec_global_size(PetscObjectPtr<Vec> vec);
+    Comm object_comm_(PetscObject o);
+
+    template <typename T>
+    Comm object_comm(PetscObjectPtr<T> o) {
+      return object_comm_(petsc_object_cast(o.get()));
+    }
+
+    #endif
   }
 }
 

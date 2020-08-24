@@ -144,7 +144,7 @@ TEST(GMRES, InnerSolve1)
   using Number = std::complex<double>;
 
   VectorSpec spec(Comm::world(), 1, 1);
-  auto v = make_vector<Number>(spec);
+  auto v = Vector<Number>(spec);
 
   LocalCooMatrix<Number> coo;
   coo.add(0, 0, 5);
@@ -152,9 +152,7 @@ TEST(GMRES, InnerSolve1)
   auto mat = make_sparse_matrix<Number>(spec, spec);
   mat.set_entries(coo);
 
-  { auto loc = local_slice(v);
-    loc[0] = 1;
-  }
+  local_slice(v) = { 1.0 };
 
   auto w = gmres(mat, v, 1e-6);
 
@@ -168,7 +166,7 @@ TEST(GMRES, solve2)
   using Number = std::complex<double>;
 
   VectorSpec spec(Comm::world(), 4, 4);
-  auto v = make_vector<Number>(spec);
+  auto v = Vector<Number>(spec);
 
   LocalCooMatrix<Number> coo;
   coo.add(0, 0,  2);
@@ -188,12 +186,7 @@ TEST(GMRES, solve2)
   auto mat = make_sparse_matrix<Number>(spec, spec);
   mat.set_entries(coo);
 
-  { auto loc = local_slice(v);
-    loc[0] = 1.0;
-    loc[1] = 0.0;
-    loc[2] = 0.0;
-    loc[3] = 1.0;
-  }
+  local_slice(v) = { 1.0, 0.0, 0.0, 1.0 };
 
   auto w = gmres(mat, v, 1e-10);
   { auto loc = local_slice(w);

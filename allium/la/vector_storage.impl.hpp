@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#include "vector_storage.hpp"
 
-#ifdef ALLIUM_USE_PETSC
+namespace allium {
+  template <typename N>
+  VectorStorage<N>::~VectorStorage()
+  {}
+}
 
-#include <petscsys.h>
-#include "petsc_util.hpp"
-
-namespace allium {}
-
-#endif

@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#ifndef ALLIUM_UTIL_EXCEPT_HPP
+#define ALLIUM_UTIL_EXCEPT_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#include <stdexcept>
 
-#include <petscsys.h>
-#include "petsc_util.hpp"
-
-namespace allium {}
+namespace allium {
+  class not_implemented : public std::logic_error {
+    public:
+      not_implemented() : std::logic_error("Not implemented.") {};
+  };
+}
 
 #endif

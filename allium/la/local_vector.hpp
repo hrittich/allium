@@ -16,11 +16,13 @@
 #define ALLIUM_LA_LOCAL_VECTOR_HPP
 
 #include <Eigen/Core>
+#include "vector_trait.hpp"
 
 namespace allium {
 
   template <typename N>
   class LocalVector
+    : public VectorTrait<LocalVector<N>, N>
   {
     public:
       using Number = N;
@@ -42,10 +44,6 @@ namespace allium {
 
       LocalVector& operator+= (const LocalVector& rhs) {
         m_storage += rhs.m_storage;
-      }
-
-      LocalVector& operator-= (const LocalVector& rhs) {
-        m_storage -= rhs.m_storage;
       }
 
       LocalVector& operator*= (Number rhs) {

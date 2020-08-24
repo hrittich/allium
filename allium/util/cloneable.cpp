@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#include "cloneable.hpp"
 
-#ifdef ALLIUM_USE_PETSC
+namespace allium {
 
-#include <petscsys.h>
-#include "petsc_util.hpp"
+Cloneable::~Cloneable() {}
 
-namespace allium {}
+}
 
-#endif

@@ -122,13 +122,13 @@ namespace allium {
   {
     PetscErrorCode ierr;
 
-    auto v_store = std::dynamic_pointer_cast<const PetscVectorStorage>(v.storage());
+    auto v_store = dynamic_cast<const PetscVectorStorage<PetscScalar>*>(&v.storage());
     if (!v_store)
       throw std::runtime_error("Not implemented");
 
     NativeVector w(row_spec());
 
-    ierr = MatMult(ptr, v_store->native(), w.storage()->native()); chkerr(ierr);
+    ierr = MatMult(ptr, v_store->native(), w.storage().native()); chkerr(ierr);
 
     return w;
   }

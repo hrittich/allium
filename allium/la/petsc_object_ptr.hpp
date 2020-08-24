@@ -44,10 +44,8 @@ template<> struct is_petsc_object<EPS> : std::true_type {};
 #endif
 
 template <typename T>
-PetscObject petsc_object_cast(T value) {
-  // check that we actually have a PETSc type
-  static_assert(is_petsc_object<T>::value,
-                "Can only cast PETSc types to PETSc objects.");
+std::enable_if_t<is_petsc_object<T>::value, PetscObject>
+petsc_object_cast(T value) {
   return reinterpret_cast<PetscObject>(value);
 }
 

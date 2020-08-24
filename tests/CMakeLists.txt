@@ -19,6 +19,8 @@ add_executable(test_suite
   petsc.cpp
   eigen.cpp
   cg.cpp
-  gmres.cpp)
-target_link_libraries(test_suite ${GTEST_LIBRARIES} ${LIBRARIES} ${ALLIUM_LIBRARIES})
+  gmres.cpp
+  vector_storage.cpp
+  )
+target_link_libraries(test_suite ${ALLIUM_LIBRARIES} ${GTEST_LIBRARIES} ${LIBRARIES})
 

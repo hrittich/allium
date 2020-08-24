@@ -15,6 +15,7 @@
 #ifndef ALLIUM_CONFIG_HPP
 #define ALLIUM_CONFIG_HPP
 
+#cmakedefine ALLIUM_DEBUG
 #cmakedefine ALLIUM_USE_PETSC
 #cmakedefine ALLIUM_USE_PYTHON
 #cmakedefine ALLIUM_USE_MPI4PY

@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#ifndef ALLIUM_UTIL_NUMERIC_HPP
+#define ALLIUM_UTIL_NUMERIC_HPP
 
-#ifdef ALLIUM_USE_PETSC
+#include <complex>
 
-#include <petscsys.h>
-#include "petsc_util.hpp"
+namespace allium {
+  template <typename T> struct real_part {};
+  template <> struct real_part<float> { typedef float type; };
+  template <> struct real_part<double> { typedef double type; };
+  template <typename T> struct real_part<std::complex<T>> { typedef T type; };
 
-namespace allium {}
+  template <typename T>
+  using real_part_t = typename real_part<T>::type;
+}
 
 #endif

@@ -12,13 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
-
-#ifdef ALLIUM_USE_PETSC
-
-#include <petscsys.h>
+#include <allium/config.hpp>
 #include "petsc_util.hpp"
 
-namespace allium {}
+namespace allium { namespace petsc {
 
+#ifdef ALLIUM_USE_PETSC
+PetscInt vec_local_size(PetscObjectPtr<Vec> vec) {
+  PetscErrorCode ierr;
+
+  PetscInt size;
+  ierr = VecGetLocalSize(vec, &size); chkerr(ierr);
+  return size;
+}
+
+PetscInt vec_global_size(PetscObjectPtr<Vec> vec) {
+  PetscErrorCode ierr;
+
+  PetscInt size;
+  ierr = VecGetLocalSize(vec, &size); chkerr(ierr);
+  return size;
+}
+
+Comm object_comm_(PetscObject o) {
+  PetscErrorCode ierr;
+
+  MPI_Comm comm;
+  ierr = PetscObjectGetComm(o, &comm); chkerr(ierr);
+
+  return Comm(comm);
+}
 #endif
+
+}}
+

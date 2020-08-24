@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
   mat.set_entries(lmat);
 
   // Create the right hand side vector
-  auto v = make_vector<std::complex<double>>(spec);
+  auto v = Vector<std::complex<double>>(spec);
 
   auto v_loc = local_slice(v); // get access to the local portion of the vector
   for (global_size_t i_glob = spec.local_start(); i_glob < spec.local_end(); i_glob++)

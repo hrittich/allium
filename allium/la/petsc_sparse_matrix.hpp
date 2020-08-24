@@ -28,12 +28,12 @@ namespace allium {
   class PetscSparseMatrixStorage final
     : public SparseMatrixStorage<PetscScalar> {
     public:
-      using NativeVector = PetscVector;
+      using NativeVector = PetscVector<PetscScalar>;
 
       PetscSparseMatrixStorage(VectorSpec rows, VectorSpec cols);
 
-      void set_entries(LocalCooMatrix<Number> mat);
-      LocalCooMatrix<Number> get_entries();
+      void set_entries(LocalCooMatrix<Number> mat) override;
+      LocalCooMatrix<Number> get_entries() override;
 
       Vector<PetscScalar> vec_mult(const Vector<Number>& v) override;
 

@@ -17,6 +17,7 @@
 
 #include "sparse_matrix.hpp"
 #include "eigen_vector.hpp"
+#include <allium/util/except.hpp>
 #include <Eigen/Sparse>
 
 namespace allium {
@@ -91,13 +92,13 @@ namespace allium {
       }
 
       Vector<N> vec_mult(const Vector<N>& v) override {
-        auto ptr = std::dynamic_pointer_cast<const EigenVectorStorage<N>> (v.storage());
+        auto ptr = dynamic_cast<const EigenVectorStorage<N>*>(&v.storage());
         if (!ptr)
-          throw std::logic_error("Not implemented");
+          throw not_implemented();
 
         NativeVector ret(row_spec());
-        ret.storage()->native()
-          = mat * (std::const_pointer_cast<EigenVectorStorage<N>>(ptr)->native());
+        ret.storage().native()
+          = mat * (const_cast<EigenVectorStorage<N>*>(ptr)->native());
         return ret;
       }
 
