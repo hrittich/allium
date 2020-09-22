@@ -1,12 +1,13 @@
 # Targets
 *.a
 *.so
-tests/test_suite
-demo/poisson
-contrib/googletest
-contrib/eigen
-contrib/pybind11
 allium/config.hpp
+contrib/eigen
+contrib/googletest
+contrib/pybind11
+demo/poisson
+demo/poisson2
+tests/test_suite
 
 # Vim Swap
 *.swp

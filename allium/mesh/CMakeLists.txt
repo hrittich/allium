@@ -12,12 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-configure_file(config.hpp.in config.hpp)
+add_library(allium_mesh
+  petsc_mesh.cpp petsc_mesh.hpp
+  petsc_mesh_spec.cpp petsc_mesh_spec.hpp
+  point.hpp
+  regular_mesh.hpp
+  )
 
-add_subdirectory(main)
-add_subdirectory(mesh)
-add_subdirectory(la)
-add_subdirectory(ipc)
-add_subdirectory(util)
-
+list(APPEND ALLIUM_LIBRARIES allium_mesh)
 set(ALLIUM_LIBRARIES ${ALLIUM_LIBRARIES} PARENT_SCOPE)

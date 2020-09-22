@@ -87,7 +87,7 @@ TYPED_TEST(VectorTest, CopyConstruct) {
 TYPED_TEST(VectorTest, MoveConstruct) {
   auto v = TypeParam(this->spec_1d);
 
-  local_slice(v) ={ 1.0 };
+  local_slice(v) = { 1.0 };
 
   TypeParam w(std::move(v));
 

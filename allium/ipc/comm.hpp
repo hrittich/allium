@@ -30,9 +30,16 @@ namespace allium {
 
       static Comm world();
 
-      int rank();
-      int size();
+      int rank() const;
+      int size() const;
 
+      // === Communicator Management =========================================
+
+      Comm dup() const;
+      Comm split(int color, int key) const;
+      void free();
+
+      // === IPC =============================================================
       void barrier(void);
 
       std::vector<long long> sum_exscan(std::vector<long long> buf);

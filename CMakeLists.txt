@@ -136,6 +136,12 @@ endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include_directories(${CMAKE_BINARY_DIR}) # Include for automatically generated files
 
+# Strict compiler settings
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(ALLIUM_CXX_FLAGS "-std=c++14 -Wall" CACHE STRING "Additional CXX flags.")
+  set(CMAKE_CXX_FLAGS "${ALLIUM_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
+endif()
+
 # The ALLIUM_LIBRARIES variable will be populated in the subdirectories.
 set(ALLIUM_LIBRARIES "")
 

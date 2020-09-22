@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#ifndef ALLIUM_UTIL_HASH_HPP
+#define ALLIUM_UTIL_HASH_HPP
 
-#ifdef ALLIUM_USE_PETSC
+namespace allium {
+
+  int bit_scatter(int x, int distance);
+  int z_curve(int x, int y);
+
+}
 
 #endif

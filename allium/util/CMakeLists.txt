@@ -19,6 +19,7 @@ add_library(allium_util
   crtp.hpp
   except.hpp
   extern.hpp
+  hash.cpp hash.hpp
   numeric.hpp
   types.hpp
 )

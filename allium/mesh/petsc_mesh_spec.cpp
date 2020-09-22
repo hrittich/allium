@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#include "petsc_mesh_spec.hpp"
 
 #ifdef ALLIUM_USE_PETSC
+
+namespace allium {
+  ALLIUM_INSTANTIATE_D(ALLIUM_PETSC_MESH_SPEC_DECL)
+}
 
 #endif

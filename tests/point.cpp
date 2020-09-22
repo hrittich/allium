@@ -13,14 +13,37 @@
 // limitations under the License.
 
 #include <gtest/gtest.h>
-#include <allium/config.hpp>
-
-#ifdef ALLIUM_USE_PETSC
-
-#include <allium/la/petsc_vector.hpp>
+#include <allium/mesh/point.hpp>
 
 using namespace allium;
 
-// Special PETSc Tests ...
+TEST(Point, CreateSetGet)
+{
+  Point<int, 1> p;
+  p[0] = 99;
 
-#endif
+  EXPECT_EQ(p[0], 99);
+}
+
+TEST(Point, Initialize)
+{
+  Point<int, 3> p{4, 7, 12};
+  EXPECT_EQ(p[0], 4);
+  EXPECT_EQ(p[1], 7);
+  EXPECT_EQ(p[2], 12);
+}
+
+TEST(Point, Add)
+{
+  Point<int, 1> p{2}, q{3};
+  p += q;
+  EXPECT_EQ(p[0], 5);
+}
+
+TEST(Point, Scale)
+{
+  Point<int, 1> p{2};
+  p *= 3;
+  EXPECT_EQ(p[0], 6);
+}
+

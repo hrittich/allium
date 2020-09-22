@@ -29,7 +29,7 @@ namespace allium {
 
       ~PetscMatRow() {
         PetscErrorCode ierr;
-        MatRestoreRow(m_mat, m_row, &m_ncols, &m_cols, &m_vals);
+        ierr = MatRestoreRow(m_mat, m_row, &m_ncols, &m_cols, &m_vals); chkerr(ierr);
       }
 
       global_size_t ncols() {
@@ -38,7 +38,7 @@ namespace allium {
 
       global_size_t col(global_size_t i) {
         #ifdef ALLIUM_BOUND_CHECKS
-          if (i >= m_ncols)
+          if (i >= (global_size_t)m_ncols)
             throw std::runtime_error("Out of bound access.");
         #endif
         return m_cols[i];
@@ -46,7 +46,7 @@ namespace allium {
 
       PetscScalar value(global_size_t i) {
         #ifdef ALLIUM_BOUND_CHECKS
-          if (i >= m_ncols)
+          if (i >= (global_size_t)m_ncols)
             throw std::runtime_error("Out of bound access");
         #endif
         return m_vals[i];
@@ -107,7 +107,7 @@ namespace allium {
 
     LocalCooMatrix<PetscScalar> lmat;
 
-    for (global_size_t i_row=start; i_row < end; ++i_row) {
+    for (global_size_t i_row=start; i_row < (global_size_t)end; ++i_row) {
       PetscMatRow row(ptr, i_row);
       for (global_size_t i_col_entry=0; i_col_entry < row.ncols(); ++i_col_entry) {
         lmat.add(i_row, row.col(i_col_entry), row.value(i_col_entry));

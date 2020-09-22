@@ -15,3 +15,7 @@
 add_executable(poisson poisson.cpp)
 target_link_libraries(poisson ${ALLIUM_LIBRARIES} ${LIBRARIES})
 
+if(ALLIUM_USE_PETSC)
+  add_executable(poisson2 poisson2.cpp)
+  target_link_libraries(poisson2 ${ALLIUM_LIBRARIES} ${LIBRARIES})
+endif()

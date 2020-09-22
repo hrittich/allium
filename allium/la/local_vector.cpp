@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#include "local_vector.hpp"
 
-#ifdef ALLIUM_USE_PETSC
-
-#endif
+namespace allium {
+  ALLIUM_INSTANTIATE(ALLIUM_LOCAL_VECTOR_DECL)
+}

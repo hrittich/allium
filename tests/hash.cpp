@@ -12,8 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#include <gtest/gtest.h>
 
-#ifdef ALLIUM_USE_PETSC
+#include <allium/util/hash.hpp>
+using namespace allium;
 
-#endif
+TEST(Hash, BitScatter)
+{
+  EXPECT_EQ(bit_scatter(0, 1), 0);
+  EXPECT_EQ(bit_scatter(1, 1), 1);
+  EXPECT_EQ(bit_scatter(0b00001011, 1), 0b01000101);
+  EXPECT_EQ(bit_scatter(0b00001011, 2), 0b001000001001);
+}
+
+TEST(Hash, ZCurve)
+{
+  EXPECT_EQ(z_curve(0, 0), 0);
+  EXPECT_EQ(z_curve(0x01, 0x01), 0x03);
+  EXPECT_EQ(z_curve(0b1011, 0b0101), 0b01100111);
+}
+

@@ -15,16 +15,41 @@
 #ifndef ALLIUM_UTIL_EXTERN_HPP
 #define ALLIUM_UTIL_EXTERN_HPP
 
-#define ALLIUM_INSTANTIATE(DECL) \
-  DECL(template, float) \
-  DECL(template, std::complex<float>) \
-  DECL(template, double) \
-  DECL(template, std::complex<double>)
+#define ALLIUM_EXTERN_N_1(DECL, T) \
+  DECL(T, float) \
+  DECL(T, std::complex<float>) \
+  DECL(T, double) \
+  DECL(T, std::complex<double>)
 
-#define ALLIUM_EXTERN(DECL) \
-  DECL(extern template, float) \
-  DECL(extern template, std::complex<float>) \
-  DECL(extern template, double) \
-  DECL(extern template, std::complex<double>)
+#define ALLIUM_EXTERN(DECL)       ALLIUM_EXTERN_N_1(DECL, extern template)
+#define ALLIUM_INSTANTIATE(DECL)  ALLIUM_EXTERN_N_1(DECL, template)
+
+
+
+#define ALLIUM_EXTERN_D_1(DECL, T) \
+  DECL(T, 1) \
+  DECL(T, 2) \
+  DECL(T, 3)
+
+#define ALLIUM_EXTERN_D(DECL) ALLIUM_EXTERN_D_1(DECL, extern template)
+#define ALLIUM_INSTANTIATE_D(DECL) ALLIUM_EXTERN_D_1(DECL, template)
+
+
+
+#define ALLIUM_EXTERN_ND_2(DECL, T, N) \
+  DECL(T, N, 1) \
+  DECL(T, N, 2) \
+  DECL(T, N, 3)
+
+#define ALLIUM_EXTERN_ND_1(DECL, T) \
+  ALLIUM_EXTERN_ND_2(DECL, T, float) \
+  ALLIUM_EXTERN_ND_2(DECL, T, std::complex<float>) \
+  ALLIUM_EXTERN_ND_2(DECL, T, double) \
+  ALLIUM_EXTERN_ND_2(DECL, T, std::complex<double>)
+
+#define ALLIUM_EXTERN_ND(DECL) ALLIUM_EXTERN_ND_1(DECL, extern template)
+#define ALLIUM_INSTANTIATE_ND(DECL) ALLIUM_EXTERN_ND_1(DECL, template)
+
+
 
 #endif

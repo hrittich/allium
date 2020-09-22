@@ -178,7 +178,7 @@ namespace allium {
     for (int i_row = n_columns-1; i_row >= 0; i_row--)
     {
       Number acc = m_rhs[i_row];
-      for (int i_col = i_row+1; i_col < n_columns; ++i_col) {
+      for (size_t i_col = i_row+1; i_col < n_columns; ++i_col) {
         acc -= m_r_columns[i_col][i_row] * result[i_col];
       }
       result[i_row] = acc / m_r_columns[i_row][i_row];

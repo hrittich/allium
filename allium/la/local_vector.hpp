@@ -17,6 +17,7 @@
 
 #include <Eigen/Core>
 #include "vector_trait.hpp"
+#include <allium/util/extern.hpp>
 
 namespace allium {
 
@@ -42,17 +43,11 @@ namespace allium {
         }
       }
 
-      LocalVector& operator+= (const LocalVector& rhs) {
-        m_storage += rhs.m_storage;
-      }
-
-      LocalVector& operator*= (Number rhs) {
-        m_storage *= rhs;
-        return *this;
-      }
+      LocalVector& operator+= (const LocalVector& rhs);
+      LocalVector& operator*= (Number rhs);
 
       Number dot(const LocalVector& rhs) const {
-        return rhs->m_storage.dot(m_storage);
+        return rhs.m_storage.dot(m_storage);
       }
 
       Number& operator[] (size_t i_element) {
@@ -68,12 +63,29 @@ namespace allium {
   };
 
   template <typename N>
+  LocalVector<N>& LocalVector<N>::operator+= (const LocalVector& rhs)
+  {
+    m_storage += rhs.m_storage;
+    return *this;
+  }
+
+  template <typename N>
+  LocalVector<N>& LocalVector<N>::operator*= (Number rhs)
+  {
+    m_storage *= rhs;
+    return *this;
+  }
+
+  template <typename N>
   LocalVector<N> operator* (N s, const LocalVector<N>& v) {
     LocalVector<N> w = v;
     w *= s;
     return w;
   }
 
+  #define ALLIUM_LOCAL_VECTOR_DECL(T, N) \
+    T class LocalVector<N>;
+  ALLIUM_EXTERN(ALLIUM_LOCAL_VECTOR_DECL)
 }
 
 #endif

@@ -24,6 +24,7 @@
 #include <petscksp.h>
 #include <petscpc.h>
 #include <petscts.h>
+#include <petscdm.h>
 
 #ifdef USE_SLEPC
 #include <slepceps.h>
@@ -39,6 +40,7 @@ template<> struct is_petsc_object<Vec> : std::true_type {};
 template<> struct is_petsc_object<KSP> : std::true_type {};
 template<> struct is_petsc_object<PC>  : std::true_type {};
 template<> struct is_petsc_object<TS>  : std::true_type {};
+template<> struct is_petsc_object<DM>  : std::true_type {};
 #ifdef USE_SLEPC
 template<> struct is_petsc_object<EPS> : std::true_type {};
 #endif
@@ -53,7 +55,7 @@ petsc_object_cast(T value) {
  * Takes care of increasing and decreasing reference counts.
  */
 template <typename T>
-class PetscObjectPtr {
+class PetscObjectPtr final {
   public:
     static_assert(is_petsc_object<T>::value,
                   "PetscObjectPtr can only hold PETSc objects.");
@@ -77,7 +79,7 @@ class PetscObjectPtr {
       set(new_value, adopt);
     }
 
-    virtual ~PetscObjectPtr() {
+    ~PetscObjectPtr() {
       release();
     }
 

@@ -21,10 +21,9 @@
 
 namespace allium {
   template <typename N>
-  class AbstractLinearOperator : public Cloneable {
+  class AbstractLinearOperator {
     public:
-      virtual Vector<N> apply(const AbstractVector<N>& rhs) const& = 0;
-      virtual AbstractLinearOperator* unsafe_clone() const& override = 0;
+      virtual Vector<N> apply(const VectorStorage<N>& x) const& = 0;
   };
 
   template <typename N, bool reference = false>
@@ -40,16 +39,16 @@ namespace allium {
       {}
 
       // Methods
-      Vector<N> operator() (const AbstractVector<N>& x) {
+      Vector<N> operator() (const Vector<N>& x) {
         return m_ptr->apply(x);
       }
 
-      Vector<N> operator* (const AbstractVector<N>& x) {
+      Vector<N> operator* (const Vector<N>& x) {
         return m_ptr->apply(x);
       }
 
     private:
-      CloningPtr<AbstractLinearOperator<N>> m_ptr;
+      std::shared_ptr<AbstractLinearOperator<N>> m_ptr;
   };
 
   template <typename N>

@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#include <allium/la/vector_storage.hpp>
 
-#ifdef ALLIUM_USE_PETSC
+class RegularMesh {
+  public:
 
-#endif
+};
+

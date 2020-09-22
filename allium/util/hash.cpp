@@ -12,8 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#include "hash.hpp"
 
-#ifdef ALLIUM_USE_PETSC
+namespace allium {
 
-#endif
+  int bit_scatter(int x, int distance) {
+    int y = 0;
+    int mask = 0x01;
+    while (x != 0) {
+      y |= (x & mask);
+      x <<= distance;
+      mask <<= (distance+1);
+    }
+    return y;
+  }
+
+  int z_curve(int x, int y) {
+    return
+      bit_scatter(x, 1) | (bit_scatter(y, 1) << 1);
+  }
+
+}
+

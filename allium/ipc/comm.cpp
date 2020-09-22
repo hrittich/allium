@@ -24,16 +24,33 @@ namespace allium {
     return Comm(MPI_COMM_WORLD);
   }
 
-  int Comm::rank() {
+  int Comm::rank() const {
     int rank;
     MPI_Comm_rank(m_handle, &rank);
     return rank;
   }
 
-  int Comm::size() {
+  int Comm::size() const {
     int size;
     MPI_Comm_size(m_handle, &size);
     return size;
+  }
+
+  Comm Comm::dup() const {
+    MPI_Comm new_handle;
+    MPI_Comm_dup(m_handle, &new_handle);
+    return Comm(new_handle);
+  }
+
+  Comm Comm::split(int color, int key) const {
+    MPI_Comm new_handle;
+    MPI_Comm_split(m_handle, color, key, &new_handle);
+    return Comm(new_handle);
+  }
+
+  void Comm::free() {
+    MPI_Comm_free(&m_handle);
+    m_handle = MPI_COMM_NULL;
   }
 
   void Comm::barrier(void) {

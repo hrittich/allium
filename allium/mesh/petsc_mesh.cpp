@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "petsc_vector.hpp"
+#include "petsc_mesh.impl.hpp"
+
+#include <allium/la/petsc_util.hpp>
 
 #ifdef ALLIUM_USE_PETSC
+
+namespace allium {
+
+}
 
 #endif

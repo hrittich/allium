@@ -13,13 +13,16 @@
 #  limitations under the License.
 
 add_executable(test_suite
-  main.cpp
-  vector.cpp
-  sparse_matrix.cpp
-  petsc.cpp
-  eigen.cpp
   cg.cpp
+  eigen.cpp
   gmres.cpp
+  hash.cpp
+  main.cpp
+  petsc_mesh.cpp
+  point.cpp
+  range.cpp
+  sparse_matrix.cpp
+  vector.cpp
   vector_storage.cpp
   )
 target_link_libraries(test_suite ${ALLIUM_LIBRARIES} ${GTEST_LIBRARIES} ${LIBRARIES})

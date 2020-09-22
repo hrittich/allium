@@ -21,7 +21,7 @@ add_library(allium_la
   gmres.cpp gmres.impl.hpp gmres.hpp
   linear_operator.hpp
   local_coo_matrix.hpp
-  local_vector.hpp
+  local_vector.cpp local_vector.hpp
   petsc_object_ptr.hpp
   petsc_sparse_matrix.cpp petsc_sparse_matrix.hpp
   petsc_util.cpp petsc_util.hpp
