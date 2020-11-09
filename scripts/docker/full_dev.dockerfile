@@ -1,6 +1,7 @@
 FROM allium-minimal
 
-RUN $SCRIPTDIR/deb-install-dependencies.sh full
+COPY install-dependencies.sh $SCRIPTDIR
+RUN $SCRIPTDIR/install-dependencies.sh
 
 COPY install-petsc.sh $SCRIPTDIR/
 WORKDIR /usr/local/src

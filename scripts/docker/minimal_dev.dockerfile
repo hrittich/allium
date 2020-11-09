@@ -6,8 +6,8 @@ RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y vim tmux
 
-COPY deb-install-dependencies.sh $SCRIPTDIR/
-RUN $SCRIPTDIR/deb-install-dependencies.sh minimal
+COPY install-minimal-dependencies.sh $SCRIPTDIR/
+RUN $SCRIPTDIR/install-minimal-dependencies.sh
 
 RUN mkdir -p /home/developer
 
