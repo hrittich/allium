@@ -46,33 +46,6 @@ namespace allium {
     cloned->assign(*this);
     return cloned.release();
   }
-
-  // === PetscMeshValues =====================================================
-
-  PetscMeshValues<2>::PetscMeshValues(IPetscMesh<2>* mesh)
-    : m_mesh(mesh)
-  {
-    using namespace petsc;
-
-    PetscErrorCode ierr;
-    ierr = DMDAVecGetArray(m_mesh->mesh_spec()->dm(), m_mesh->petsc_vec(), &m_values);
-    chkerr(ierr);
-
-    m_ndof = mesh->mesh_spec()->ndof();
-
-    #ifdef ALLIUM_BOUND_CHECKS
-      m_range = mesh->range();
-    #endif
-  }
-
-  PetscMeshValues<2>::~PetscMeshValues()
-  {
-    using namespace petsc;
-
-    PetscErrorCode ierr;
-    ierr = DMDAVecRestoreArray(m_mesh->mesh_spec()->dm(), m_mesh->petsc_vec(), &m_values);
-    chkerr(ierr);
-  }
 }
 
 #endif

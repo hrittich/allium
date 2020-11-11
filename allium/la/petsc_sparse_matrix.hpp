@@ -23,20 +23,27 @@
 #include "petsc_util.hpp"
 #include "petsc_object_ptr.hpp"
 #include "petsc_vector.hpp"
+#include "linear_operator.hpp"
 
 namespace allium {
   class PetscSparseMatrixStorage final
-    : public SparseMatrixStorage<PetscScalar> {
+      : public SparseMatrixStorage<PetscScalar>,
+        public LinearOperator<PetscVectorStorage<PetscScalar>>
+  {
     public:
       using NativeVector = PetscVector<PetscScalar>;
+      using typename SparseMatrixStorage<PetscScalar>::Number;
+      using typename SparseMatrixStorage<PetscScalar>::Real;
 
       PetscSparseMatrixStorage(VectorSpec rows, VectorSpec cols);
 
       void set_entries(LocalCooMatrix<Number> mat) override;
       LocalCooMatrix<Number> get_entries() override;
 
-      Vector<PetscScalar> vec_mult(const Vector<Number>& v) override;
+      allium::Vector<PetscScalar> vec_mult(const allium::Vector<Number>& v) override;
 
+      void apply(PetscVectorStorage<PetscScalar>& result,
+                 const PetscVectorStorage<PetscScalar>& arg) override;
     private:
       PetscObjectPtr<Mat> ptr;
   };

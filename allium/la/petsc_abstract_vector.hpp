@@ -111,6 +111,13 @@ namespace allium {
         return *this;
       }
 
+      void add_scaled(Number factor, const PetscAbstractVectorStorage& other) {
+        allium_assert(!m_dirty && !other.m_dirty);
+
+        PetscErrorCode ierr;
+        ierr = VecAXPY(m_ptr, factor, other.m_ptr); petsc::chkerr(ierr);
+      }
+
       PetscAbstractVectorStorage& operator*=(const Number& factor) override {
         allium_assert(!m_dirty);
 

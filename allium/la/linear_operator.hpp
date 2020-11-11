@@ -15,44 +15,43 @@
 #ifndef ALLIUM_LA_LINEAR_OPERATOR_HPP
 #define ALLIUM_LA_LINEAR_OPERATOR_HPP
 
-#include "vector.hpp"
 #include <memory>
 #include <allium/util/cloning_ptr.hpp>
 
 namespace allium {
-  template <typename N>
-  class AbstractLinearOperator {
-    public:
-      virtual Vector<N> apply(const VectorStorage<N>& x) const& = 0;
-  };
-
-  template <typename N, bool reference = false>
+  template <typename V>
   class LinearOperator {
     public:
-      using Number = N;
-      using Real = real_part_t<Number>;
+      using Vector = V;
+      using Number = typename Vector::Number;
+      using Real = typename Vector::Real;
 
-      // Create
-      template <typename T>
-      LinearOperator(T storage)
-        : m_ptr(std::forward<T>(storage))
-      {}
+      virtual ~LinearOperator() {}
 
-      // Methods
-      Vector<N> operator() (const Vector<N>& x) {
-        return m_ptr->apply(x);
-      }
-
-      Vector<N> operator* (const Vector<N>& x) {
-        return m_ptr->apply(x);
-      }
-
-    private:
-      std::shared_ptr<AbstractLinearOperator<N>> m_ptr;
+      virtual void apply(Vector& result,
+                         const Vector& arg) = 0;
   };
 
-  template <typename N>
-  using LinearOperatorReference = LinearOperator<N, true>;
+  template <typename V, typename F>
+  class FunctorLinearOperator final : public LinearOperator<V> {
+    public:
+      using typename LinearOperator<V>::Vector;
+
+      FunctorLinearOperator(const F& fun) : m_fun(fun) {};
+      FunctorLinearOperator(F&& fun) : m_fun(std::move(fun)) {};
+
+      void apply(Vector& result, const Vector& arg) override {
+        m_fun(result, arg);
+      }
+    private:
+      F m_fun;
+  };
+
+  template <typename V, typename F>
+    FunctorLinearOperator<V, typename std::remove_reference<F>::type>
+    make_linear_operator(F&& f) {
+      return FunctorLinearOperator<V, F>(std::forward<F>(f));
+    }
 }
 
 #endif

@@ -17,6 +17,7 @@
 
 #include "sparse_matrix.hpp"
 #include "eigen_vector.hpp"
+#include "linear_operator.hpp"
 #include <allium/util/except.hpp>
 #include <Eigen/Sparse>
 
@@ -60,8 +61,13 @@ namespace allium {
 
 
   template <typename N>
-  class EigenSparseMatrixStorage final : public SparseMatrixStorage<N> {
+  class EigenSparseMatrixStorage final
+      : public SparseMatrixStorage<N>,
+        public LinearOperator<EigenVectorStorage<N>>
+  {
     public:
+      using SparseMatrixStorage<N>::Number;
+      using SparseMatrixStorage<N>::Real;
       using NativeVector = EigenVector<N>;
       using SparseMatrixStorage<N>::row_spec;
       using SparseMatrixStorage<N>::col_spec;
@@ -100,6 +106,10 @@ namespace allium {
         ret.storage().native()
           = mat * (const_cast<EigenVectorStorage<N>*>(ptr)->native());
         return ret;
+      }
+
+      void apply(EigenVectorStorage<N>& result, const EigenVectorStorage<N>& arg) {
+        result.native() = mat * arg.native();
       }
 
     private:

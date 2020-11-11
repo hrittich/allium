@@ -118,7 +118,7 @@ namespace allium {
   }
 
   Vector<PetscScalar>
-    PetscSparseMatrixStorage::vec_mult(const Vector<Number>& v)
+    PetscSparseMatrixStorage::vec_mult(const allium::Vector<Number>& v)
   {
     PetscErrorCode ierr;
 
@@ -132,6 +132,15 @@ namespace allium {
 
     return w;
   }
+
+  void PetscSparseMatrixStorage::apply(PetscVectorStorage<PetscScalar>& result,
+                                       const PetscVectorStorage<PetscScalar>& arg)
+  {
+    PetscErrorCode ierr;
+
+    ierr = MatMult(ptr, arg.native(), result.native()); chkerr(ierr);
+  }
+
 }
 
 #endif

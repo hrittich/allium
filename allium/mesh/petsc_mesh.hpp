@@ -33,7 +33,7 @@ class IPetscMesh {
   public:
     virtual std::shared_ptr<PetscMeshSpec<D>> mesh_spec() const = 0;
     virtual PetscObjectPtr<Vec> petsc_vec() = 0;
-    virtual Range<D> range() const = 0;
+    virtual Range<D> local_range() const = 0;
 };
 
 template <int D>
@@ -56,7 +56,7 @@ class PetscMesh<2>
 
     std::shared_ptr<PetscMeshSpec<2>> mesh_spec() const override { return m_spec; }
     PetscObjectPtr<Vec> petsc_vec() override { return m_ptr; }
-    Range<2> range() const override { return m_spec->range(); }
+    Range<2> local_range() const override { return m_spec->local_range(); }
   private:
     std::shared_ptr<PetscMeshSpec<2>> m_spec;
 
@@ -95,7 +95,7 @@ class PetscLocalMesh<2> : public IPetscMesh<2>
 
     std::shared_ptr<PetscMeshSpec<2>> mesh_spec() const override { return m_spec; }
     PetscObjectPtr<Vec> petsc_vec() override { return m_ptr; }
-    Range<2> range() const override { return m_spec->ghost_range(); }
+    Range<2> local_range() const override { return m_spec->local_ghost_range(); }
   private:
     std::shared_ptr<PetscMeshSpec<2>> m_spec;
     PetscObjectPtr<Vec> m_ptr;
@@ -106,18 +106,60 @@ template <int D> struct PetscArrayType {
 };
 template <> struct PetscArrayType<0> { using type = PetscScalar; };
 
-template <int D>
+template <int D, bool is_mutable=true>
 class PetscMeshValues {};
 
-template <>
-class PetscMeshValues<2>
+template <bool is_mutable>
+class PetscMeshValues<2, is_mutable>
 {
   public:
-    explicit PetscMeshValues(IPetscMesh<2>* mesh);
-    ~PetscMeshValues();
+    using Mesh
+      = typename std::conditional<is_mutable, IPetscMesh<2>, const IPetscMesh<2>>::type;
+    using Reference
+      = typename std::conditional<is_mutable, PetscScalar, const PetscScalar>::type;
+
+    explicit PetscMeshValues(Mesh& mesh)
+      : m_mesh(&mesh)
+    {
+      using namespace petsc;
+
+      PetscErrorCode ierr;
+      ierr = DMDAVecGetArray(m_mesh->mesh_spec()->dm(),
+                             const_cast<IPetscMesh<2>*>(m_mesh)->petsc_vec(),
+                             &m_values);
+      chkerr(ierr);
+
+      m_ndof = mesh.mesh_spec()->ndof();
+
+      #ifdef ALLIUM_BOUND_CHECKS
+        m_range = mesh.local_range();
+      #endif
+    }
+    ~PetscMeshValues() {
+      using namespace petsc;
+
+      if (m_mesh != nullptr) {
+        PetscErrorCode ierr;
+        ierr = DMDAVecRestoreArray(m_mesh->mesh_spec()->dm(),
+                                   const_cast<IPetscMesh<2>*>(m_mesh)->petsc_vec(),
+                                   &m_values);
+        chkerr(ierr);
+      }
+    }
 
     PetscMeshValues(const PetscMeshValues&) = delete;
     PetscMeshValues& operator= (const PetscMeshValues&) = delete;
+
+    PetscMeshValues(PetscMeshValues&& other) {
+      m_values = other.m_values;
+      m_mesh = other.m_mesh;
+      m_ndof = other.m_ndof;
+      #ifdef ALLIUM_BOUND_CHECKS
+        m_range = other.m_range;
+      #endif
+
+      other.m_mesh = nullptr;
+    }
 
     PetscScalar& operator() (int i, int j, int dof = 0) {
       #ifdef ALLIUM_BOUND_CHECKS
@@ -129,12 +171,23 @@ class PetscMeshValues<2>
 
   private:
     typename PetscArrayType<2>::type m_values;
-    IPetscMesh<2>* m_mesh;
+    Mesh* m_mesh;
     int m_ndof;
     #ifdef ALLIUM_BOUND_CHECKS
       Range<2> m_range;
     #endif
 };
+
+template <int D>
+PetscMeshValues<D, true> local_mesh(IPetscMesh<D>& mesh) {
+  return PetscMeshValues<D, true>(mesh);
+}
+
+template <int D>
+PetscMeshValues<D, false> local_mesh(const IPetscMesh<D>& mesh) {
+  return PetscMeshValues<D, false>(mesh);
+}
+
 
 }
 

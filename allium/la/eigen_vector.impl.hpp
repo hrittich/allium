@@ -33,16 +33,21 @@ namespace allium {
     {}
 
   template <typename N>
-  EigenVectorStorage<N>& EigenVectorStorage<N>::operator+=(const EigenVectorStorage<N>& rhs)
+  auto EigenVectorStorage<N>::operator+=(const EigenVectorStorage<N>& rhs) -> EigenVectorStorage&
   {
     vec += rhs.vec;
     return *this;
   }
 
   template <typename N>
-  EigenVectorStorage<N>& EigenVectorStorage<N>::operator*=(const N& factor) {
+  auto EigenVectorStorage<N>::operator*=(const N& factor) -> EigenVectorStorage& {
     vec *= factor;
     return *this;
+  }
+
+  template <typename N>
+  void EigenVectorStorage<N>::add_scaled(N factor, const EigenVectorStorage& other) {
+    vec += factor * other.vec;
   }
 
   template <typename N>
@@ -51,15 +56,14 @@ namespace allium {
     return rhs.vec.dot(vec);
   }
 
-  template <typename Number>
-    real_part_t<Number>
-    EigenVectorStorage<Number>::l2_norm() const
+  template <typename N>
+    auto EigenVectorStorage<N>::l2_norm() const -> Real
   {
     return vec.norm();
   }
 
-  template <typename Number>
-    typename VectorStorage<Number>::Number* EigenVectorStorage<Number>::aquire_data_ptr()
+  template <typename N>
+    auto EigenVectorStorage<N>::aquire_data_ptr() -> Number*
   {
     return vec.data();
   }

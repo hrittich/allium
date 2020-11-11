@@ -39,11 +39,14 @@ namespace allium {
 
       EigenVectorStorage& operator*=(const N& factor) override;
 
+      void add_scaled(N factor, const EigenVectorStorage& other);
+
       using VectorStorageTrait<EigenVectorStorage, N>::dot;
       N dot(const EigenVectorStorage& rhs) const;
       Real l2_norm() const override;
 
       BaseVector& native() { return vec; }
+      const BaseVector& native() const { return vec; }
 
     protected:
       Number* aquire_data_ptr() override;

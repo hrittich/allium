@@ -53,4 +53,58 @@ namespace allium {
     return x;
   }
 
+  template <typename N>
+  void CgSolverBase<N>::solve(const VectorStorage<N>& rhs, VectorStorage<N>& solution)
+  {
+    auto residual = allocate_like(rhs);
+    auto new_residual = allocate_like(rhs);
+    auto x = allocate_like(rhs);
+    auto tmp1 = allocate_like(rhs);
+    set_zero(*x);
+
+    //residual = rhs - m_mat * x;
+    matvec(*tmp1, *x);
+    residual->assign(rhs);
+    residual->add_scaled(-1, *tmp1);
+
+    Real residual_norm_sq = std::real(residual->dot(*residual));
+    auto p = allocate_like(rhs);
+    p->assign(*residual);
+
+    Real rel_tol = rhs.l2_norm() * m_tol;
+
+    if (sqrt(residual_norm_sq) > rel_tol)
+    {
+      auto Ap = allocate_like(rhs);
+      while (true) {
+        matvec(*Ap, *p);
+
+        Real alpha = std::real(residual->dot(*residual)) / std::real(p->dot(*Ap));
+
+        // x = x + alpha * p;
+        x->add_scaled(alpha, *p);
+
+        // new_residual = residual - alpha * Ap;
+        new_residual->assign(*residual);
+        new_residual->add_scaled(-alpha, *Ap);
+
+        Real new_residual_norm_sq
+          = std::real(new_residual->dot(*new_residual));
+
+        if (sqrt(new_residual_norm_sq) <= rel_tol) break;
+
+        Real beta = new_residual_norm_sq / residual_norm_sq;
+        // p = beta * p + new_residual
+        *p *= beta;
+        *p += *new_residual;
+
+        // @todo Remove unecessary copying
+        residual->assign(*new_residual);
+        residual_norm_sq = new_residual_norm_sq;
+      }
+    }
+
+    solution.assign(*x);
+  }
+
 }

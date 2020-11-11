@@ -47,9 +47,9 @@ TEST(PetscMesh, Simple4x4)
 
   PetscMesh<2> global(spec);
 
-  auto p = spec->range().begin_pos();
+  auto p = spec->local_range().begin_pos();
   {
-    PetscMeshValues<2> v(&global);
+    PetscMeshValues<2> v(global);
     v(p[0], p[1]) = 10 * p[0] + p[1];
   }
 
@@ -57,7 +57,7 @@ TEST(PetscMesh, Simple4x4)
   local.assign(global);
 
   {
-    PetscMeshValues<2> v(&local);
+    PetscMeshValues<2> v(local);
     EXPECT_EQ(v(0,0), 00.0);
     EXPECT_EQ(v(0,1), 01.0);
     EXPECT_EQ(v(1,0), 10.0);
@@ -84,13 +84,13 @@ TEST(PetscMesh, FixedLocalSize2D) {
   PetscLocalMesh<2> local(spec);
 
   {
-    PetscMeshValues<2> val(&global);
+    PetscMeshValues<2> val(global);
 
     std::cout <<
-      "normal: " << spec->range() << " "
-      "ghosted: " << spec->ghost_range() << std::endl;
+      "normal: " << spec->local_range() << " "
+      "ghosted: " << spec->local_ghost_range() << std::endl;
 
-    for (auto p : spec->range()) {
+    for (auto p : spec->local_range()) {
       //std::cout << p << std::endl;
       val(p[0], p[1]) = z_curve(p[0], p[1]);
     }
@@ -99,13 +99,9 @@ TEST(PetscMesh, FixedLocalSize2D) {
   local.assign(global);
 
   {
-    PetscMeshValues<2> val(&local);
+    PetscMeshValues<2> val(local);
 
-    auto r = spec->range();
-    auto local_begin_pos = r.begin_pos() - r.begin_pos();
-    auto local_end_pos = r.end_pos() - r.begin_pos();
-
-    for (auto p : spec->ghost_range()) {
+    for (auto p : spec->local_ghost_range()) {
       if (p[0] < 0 || p[1] < 0 || p[0] >= N || p[1] >= N)
         continue;
 

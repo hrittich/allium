@@ -124,6 +124,7 @@ EOF
   $XTERM $XTERM_FLAGS -e "$GDB" -x $INIT_FILE --args "$@"
   rm $INIT_FILE
 else
-  exec $@
+  "$@"
+  true
 fi
 

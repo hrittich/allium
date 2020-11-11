@@ -87,4 +87,8 @@ The script `scripts/stub.py` can be used to generate new files.
 ## Naming Conventions
 
 
+## Function Parameters
+
+Output arguments should be before the input arguments in the parameter list.
+The idea being that `compute(x, a, b)` reads like `x = compute(a, b)`.
 

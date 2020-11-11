@@ -79,10 +79,24 @@ class PetscMeshSpec<2> {
 
     PetscObjectPtr<DM> dm() { return m_dm; }
     VectorSpec vector_spec() const { return m_spec; }
+    Comm comm() { return m_spec.comm(); }
 
     int ndof() { return m_ndof; }
 
     Range<2> range() const {
+      using namespace petsc;
+      PetscErrorCode ierr;
+
+      DMDALocalInfo info;
+      ierr = DMDAGetLocalInfo(m_dm, &info); chkerr(ierr);
+
+      Point<int, 2> begin{0,0};
+      Point<int, 2> end{info.mx, info.my};
+
+      return Range<2>(begin, end);
+    }
+
+    Range<2> local_range() const {
       using namespace petsc;
       PetscErrorCode ierr;
 
@@ -97,7 +111,7 @@ class PetscMeshSpec<2> {
       return Range<2>(begin, begin+extent);
     }
 
-    Range<2> ghost_range() const {
+    Range<2> local_ghost_range() const {
       using namespace petsc;
       PetscErrorCode ierr;
 

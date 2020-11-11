@@ -46,6 +46,8 @@ namespace allium {
       // Public virtual vector interface
       virtual VectorStorage& operator+=(const VectorStorage& rhs) = 0;
       virtual VectorStorage& operator*=(const Number& factor) = 0;
+
+      virtual void add_scaled(Number factor, const VectorStorage& other) = 0;
       virtual Real l2_norm() const = 0;
       virtual Number dot(const VectorStorage& rhs) const = 0;
 
@@ -231,6 +233,7 @@ namespace allium {
         copy(*this, other);
       }
 
+      // @todo: Turn these calls into static casts and add assertions
       VectorStorageTrait& operator+=(const VectorStorage<N>& rhs) override {
         const Derived* derived_rhs = dynamic_cast<const Derived*>(&rhs);
         if (derived_rhs != nullptr) {
@@ -245,10 +248,31 @@ namespace allium {
         if (derived_rhs != nullptr) {
           return derived(this).dot(*derived_rhs);
         } else {
-          throw std::logic_error("Not implemented");
+          throw not_implemented();
         }
       }
+
+      void add_scaled(Number factor, const VectorStorage<N>& other) override {
+        allium_assert(dynamic_cast<const Derived*>(&other));
+        derived(this).add_scaled(factor, static_cast<const Derived&>(other));
+      }
+
   };
+
+  template <typename N>
+  void fill(VectorStorage<N>& vec, N value)
+  {
+    auto loc = LocalSlice<VectorStorage<N>*>(&vec);
+    for (size_t i_loc=0; i_loc < loc.size(); ++i_loc) {
+      loc[i_loc] = value;
+    }
+  }
+
+  template <typename N>
+  void set_zero(VectorStorage<N>& vec)
+  {
+    fill(vec, N(0.0));
+  }
 
   #define ALLIUM_LA_VECTOR_STORAGE_DECL(T, N) \
     T class VectorStorage<N>;
