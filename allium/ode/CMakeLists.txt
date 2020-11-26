@@ -12,20 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-add_executable(test_suite
-  cg.cpp
-  eigen.cpp
-  explicit_integrator.cpp
-  gmres.cpp
-  hash.cpp
-  imex_euler.cpp
-  main.cpp
-  petsc_mesh.cpp
-  point.cpp
-  range.cpp
-  sparse_matrix.cpp
-  vector.cpp
-  vector_storage.cpp
+add_library(allium_ode
+  explicit_euler.hpp
+  explicit_integrator.hpp
+  imex_euler.cpp imex_euler.impl.hpp imex_euler.hpp
+  linear_imex_integrator.hpp
   )
-target_link_libraries(test_suite ${ALLIUM_LIBRARIES} ${GTEST_LIBRARIES} ${LIBRARIES})
 
+list(APPEND ALLIUM_LIBRARIES allium_ode)
+set(ALLIUM_LIBRARIES ${ALLIUM_LIBRARIES} PARENT_SCOPE)

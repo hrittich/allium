@@ -15,6 +15,8 @@
 #ifndef ALLIUM_LA_DEFAULT_HPP
 #define ALLIUM_LA_DEFAULT_HPP
 
+#include <allium/config.hpp>
+
 #if defined(ALLIUM_DEFAULT_BACKEND_EIGEN)
 
   #include "eigen_vector.hpp"

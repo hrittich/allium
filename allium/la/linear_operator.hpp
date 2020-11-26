@@ -50,7 +50,7 @@ namespace allium {
   template <typename V, typename F>
     FunctorLinearOperator<V, typename std::remove_reference<F>::type>
     make_linear_operator(F&& f) {
-      return FunctorLinearOperator<V, F>(std::forward<F>(f));
+      return FunctorLinearOperator<V, typename std::remove_reference<F>::type>(std::forward<F>(f));
     }
 }
 

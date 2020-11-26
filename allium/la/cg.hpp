@@ -36,7 +36,12 @@ namespace allium {
       using Number = N;
       using Real = real_part_t<N>;
 
-      void solve(const VectorStorage<N>& rhs, VectorStorage<N>& solution);
+      CgSolverBase(Real tolerance = 1e-8)
+      {
+        m_tol = tolerance;
+      }
+
+      void solve(VectorStorage<N>& solution, const VectorStorage<N>& rhs);
     protected:
       Real m_tol;
 
@@ -54,25 +59,22 @@ namespace allium {
       using Real = typename Vector::Real;
       using CgSolverBase<Number>::m_tol;
 
-      CgSolver(Real tolerance = 1e-8)
-      {
-        m_tol = tolerance;
-      }
+      using CgSolverBase<Number>::CgSolverBase;
 
       void setup(std::shared_ptr<Matrix> mat) override {
         m_mat = mat;
       }
 
-      void solve(const Vector& rhs, Vector& solution) override {
-        CgSolverBase<Number>::solve(rhs, solution);
+      void solve(Vector& solution, const Vector& rhs) override {
+        CgSolverBase<Number>::solve(solution, rhs);
       }
 
     private:
       std::shared_ptr<Matrix> m_mat;
 
       void matvec(VectorStorage<Number>& out, const VectorStorage<Number>& in) override {
-        allium_assert(dynamic_cast<const V*>(&in));
-        allium_assert(dynamic_cast<V*>(&out));
+        allium_assert(dynamic_cast<const V*>(&in) != nullptr);
+        allium_assert(dynamic_cast<V*>(&out) != nullptr);
 
         m_mat->apply(static_cast<V&>(out),
                      static_cast<const V&>(in));

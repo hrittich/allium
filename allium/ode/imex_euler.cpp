@@ -12,25 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ALLIUM_UTIL_MEMORY_HPP
-#define ALLIUM_UTIL_MEMORY_HPP
-
-#include <memory>
+#include "imex_euler.impl.hpp"
 
 namespace allium {
-
-  template <typename T>
-    std::unique_ptr<typename std::remove_reference<T>::type>
-    unique_copy(T&& v) {
-      return std::make_unique<typename std::remove_reference<T>::type>(std::forward<T>(v));
-    }
-
-  template <typename T>
-    std::shared_ptr<typename std::remove_reference<T>::type>
-    shared_copy(T&& v) {
-      return std::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(v));
-    }
-
+  ALLIUM_NOEXTERN_N(ALLIUM_IMEX_EULER_DECL)
 }
-
-#endif

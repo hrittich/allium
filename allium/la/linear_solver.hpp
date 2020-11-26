@@ -31,7 +31,7 @@ namespace allium {
       using Vector = V;
 
       virtual void setup(std::shared_ptr<Matrix> mat) = 0;
-      virtual void solve(const Vector& rhs, Vector& solution) = 0;
+      virtual void solve(Vector& solution, const Vector& rhs) = 0;
   };
 
 }

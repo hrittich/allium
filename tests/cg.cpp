@@ -108,7 +108,7 @@ TEST(CgSolver, solve1)
 
   CgSolver<Vector> solver;
   solver.setup(mat);
-  solver.solve(*v, *w);
+  solver.solve(*w, *v);
 
   { auto loc = local_slice(*w);
     EXPECT_EQ(loc[0], 0.2);
@@ -146,7 +146,7 @@ TEST(CgSolver, solve4)
   DefaultVector<Number> w(spec);
 
   solver.setup(std::move(mat));
-  solver.solve(v, w);
+  solver.solve(w, v);
 
   { auto loc = local_slice(w);
     EXPECT_EQ(loc[0], 1.0);

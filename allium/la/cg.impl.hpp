@@ -54,7 +54,7 @@ namespace allium {
   }
 
   template <typename N>
-  void CgSolverBase<N>::solve(const VectorStorage<N>& rhs, VectorStorage<N>& solution)
+  void CgSolverBase<N>::solve(VectorStorage<N>& solution, const VectorStorage<N>& rhs)
   {
     auto residual = allocate_like(rhs);
     auto new_residual = allocate_like(rhs);

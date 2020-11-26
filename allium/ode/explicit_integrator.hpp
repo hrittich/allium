@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ALLIUM_UTIL_MEMORY_HPP
-#define ALLIUM_UTIL_MEMORY_HPP
-
-#include <memory>
+#ifndef ALLIUM_ODE_EXPLICIT_INTEGRATOR_HPP
+#define ALLIUM_ODE_EXPLICIT_INTEGRATOR_HPP
 
 namespace allium {
 
-  template <typename T>
-    std::unique_ptr<typename std::remove_reference<T>::type>
-    unique_copy(T&& v) {
-      return std::make_unique<typename std::remove_reference<T>::type>(std::forward<T>(v));
-    }
+  template <typename V>
+  class ExplicitIntegrator {
+    public:
+      using Vector = V;
+      using Number = typename Vector::Number;
+      using Real = real_part_t<Number>;
+      using F = std::function<void(Vector&, Real, const Vector&)>;
 
-  template <typename T>
-    std::shared_ptr<typename std::remove_reference<T>::type>
-    shared_copy(T&& v) {
-      return std::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(v));
-    }
+      virtual void setup(F f) = 0;
+      virtual void initial_values(Real t0, const Vector& y0) = 0;
+      virtual void integrate(Vector& y1, Real t1) = 0;
+  };
 
 }
 

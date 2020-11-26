@@ -15,6 +15,7 @@
 configure_file(config.hpp.in config.hpp)
 
 add_subdirectory(main)
+add_subdirectory(ode)
 add_subdirectory(mesh)
 add_subdirectory(la)
 add_subdirectory(ipc)
