@@ -15,6 +15,6 @@
 #include "cg.impl.hpp"
 
 namespace allium {
-  ALLIUM_INSTANTIATE(ALLIUM_CG_DECL)
+  ALLIUM_NOEXTERN_N(ALLIUM_CG_DECL)
 }
 

@@ -125,10 +125,10 @@ namespace allium {
   template <typename N>
   Vector<N> make_vector(VectorSpec spec);
 
-  #define ALLIUM_LA_VECTOR_DECL(T, N) \
-    T class VectorStorage<N>; \
-    T struct make_default_vector_storage<N>;
-  ALLIUM_EXTERN(ALLIUM_LA_VECTOR_DECL)
+  #define ALLIUM_LA_VECTOR_DECL(extern, N) \
+    extern template class VectorStorage<N>; \
+    extern template struct make_default_vector_storage<N>;
+  ALLIUM_EXTERN_N(ALLIUM_LA_VECTOR_DECL)
 }
 
 

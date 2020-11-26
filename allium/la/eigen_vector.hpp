@@ -67,10 +67,10 @@ namespace allium {
   template <typename N>
   using EigenVector = VectorBase<EigenVectorStorage<N>>;
 
-  #define ALLIUM_EIGEN_VECTOR_DECL(T, N) \
-    T class EigenVectorStorage<N>; \
-    T class VectorBase<EigenVectorStorage<N>>;
-  ALLIUM_EXTERN(ALLIUM_EIGEN_VECTOR_DECL)
+  #define ALLIUM_EIGEN_VECTOR_DECL(extern, N) \
+    extern template class EigenVectorStorage<N>; \
+    extern template class VectorBase<EigenVectorStorage<N>>;
+  ALLIUM_EXTERN_N(ALLIUM_EIGEN_VECTOR_DECL)
 }
 
 #endif

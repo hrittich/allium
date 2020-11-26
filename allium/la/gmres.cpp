@@ -15,5 +15,5 @@
 #include "gmres.impl.hpp"
 
 namespace allium {
-  ALLIUM_INSTANTIATE(ALLIUM_LA_GMRES_DECL)
+  ALLIUM_NOEXTERN_N(ALLIUM_LA_GMRES_DECL)
 }

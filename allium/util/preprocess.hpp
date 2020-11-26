@@ -12,8 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "local_vector.hpp"
+#ifndef ALLIUM_UTIL_PREPROCESS_HPP
+#define ALLIUM_UTIL_PREPROCESS_HPP
 
-namespace allium {
-  ALLIUM_NOEXTERN_N(ALLIUM_LOCAL_VECTOR_DECL)
-}
+#define ALLIUM_FORALL_N(F, A1, A2, A3, A4) \
+  F(A1, A2, A3, A4, float) \
+  F(A1, A2, A3, A4, double) \
+  F(A1, A2, A3, A4, std::complex<float>) \
+  F(A1, A2, A3, A4, std::complex<double>)
+
+#define ALLIUM_FORALL_D(F, A1, A2, A3, A4) \
+  F(A1, A2, A3, A4, 1) \
+  F(A1, A2, A3, A4, 2) \
+  F(A1, A2, A3, A4, 3)
+
+#define ALLIUM_ARY1(F, A1, A2, A3, A4) F(A4)
+#define ALLIUM_ARY2(F, A1, A2, A3, A4) F(A3, A4)
+#define ALLIUM_ARY3(F, A1, A2, A3, A4) F(A2, A3, A4)
+#define ALLIUM_ARY4(F, A1, A2, A3, A4) F(A1, A2, A3, A4)
+
+#endif

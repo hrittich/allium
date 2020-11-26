@@ -274,9 +274,9 @@ namespace allium {
     fill(vec, N(0.0));
   }
 
-  #define ALLIUM_LA_VECTOR_STORAGE_DECL(T, N) \
-    T class VectorStorage<N>;
-  ALLIUM_EXTERN(ALLIUM_LA_VECTOR_STORAGE_DECL)
+  #define ALLIUM_LA_VECTOR_STORAGE_DECL(extern, N) \
+    extern template class VectorStorage<N>;
+  ALLIUM_EXTERN_N(ALLIUM_LA_VECTOR_STORAGE_DECL)
 }
 
 #endif

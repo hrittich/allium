@@ -24,9 +24,9 @@ namespace allium {
   template <typename N>
     Vector<N> gmres(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol = 1e-6);
 
-  #define ALLIUM_LA_GMRES_DECL(T, N) \
-    T Vector<N> gmres(SparseMatrix<N>, Vector<N>, real_part_t<N> tol);
-  ALLIUM_EXTERN(ALLIUM_LA_GMRES_DECL)
+  #define ALLIUM_LA_GMRES_DECL(extern, N) \
+    extern template Vector<N> gmres(SparseMatrix<N>, Vector<N>, real_part_t<N> tol);
+  ALLIUM_EXTERN_N(ALLIUM_LA_GMRES_DECL)
 }
 
 #endif

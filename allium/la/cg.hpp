@@ -79,10 +79,10 @@ namespace allium {
       }
   };
 
-  #define ALLIUM_CG_DECL(T, N) \
-    T class CgSolverBase<N>; \
-    T Vector<N> cg_<N>(SparseMatrix<N>, Vector<N>, real_part_t<N>);
-  ALLIUM_EXTERN(ALLIUM_CG_DECL)
+  #define ALLIUM_CG_DECL(extern, N) \
+    extern template class CgSolverBase<N>; \
+    extern template Vector<N> cg_<N>(SparseMatrix<N>, Vector<N>, real_part_t<N>);
+  ALLIUM_EXTERN_N(ALLIUM_CG_DECL)
 }
 
 #endif

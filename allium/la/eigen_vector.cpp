@@ -15,6 +15,6 @@
 #include "eigen_vector.impl.hpp"
 
 namespace allium {
-  ALLIUM_INSTANTIATE(ALLIUM_EIGEN_VECTOR_DECL)
+  ALLIUM_NOEXTERN_N(ALLIUM_EIGEN_VECTOR_DECL)
 }
 

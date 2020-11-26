@@ -131,8 +131,8 @@ class PetscMeshSpec<2> {
     int m_ndof;
 };
 
-#define ALLIUM_PETSC_MESH_SPEC_DECL(template, D) \
-  template class PetscMeshSpec<D>;
+#define ALLIUM_PETSC_MESH_SPEC_DECL(extern, D) \
+  extern template class PetscMeshSpec<D>;
 ALLIUM_EXTERN_D(ALLIUM_PETSC_MESH_SPEC_DECL)
 
 }

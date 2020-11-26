@@ -80,9 +80,9 @@ namespace allium {
   template <typename N>
     SparseMatrix<N> make_sparse_matrix(VectorSpec row_spec, VectorSpec col_spec);
 
-  #define ALLIUM_LA_SPARSE_MATRIX_DECL(T, N) \
-    T SparseMatrix<N> make_sparse_matrix(VectorSpec row_spec, VectorSpec col_spec);
-  ALLIUM_EXTERN(ALLIUM_LA_SPARSE_MATRIX_DECL)
+  #define ALLIUM_LA_SPARSE_MATRIX_DECL(extern, N) \
+    extern template SparseMatrix<N> make_sparse_matrix(VectorSpec,VectorSpec);
+  ALLIUM_EXTERN_N(ALLIUM_LA_SPARSE_MATRIX_DECL)
 }
 
 #endif
