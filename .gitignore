@@ -8,6 +8,8 @@ contrib/pybind11
 demo/poisson
 demo/poisson2
 tests/test_suite
+doc/api/html
+doc/api/latex
 
 # Vim Swap
 *.swp

@@ -101,10 +101,12 @@ class PetscLocalMesh<2> : public IPetscMesh<2>
     PetscObjectPtr<Vec> m_ptr;
 };
 
+/// @cond INTERNAL
 template <int D> struct PetscArrayType {
   using type = typename PetscArrayType<D-1>::type*;
 };
 template <> struct PetscArrayType<0> { using type = PetscScalar; };
+/// @endcond
 
 template <int D, bool is_mutable=true>
 class PetscMeshValues {};

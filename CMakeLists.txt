@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 cmake_minimum_required(VERSION 3.13)
-project(allium
+project(Allium
   VERSION 0.1.0
   DESCRIPTION "Parallel Computation Library"
   LANGUAGES CXX)
@@ -114,6 +114,12 @@ if(ALLIUM_USE_PYTHON)
                    ${CMAKE_BINARY_DIR}/contrib/pybind11)
 endif()
 
+# Doxygen
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
+if(Doxygen_FOUND)
+  option(ALLIUM_INTERNAL_DOCS "Show internal APIs in the documentation" OFF)
+endif()
+
 # Default linear algebra backend
 set(ALLIUM_DEFAULT_BACKEND ""
     CACHE STRING "Default linear algebra backend = \"EIGEN\"|\"PETSC\"")
@@ -150,6 +156,7 @@ include_directories("${CMAKE_SOURCE_DIR}")
 add_link_options(${LINK_OPTIONS})
 
 add_subdirectory(allium)
+add_subdirectory(doc)
 add_subdirectory(python)
 add_subdirectory(tests)
 add_subdirectory(demo)

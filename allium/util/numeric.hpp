@@ -18,12 +18,14 @@
 #include <complex>
 
 namespace allium {
+  /// @cond INTERNAL
   template <typename T> struct real_part {};
   template <> struct real_part<float> { typedef float type; };
   template <> struct real_part<double> { typedef double type; };
   template <> struct real_part<int> { typedef int type; };
   template <> struct real_part<long> { typedef long type; };
   template <typename T> struct real_part<std::complex<T>> { typedef T type; };
+  /// @endcond
 
   template <typename T>
   using real_part_t = typename real_part<T>::type;

@@ -48,6 +48,7 @@ namespace allium {
       Point<int, D> m_begin_pos, m_end_pos;
   };
 
+  /// @cond INTERNAL
   template <int D, int I = D>
   struct next_in_range {
     static void exec(const Range<D>& r, Point<int, D>& p, bool& overflow) {
@@ -64,6 +65,7 @@ namespace allium {
       overflow = true;
     }
   };
+  /// @endcond
 
   template <int D>
   class RangeIterator {

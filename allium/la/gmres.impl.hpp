@@ -99,6 +99,7 @@ namespace allium {
     u[i2] = new_entry2;
   }
 
+  /// @cond INTERNAL
   /** Incrementally computes the QR decomposition of an upper Hessenberg
    * matrix. */
   template <typename N>
@@ -123,6 +124,7 @@ namespace allium {
       std::vector<Number> m_sin_list;
       std::vector<Number> m_rhs;
   };
+  /// @endcond
 
   template <typename N>
   HessenbergQr<N>::HessenbergQr(Number first_rhs_entry)

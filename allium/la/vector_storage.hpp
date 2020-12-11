@@ -24,6 +24,11 @@
 
 namespace allium {
 
+  /**
+   @addtogroup vector
+   @{
+  */
+
   template <typename> class LocalSlice;
 
   /** Abstract base class for any vector storage. */
@@ -75,9 +80,12 @@ namespace allium {
       VectorSpec m_spec;
   };
 
+  template <typename C, typename T=void>
+  using enable_if_vector_t =
+    std::enable_if_t<std::is_base_of<VectorStorage<typename C::Number>, C>::value, T>;
+
   template <typename T>
-    std::enable_if_t<std::is_base_of<VectorStorage<typename T::Number>, T>::value,
-                     std::unique_ptr<T>>
+    enable_if_vector_t<T, std::unique_ptr<T>>
     allocate_like(const T& o)
   {
     using Number = typename T::Number;
@@ -210,7 +218,7 @@ namespace allium {
   }
 
   template <typename T1, typename T2>
-  std::enable_if_t<std::is_base_of<VectorStorage<typename T1::Number>, T1>::value>
+  enable_if_vector_t<T1>
   copy(T1& dest, T2& src) {
     local_slice(dest) = local_slice(src);
   }
@@ -273,6 +281,8 @@ namespace allium {
   {
     fill(vec, N(0.0));
   }
+
+  /// @}
 
   #define ALLIUM_LA_VECTOR_STORAGE_DECL(extern, N) \
     extern template class VectorStorage<N>;

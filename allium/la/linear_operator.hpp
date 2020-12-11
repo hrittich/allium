@@ -19,6 +19,11 @@
 #include <allium/util/cloning_ptr.hpp>
 
 namespace allium {
+  /**
+   @addtogroup linear_solver
+   @{
+   */
+
   template <typename V>
   class LinearOperator {
     public:
@@ -47,11 +52,16 @@ namespace allium {
       F m_fun;
   };
 
+  /**
+   @brief Converts any functor into a LinearOperator.
+   */
   template <typename V, typename F>
     FunctorLinearOperator<V, typename std::remove_reference<F>::type>
     make_linear_operator(F&& f) {
       return FunctorLinearOperator<V, typename std::remove_reference<F>::type>(std::forward<F>(f));
     }
+
+  /// @}
 }
 
 #endif

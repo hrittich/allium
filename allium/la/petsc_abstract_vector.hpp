@@ -30,6 +30,8 @@ namespace allium {}
 
 namespace allium {
 
+  /// @cond INTERNAL
+
   template <typename To, typename From> struct numerical_cast {
     To operator() (From x) {
       return static_cast<To>(x);
@@ -69,6 +71,8 @@ namespace allium {
   template <>
   inline void copy_back_if_needed(PetscScalar* begin, PetscScalar* end, PetscScalar* original) {
   }
+
+  /// @endcond
 
   template <typename N>
   class PetscAbstractVectorStorage

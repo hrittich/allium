@@ -20,6 +20,12 @@
 
 namespace allium {
 
+  /**
+   @defgroup linear_solver Linear Solver
+   @brief Linear solver interface.
+   @{
+   */
+
   template <typename V>
   class LinearSolver
   {
@@ -33,6 +39,8 @@ namespace allium {
       virtual void setup(std::shared_ptr<Matrix> mat) = 0;
       virtual void solve(Vector& solution, const Vector& rhs) = 0;
   };
+
+  /// @}
 
 }
 

@@ -14,8 +14,10 @@
 
 #include <allium/la/vector_storage.hpp>
 
-class RegularMesh {
-  public:
+namespace allium {
+  class RegularMesh {
+    public:
 
-};
+  };
+}
 

@@ -22,6 +22,7 @@
 #include <Eigen/Sparse>
 
 namespace allium {
+  /** @cond INTERNAL */
   template <typename N>
   class triplet_iterator final {
     public:
@@ -58,6 +59,7 @@ namespace allium {
       base_iterator base;
       Eigen::Triplet<N> current;
   };
+  /** @endcond */
 
 
   template <typename N>

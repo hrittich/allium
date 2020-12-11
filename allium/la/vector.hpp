@@ -25,6 +25,12 @@
 
 namespace allium {
 
+  /** @defgroup vector Vector
+      @brief Generic vector interface.
+      @{
+  */
+
+  /// @cond INTERNAL
   template <typename T>
   struct make {
     template <typename ...Args>
@@ -32,6 +38,7 @@ namespace allium {
       return std::make_unique<T>(std::forward<Args>(args)...);
     }
   };
+  /// @endcond
 
   template <typename Storage_,
             typename Allocator = make<Storage_>>
@@ -124,6 +131,8 @@ namespace allium {
 
   template <typename N>
   Vector<N> make_vector(VectorSpec spec);
+
+  /// @}
 
   #define ALLIUM_LA_VECTOR_DECL(extern, N) \
     extern template class VectorStorage<N>; \

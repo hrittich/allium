@@ -17,6 +17,12 @@
 
 namespace allium {
 
+  /**
+   @defgroup ode ODE
+   @brief Ordinary differential equation solvers.
+   @{
+   */
+
   template <typename V>
   class ExplicitIntegrator {
     public:
@@ -30,6 +36,7 @@ namespace allium {
       virtual void integrate(Vector& y1, Real t1) = 0;
   };
 
+  /// @}
 }
 
 #endif

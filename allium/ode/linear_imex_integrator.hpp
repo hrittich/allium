@@ -19,6 +19,9 @@
 
 namespace allium {
 
+  /// @addtogroup ode
+  /// @{
+
   /**
    Interface for implicit-explicit time-stepping schemes have a linear
    implicit part.
@@ -43,4 +46,5 @@ namespace allium {
       virtual void initial_values(real_part_t<Number> t0, const Vector& y0) = 0;
   };
 
+  /// @}
 }

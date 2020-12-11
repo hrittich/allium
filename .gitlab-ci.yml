@@ -1,5 +1,5 @@
 stages:
-  - tests
+  - build_and_test
 
 default:
   image: "gitlab.version.fz-juelich.de:5555/rittich2/allium/allium-full"
@@ -10,12 +10,25 @@ default:
     - ln -s $PWD /home/developer/source
 
 test_suite_minimal:
-  stage: tests
+  stage: build_and_test
   image: "gitlab.version.fz-juelich.de:5555/rittich2/allium/allium-minimal"
   script:
     - container-init.sh tests
 
 test_suite_full:
-  stage: tests
+  stage: build_and_test
   script:
     - container-init.sh tests
+
+pages:
+  stage: build_and_test
+  only:
+    - master
+  script:
+    - cmake .
+    - make api-docs
+    - mkdir public
+    - cp -r doc/api/html -T public
+  artifacts:
+    paths:
+      - public

@@ -30,6 +30,10 @@
 #include <slepceps.h>
 #endif
 
+namespace allium {
+
+/// @cond INTERNAL
+
 // make a list of objects castable to PetscObject such that we do not
 // accidentally cast other operators
 template <typename T>
@@ -50,6 +54,8 @@ std::enable_if_t<is_petsc_object<T>::value, PetscObject>
 petsc_object_cast(T value) {
   return reinterpret_cast<PetscObject>(value);
 }
+
+/// @endcond
 
 /** Petsc Wrapper Object for memory management.
  * Takes care of increasing and decreasing reference counts.
@@ -142,6 +148,8 @@ class PetscObjectPtr final {
   protected:
     T value;
 };
+
+}
 
 #endif
 #endif
