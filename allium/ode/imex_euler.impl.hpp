@@ -22,7 +22,7 @@ namespace allium {
     auto y_old = allocate_like(y0);
     auto y_new = allocate_like(y0);
     auto rhs = allocate_like(y0);
-    auto tmp1 = allocate_like(y0);
+    auto shift = allocate_like(y0);
 
     y_old->assign(y0);
 
@@ -36,22 +36,14 @@ namespace allium {
 
       Real h = t_new - t_old;
 
-      // rhs = y_old + h f_ex(t_old, y_old);
-      apply_f_ex(*tmp1, t_old, *y_old);
-      rhs->assign(*y_old);
-      rhs->add_scaled(h, *tmp1);
+      // rhs = f_ex(t_old, y_old);
+      apply_f_ex(*rhs, t_old, *y_old);
 
-      // solve (I - h f_impl(t_new)) y_new = rhs
-      solver.setup(
-        shared_copy(
-          make_linear_operator<Vector>(
-            [this, h, &t_new, &tmp1](Vector& result, const Vector& in) {
-              // result = in - h * f_impl(t_new, in)
-              this->apply_f_im(*tmp1, t_new, in);
-              result.assign(in);
-              result.add_scaled(-h, *tmp1); })));
+      shift->assign(*y_old);
+      *shift *= (-1.0/h);
 
-      solver.solve(*y_new, *rhs);
+      // solve... @todo
+      solve_implicit(*y_new, t_new, 1.0/h, *shift, *rhs);
 
       // @todo implement efficient swap
       y_old->assign(*y_new);

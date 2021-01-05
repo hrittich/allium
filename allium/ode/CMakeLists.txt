@@ -16,7 +16,7 @@ add_library(allium_ode
   explicit_euler.hpp
   explicit_integrator.hpp
   imex_euler.cpp imex_euler.impl.hpp imex_euler.hpp
-  linear_imex_integrator.hpp
+  imex_integrator.hpp
   )
 
 list(APPEND ALLIUM_LIBRARIES allium_ode)

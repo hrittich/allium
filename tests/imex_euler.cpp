@@ -41,12 +41,14 @@ TEST(ImexEuler, TestEquation)
     set_zero(out);
   };
 
-  auto f_impl = [alpha](Vector& out, double t, const Vector& in) {
-    out.assign(in);
-    out *= alpha;
+  auto f_solve = [alpha, spec](Vector& out, double t, double a, const Vector& p, const Vector& q) {
+    // out = (1 / (alpha - a)) * (p - q)
+    out.assign(p);
+    out.add_scaled(-1.0, q);
+    out *= (1.0 / (alpha - a));
   };
 
-  integrator.setup(f_ex, f_impl);
+  integrator.setup(f_ex, f_solve);
   integrator.initial_values(0, y0);
   integrator.dt(dt);
 

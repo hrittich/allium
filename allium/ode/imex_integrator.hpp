@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef ALLIUM_ODE_IMEX_INTEGRATOR_HPP
+#define ALLIUM_ODE_IMEX_INTEGRATOR_HPP
+
 #include <functional>
 #include <memory>
 #include <allium/la/linear_operator.hpp>
@@ -26,25 +29,49 @@ namespace allium {
    Interface for implicit-explicit time-stepping schemes have a linear
    implicit part.
 
-   *Experimental interface*
+   @f[
+      F(t, y, \dot{y}) = G(t, y)
+   @f]
+
+   *Experimental interface*; this interface might change.
    */
   template <typename V>
-  class LinearImexIntegrator {
+  class ImexIntegrator {
     public:
       using Vector = V;
       using Number = typename V::Number;
+
       using ExplicitF = std::function<void(Vector&,
                                            real_part_t<Number>,
                                            const Vector&)>;
-      using ImplicitF = std::function<void(Vector&,
-                                           real_part_t<Number>,
-                                           const Vector&)>;
+      using ImplicitSolve = std::function<void(Vector& y,
+                                               real_part_t<Number> t,
+                                               Number a,
+                                               const Vector& p,
+                                               const Vector& q)>;
 
-      virtual ~LinearImexIntegrator() {}
+      virtual ~ImexIntegrator() {}
 
-      virtual void setup(ExplicitF f_ex, ImplicitF f_impl) = 0;
+      /**
+       Set the callback functions for the solver.
+
+       @param[in] f_ex Function that evaluates the explicit part.
+       @param[in] solve_impl Function that solves the implicit part.
+
+       The function f_ex should evaluate the right hand side
+       @f$ G(t, y) @f$.
+
+       The function solve_impl should solve
+       @f[
+        F(t, y, a \cdot y + p) = q
+       @f]
+
+       */
+      virtual void setup(ExplicitF f_ex, ImplicitSolve solve_impl) = 0;
       virtual void initial_values(real_part_t<Number> t0, const Vector& y0) = 0;
   };
 
   /// @}
 }
+
+#endif

@@ -14,7 +14,7 @@
 
 #include <allium/util/memory.hpp>
 #include <allium/la/cg.hpp>
-#include "linear_imex_integrator.hpp"
+#include "imex_integrator.hpp"
 
 namespace allium {
 
@@ -32,7 +32,11 @@ namespace allium {
 
     private:
       virtual void apply_f_ex(Vector& out, Real t, const Vector& in) = 0;
-      virtual void apply_f_im(Vector& out, Real t, const Vector& in) = 0;
+      virtual void solve_implicit(VectorStorage<Number>& out,
+                          Real t,
+                          Number a,
+                          const VectorStorage<Number>& p,
+                          const VectorStorage<Number>& q) = 0;
 
       Real m_dt;
   };
@@ -40,19 +44,19 @@ namespace allium {
   template <typename V>
   class ImexEuler
     : public ImexEulerBase<typename V::Number>,
-      public LinearImexIntegrator<V>
+      public ImexIntegrator<V>
   {
     public:
       using Vector = V;
-      using typename LinearImexIntegrator<V>::Number;
-      using typename LinearImexIntegrator<V>::ExplicitF;
-      using typename LinearImexIntegrator<V>::ImplicitF;
+      using typename ImexIntegrator<V>::Number;
+      using typename ImexIntegrator<V>::ExplicitF;
+      using typename ImexIntegrator<V>::ImplicitSolve;
       using Real = real_part_t<Number>;
       using ImexEulerBase<Number>::integrate;
 
       ImexEuler() {}
 
-      void setup(ExplicitF f_ex, ImplicitF f_impl) override {
+      void setup(ExplicitF f_ex, ImplicitSolve f_impl) override {
         m_f_ex = f_ex;
         m_f_impl = f_impl;
       }
@@ -72,13 +76,20 @@ namespace allium {
       real_part_t<Number> m_t0;
       std::unique_ptr<Vector> m_y0;
       ExplicitF m_f_ex;
-      ImplicitF m_f_impl;
+      ImplicitSolve m_f_impl;
 
       void apply_f_ex(VectorStorage<Number>& out, Real t, const VectorStorage<Number>& in) override {
         m_f_ex(static_cast<Vector&>(out), t, static_cast<const Vector&>(in));
       }
-      void apply_f_im(VectorStorage<Number>& out, Real t, const VectorStorage<Number>& in) override {
-        m_f_impl(static_cast<Vector&>(out), t, static_cast<const Vector&>(in));
+      void solve_implicit(VectorStorage<Number>& out,
+                          Real t,
+                          Number a,
+                          const VectorStorage<Number>& p,
+                          const VectorStorage<Number>& q) override {
+        m_f_impl(static_cast<Vector&>(out),
+                 t, a,
+                 static_cast<const Vector&>(p),
+                 static_cast<const Vector&>(q));
       }
   };
 
