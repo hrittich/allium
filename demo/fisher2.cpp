@@ -15,9 +15,11 @@
 #include <allium/main/init.hpp>
 #include <allium/mesh/petsc_mesh_spec.hpp>
 #include <allium/mesh/petsc_mesh.hpp>
+#include <allium/mesh/vtk_io.hpp>
 #include <allium/ipc/comm.hpp>
 #include <allium/util/memory.hpp>
 #include <allium/ode/imex_euler.hpp>
+#include <sstream>
 #include <iomanip>
 
 using namespace allium;
@@ -106,17 +108,17 @@ void add_boundary(PetscMesh<2>& mesh, Problem pb, double t)
 
   // Iterate over all mesh points
   for (auto p : range) {
-    if (p[0] == 0) { // top boundary
+    if (p[0] == 0) { // left boundary
       double x = -1.0 * h;
       double y = p[1] * h;
       lmesh(p[0], p[1]) += (1.0 / (h*h)) * exact_solution(pb, t, x, y);
     }
-    if (p[1] == 0) { // left boundary
+    if (p[1] == 0) { // top boundary
       double x = p[0] * h;
       double y = -1 * h;
       lmesh(p[0], p[1]) += (1.0 / (h*h)) * exact_solution(pb, t, x, y);
     }
-    if (p[0] == global_range.end_pos()[0]-1) { // bottom boundary
+    if (p[0] == global_range.end_pos()[0]-1) { // right boundary
       double x = global_range.end_pos()[0] * h;
       double y = p[1] * h;
       lmesh(p[0], p[1]) += (1.0 / (h*h)) * exact_solution(pb, t, x, y);
@@ -187,7 +189,7 @@ void solve_f_impl(PetscMesh<2>& y, Problem pb, Real t, Number a, const PetscMesh
   rhs *= (1.0/a);
   add_boundary(rhs, pb, t);
 
-  // solve (-Δ + aI) y = a r + Δ^b u^b
+  // solve (-Δ + aI) y = a r + Δ^b y^b
   CgSolver<PetscMesh<2>> solver;
   auto op = std::bind(apply_shifted_laplace, _1, pb, 1.0/a, _2);
   solver.setup(shared_copy(make_linear_operator<PetscMesh<2>>(op)));
@@ -206,38 +208,14 @@ void f_expl(PetscMesh<2>& result, Real t, const PetscMesh<2>& u)
   }
 }
 
-/** Print the mesh on STDOUT, sorted by MPI ranks. */
-template <typename M>
-void print_mesh(const M& mesh) {
-  auto comm = mesh.mesh_spec()->comm();
-
-  for (int i=0; i < comm.size(); ++i) {
-    if (i == comm.rank()) {
-      std::cout << "rank " << comm.rank() << std::endl;
-
-      auto lmesh = local_mesh(mesh);
-      auto range = mesh.local_range();
-      for (int i = range.begin_pos()[0]; i < range.end_pos()[0]; i++) {
-        for (int j = range.begin_pos()[1]; j < range.end_pos()[1]; ++j) {
-          std::cout << std::setw(10) << lmesh(i, j) << " ";
-        }
-        std::cout << std::endl;
-      }
-
-    }
-
-    comm.barrier();
-  }
-}
-
 int main(int argc, char** argv)
 {
   using namespace std::placeholders;
 
   Init init(argc, argv);  // initialize Allium
 
-  const int N = 10;
-  double h = 1.0 / (N-1);
+  const int N = 64;
+  double h = 20.0 / (N-1);
 
   auto comm = Comm::world();
 
@@ -266,22 +244,35 @@ int main(int argc, char** argv)
                    std::bind(solve_f_impl, _1, pb, _2, _3, _4));
 
   double t0 = 0;
-  double t1 = 1;
   set_solution(u, pb, t0);
   integrator.initial_values(t0, u);
   integrator.dt(0.01);
 
-  print_mesh(u);
+  auto filename = [](int frame) {
+    std::stringstream s;
+    s << "mesh_" << frame << ".pvti";
+    return s.str();
+  };
 
-  integrator.integrate(u, t1);
+  write_vtk(filename(0), u);
 
-  print_mesh(u);
+  for (int i = 0; i < 200; ++i) {
+    double t0 = i * 0.1;
+    double t1 = (i+1)*0.1;
+    integrator.initial_values(t0, u);
+    integrator.integrate(u, t1);
 
-  // error = exact - u
-  set_solution(error, pb, t1);
-  error.add_scaled(-1.0, u);
+    write_vtk(filename(i), u);
 
-  std::cout << "‖e‖ = " << error.l2_norm() << std::endl;
+    // error = exact - u
+    set_solution(error, pb, t1);
+    error.add_scaled(-1.0, u);
+
+    auto e = error.l2_norm();
+    if (comm.rank() == 0) {
+      std::cout << "t = " << t1 << ", ‖e‖ = " << e << std::endl;
+    }
+  }
 
   return 0;
 }

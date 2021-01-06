@@ -17,9 +17,12 @@
 
 #include <mpi.h>
 #include <vector>
+#include <allium/mesh/range.hpp>
 
 namespace allium {
-  /** The communicator class. */
+  /** The communicator class.
+   This class just wraps an MPI communicator to make MPI easier to use.
+  */
   class Comm {
     public:
       Comm(::MPI_Comm handle);
@@ -41,6 +44,18 @@ namespace allium {
 
       // === IPC =============================================================
       void barrier(void);
+
+      struct RecvInfo {
+        int source;
+        int tag;
+        int elements;
+      };
+
+      RecvInfo recv(Range<2>& p, int src, int tag);
+      RecvInfo recv(int* data, int max_elements, int src, int tag);
+
+      void send(const Range<2>& p, int dest, int tag);
+      void send(int* data, int elements, int dest, int tag);
 
       std::vector<long long> sum_exscan(std::vector<long long> buf);
 

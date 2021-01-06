@@ -57,6 +57,36 @@ namespace allium {
     MPI_Barrier(m_handle);
   }
 
+  auto Comm::recv(Range<2>& p, int src, int tag) -> RecvInfo {
+    std::array<int, 4> buf;
+    auto info = recv(buf.data(), buf.size(), src, tag);
+
+    p = Range<2>({buf[0], buf[1]}, {buf[2], buf[3]});
+    return info;
+  }
+
+  auto Comm::recv(int* data, int max_elements, int src, int tag) -> RecvInfo {
+    MPI_Status stat;
+    MPI_Recv(data, max_elements, MPI_INT, src, tag, m_handle, &stat);
+
+    RecvInfo info;
+    info.source = stat.MPI_SOURCE;
+    info.tag = stat.MPI_TAG;
+    MPI_Get_count(&stat, MPI_INT, &info.elements);
+
+    return info;
+  }
+
+  void Comm::send(const Range<2>& p, int dest, int tag) {
+    std::vector<int> buf = { p.begin_pos()[0], p.begin_pos()[1],
+                             p.end_pos()[0], p.end_pos()[1] };
+    send(buf.data(), buf.size(), dest, tag);
+  }
+
+  void Comm::send(int* data, int elements, int dest, int tag) {
+    MPI_Send(data, elements, MPI_INT, dest, tag, m_handle);
+  }
+
   std::vector<long long> Comm::sum_exscan(std::vector<long long> buf)
   {
     std::vector<long long> result(buf.size());

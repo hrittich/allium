@@ -88,7 +88,9 @@ namespace allium {
     protected:
       PetscAbstractVectorStorage(VectorSpec spec)
         : VectorStorageTrait<PetscAbstractVectorStorage, N>(spec),
+        #ifdef ALLIUM_DEBUG
           m_dirty(false),
+        #endif
           m_entries(nullptr)
       {}
 
@@ -99,7 +101,9 @@ namespace allium {
                        petsc::vec_local_size(vec),
                        petsc::vec_global_size(vec))),
           m_ptr(vec),
+        #ifdef ALLIUM_DEBUG
           m_dirty(false),
+        #endif
           m_entries(nullptr)
       {}
 

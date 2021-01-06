@@ -17,6 +17,7 @@ add_library(allium_mesh
   petsc_mesh_spec.cpp petsc_mesh_spec.hpp
   point.hpp
   regular_mesh.hpp
+  vtk_io.cpp vtk_io.hpp
   )
 
 list(APPEND ALLIUM_LIBRARIES allium_mesh)

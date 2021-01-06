@@ -21,6 +21,10 @@
 
 namespace allium {
 
+  /**
+   A point in D dimensions.
+
+   This class is a short, fixed-length, stack-allocated vector. */
   template <typename N, int D>
   class Point : public VectorTrait<Point<N,D>, N> {
     public:
@@ -35,6 +39,8 @@ namespace allium {
           ++i;
         }
       }
+
+      size_t rows() { return D; }
 
       N& operator[] (int i) {
         return m_entries[i];
