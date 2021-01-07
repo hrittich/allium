@@ -5,5 +5,5 @@ cd $HOME
 git clone source build &&
 cd build &&
 cmake . &&
-make -j $MAKE_JOBS &&
+make -j $(nproc) &&
 tests/test_suite
