@@ -142,51 +142,56 @@ void set_solution(PetscMesh<2>& result, Problem pb, double t)
   }
 }
 
-/** Solves F(t, y, a*y + p) = q, where F(t, y, z) = z - Δy */
-auto make_f_impl(Problem pb) {
-  return
-    [=](PetscMesh<2>& y, Real t, Number a, const PetscMesh<2>& p, const PetscMesh<2>& q)
-    {
-      auto op = [a,pb](PetscMesh<2>& f, const PetscMesh<2>& u) {
-        // PETSc require to create a "local mesh" to have access to the ghost
-        // nodes.
-        PetscLocalMesh<2> u_aux(u.mesh_spec());
-        u_aux.assign(u); // copy to determine the ghost nodes
+/**
+ Compute `f = (-Δ + a I) u`.
+ */
+void apply_shifted_laplace(PetscMesh<2>& f, Problem pb, Number a, const PetscMesh<2>& u)
+{
+  // PETSc require to create a "local mesh" to have access to the ghost
+  // nodes.
+  PetscLocalMesh<2> u_aux(u.mesh_spec());
+  u_aux.assign(u); // copy to determine the ghost nodes
 
-        // We set the boundary to zero such that we can apply the same stencil
-        // everywhere (also at the boundary).
-        zero_boundary(u_aux);
+  // We set the boundary to zero such that we can apply the same stencil
+  // everywhere (also at the boundary).
+  zero_boundary(u_aux);
 
-        auto range = u.mesh_spec()->local_range();
-        auto lu = local_mesh(u_aux);
-        auto lf = local_mesh(f);
+  auto range = u.mesh_spec()->local_range();
+  auto lu = local_mesh(u_aux);
+  auto lf = local_mesh(f);
 
-        // Apply the stencil
-        //         |    -1     |
-        // (1/h^2) | -1  4  -1 |
-        //         |    -1     |h
-        for (auto p : range) {
-          lf(p[0], p[1])
-            = (1.0 / (pb.h*pb.h))
-              * ( (4+a*(pb.h*pb.h)) * lu(p[0],   p[1])
-                  - lu(p[0]-1, p[1])
-                  - lu(p[0],   p[1]-1)
-                  - lu(p[0],   p[1]+1)
-                  - lu(p[0]+1, p[1]));
-        }
-      };
+  // Apply the stencil
+  //         |     -1     |
+  // (1/h^2) | -1   4  -1 |
+  //         |     -1     |h
+  for (auto p : range) {
+    lf(p[0], p[1])
+      = (1.0 / (pb.h*pb.h))
+        * ( (4+a*(pb.h*pb.h)) * lu(p[0],   p[1])
+            - lu(p[0]-1, p[1])
+            - lu(p[0],   p[1]-1)
+            - lu(p[0],   p[1]+1)
+            - lu(p[0]+1, p[1]));
+  }
+}
 
-      // rhs = q - p
-      PetscMesh<2> rhs(p.mesh_spec());
-      rhs.assign(q);
-      rhs.add_scaled(-1.0, p);
-      add_boundary(rhs, pb, t);
+/**
+ Solves y - a f(t, y) = r, where f(t, y) = Δy.
+*/
+void solve_f_impl(PetscMesh<2>& y, Problem pb, Real t, Number a, const PetscMesh<2>& r) {
+  using namespace std::placeholders;
 
-      // solve (-Δ + aI) y = q - p
-      CgSolver<PetscMesh<2>> solver;
-      solver.setup(shared_copy(make_linear_operator<PetscMesh<2>>(op)));
-      solver.solve(y, rhs);
-    };
+  // rhs = a r + Δ^b u^b
+  PetscMesh<2> rhs(r.mesh_spec());
+  rhs.assign(r);
+  rhs *= (a);
+  add_boundary(rhs, pb, t);
+
+  // solve (-Δ + aI) y = a r + Δ^b u^b
+  CgSolver<PetscMesh<2>> solver;
+  auto op = std::bind(apply_shifted_laplace, _1, pb, a, _2);
+  solver.setup(shared_copy(make_linear_operator<PetscMesh<2>>(op)));
+  solver.solve(y, rhs);
 };
 
 /** The explicit part of the ODE, G(y) = y*(1-y) */
@@ -257,7 +262,8 @@ int main(int argc, char** argv)
 
   // setup the integrator
   ImexEuler<PetscMesh<2>> integrator;
-  integrator.setup(f_expl, make_f_impl(pb));
+  integrator.setup(f_expl,
+                   std::bind(solve_f_impl, _1, pb, _2, _3, _4));
 
   double t0 = 0;
   double t1 = 1;

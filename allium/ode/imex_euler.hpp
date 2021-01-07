@@ -35,8 +35,7 @@ namespace allium {
       virtual void solve_implicit(VectorStorage<Number>& out,
                           Real t,
                           Number a,
-                          const VectorStorage<Number>& p,
-                          const VectorStorage<Number>& q) = 0;
+                          const VectorStorage<Number>& r) = 0;
 
       Real m_dt;
   };
@@ -84,12 +83,10 @@ namespace allium {
       void solve_implicit(VectorStorage<Number>& out,
                           Real t,
                           Number a,
-                          const VectorStorage<Number>& p,
-                          const VectorStorage<Number>& q) override {
+                          const VectorStorage<Number>& r) override {
         m_f_impl(static_cast<Vector&>(out),
                  t, a,
-                 static_cast<const Vector&>(p),
-                 static_cast<const Vector&>(q));
+                 static_cast<const Vector&>(r));
       }
   };
 

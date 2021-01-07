@@ -41,10 +41,9 @@ TEST(ImexEuler, TestEquation)
     set_zero(out);
   };
 
-  auto f_solve = [alpha, spec](Vector& out, double t, double a, const Vector& p, const Vector& q) {
-    // out = (1 / (alpha - a)) * (p - q)
-    out.assign(p);
-    out.add_scaled(-1.0, q);
+  auto f_solve = [alpha, spec](Vector& out, double t, double a, const Vector& r) {
+    // out = (1 / (alpha - a)) * r
+    out.assign(r);
     out *= (1.0 / (alpha - a));
   };
 

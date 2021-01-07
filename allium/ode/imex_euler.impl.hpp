@@ -36,14 +36,13 @@ namespace allium {
 
       Real h = t_new - t_old;
 
-      // rhs = f_ex(t_old, y_old);
+      // rhs = y_old + h * f_ex(t_old, y_old);
       apply_f_ex(*rhs, t_old, *y_old);
+      *rhs *= h;
+      *rhs += *y_old;
 
-      shift->assign(*y_old);
-      *shift *= (-1.0/h);
-
-      // solve... @todo
-      solve_implicit(*y_new, t_new, 1.0/h, *shift, *rhs);
+      // solve y_new - h * f_im(t_new, y_new) = rhs
+      solve_implicit(*y_new, t_new, h, *rhs);
 
       // @todo implement efficient swap
       y_old->assign(*y_new);

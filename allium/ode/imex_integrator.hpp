@@ -30,7 +30,7 @@ namespace allium {
    implicit part.
 
    @f[
-      F(t, y, \dot{y}) = G(t, y)
+      \dot{y} = F_\mathrm{ex}(t, y) + F_\mathrm{im}(t, y)
    @f]
 
    *Experimental interface*; this interface might change.
@@ -47,8 +47,7 @@ namespace allium {
       using ImplicitSolve = std::function<void(Vector& y,
                                                real_part_t<Number> t,
                                                Number a,
-                                               const Vector& p,
-                                               const Vector& q)>;
+                                               const Vector& r)>;
 
       virtual ~ImexIntegrator() {}
 
@@ -63,7 +62,7 @@ namespace allium {
 
        The function solve_impl should solve
        @f[
-        F(t, y, a \cdot y + p) = q
+        y - a f(t, y) = r
        @f]
 
        */
