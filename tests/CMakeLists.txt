@@ -20,6 +20,7 @@ add_executable(test_suite
   hash.cpp
   imex_euler.cpp
   main.cpp
+  numeric.cpp
   petsc_mesh.cpp
   point.cpp
   range.cpp

@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
   auto result = cg(mat, v);
 
   // Print the result
-  for (global_size_t i_rank = 0; i_rank < comm.size(); ++i_rank) {
+  for (int i_rank = 0; i_rank < comm.size(); ++i_rank) {
     comm.barrier();
 
     if (i_rank == comm.rank()) {

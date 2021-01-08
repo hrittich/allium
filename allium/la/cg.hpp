@@ -19,6 +19,7 @@
 #include "vector.hpp"
 #include "sparse_matrix.hpp"
 #include "linear_solver.hpp"
+#include <allium/util/warnings.hpp>
 
 namespace allium {
   template <typename N>
@@ -73,8 +74,10 @@ namespace allium {
       std::shared_ptr<Matrix> m_mat;
 
       void matvec(VectorStorage<Number>& out, const VectorStorage<Number>& in) override {
+        ALLIUM_NO_NONNULL_WARNING
         allium_assert(dynamic_cast<const V*>(&in) != nullptr);
         allium_assert(dynamic_cast<V*>(&out) != nullptr);
+        ALLIUM_RESTORE_WARNING
 
         m_mat->apply(static_cast<V&>(out),
                      static_cast<const V&>(in));

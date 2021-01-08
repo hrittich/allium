@@ -102,7 +102,7 @@ TEST(PetscMesh, FixedLocalSize2D) {
     PetscMeshValues<2> val(local);
 
     for (auto p : spec->local_ghost_range()) {
-      if (p[0] < 0 || p[1] < 0 || p[0] >= N || p[1] >= N)
+      if (p[0] < 0 || p[1] < 0 || safe_ge(p[0], N) || safe_ge(p[1], N))
         continue;
 
       EXPECT_EQ(val(p[0], p[1]), (double)z_curve(p[0], p[1]));

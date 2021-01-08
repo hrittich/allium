@@ -89,7 +89,7 @@ namespace allium {
       LocalCooMatrix<N> get_entries() override {
         LocalCooMatrix<N> lmat;
 
-        for (size_t k=0; k < mat.outerSize(); ++k) {
+        for (long k=0; k < mat.outerSize(); ++k) {
           for (typename Eigen::SparseMatrix<N>::InnerIterator it(mat,k); it; ++it)
           {
             lmat.add(it.row(), it.col(), it.value());

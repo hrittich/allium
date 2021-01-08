@@ -16,6 +16,7 @@
 #define ALLIUM_UTIL_NUMERIC_HPP
 
 #include <complex>
+#include "warnings.hpp"
 
 namespace allium {
   /// @cond INTERNAL
@@ -29,6 +30,74 @@ namespace allium {
 
   template <typename T>
   using real_part_t = typename real_part<T>::type;
+
+
+  /**
+   Computes `a <= b`, where a comparison between signed and unsigned types is
+   safe.
+   */
+  template <typename T1, typename T2>
+  bool safe_le(T1 a, T2 b) {
+    ALLIUM_NO_SIGN_COMPARE_WARNING
+    if (std::signbit(a) && std::signbit(b)) {
+      // both negative
+      return a <= b; // comparison safe, a and b are both unsigned
+    }
+    if (std::signbit(a) && !std::signbit(b)) {
+      // a negative, b non-negative ==> a <= b == true
+      return true;
+    }
+    if (!std::signbit(a) && std::signbit(b)) {
+      // a non-negative, b negative ==> a <= b == false
+      return false;
+    }
+    // both positive
+    return a <= b;
+    ALLIUM_RESTORE_WARNING
+  }
+
+  /**
+   Computes `a >= b`, where a comparison between signed and unsigned types is
+   safe.
+   */
+  template <typename T1, typename T2>
+  bool safe_ge(T1 a, T2 b) {
+    return safe_le(b, a);
+  }
+
+  /**
+   Computes `a < b`, where a comparison between signed and unsigned types is
+   safe.
+   */
+  template <typename T1, typename T2>
+  bool safe_lt(T1 a, T2 b) {
+    ALLIUM_NO_SIGN_COMPARE_WARNING
+    if (std::signbit(a) && std::signbit(b)) {
+      // both negative
+      return a < b; // comparison safe, a and b are both unsigned
+    }
+    if (std::signbit(a) && !std::signbit(b)) {
+      // a negative, b non-negative ==> a < b == true
+      return true;
+    }
+    if (!std::signbit(a) && std::signbit(b)) {
+      // a non-negative, b negative ==> a < b == false
+      return false;
+    }
+    // both positive
+    return a < b;
+    ALLIUM_RESTORE_WARNING
+  }
+
+  /**
+   Computes `a > b`, where a comparison between signed and unsigned types is
+   safe.
+   */
+  template <typename T1, typename T2>
+  bool safe_gt(T1 a, T2 b) {
+    return safe_lt(b, a);
+  }
+
 }
 
 #endif
