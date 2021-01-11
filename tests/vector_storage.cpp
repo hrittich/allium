@@ -41,8 +41,6 @@ class VectorStorageTest : public testing::Test {
 TYPED_TEST_CASE(VectorStorageTest, VectorStorageTypes);
 
 TYPED_TEST(VectorStorageTest, Create) {
-  using Number = typename TestFixture::Number;
-
   Comm comm = Comm::world();
 
   VectorSpec vspec(comm, 1, 1);
@@ -53,8 +51,6 @@ TYPED_TEST(VectorStorageTest, Create) {
 }
 
 TYPED_TEST(VectorStorageTest, Fill) {
-  using Number = typename TestFixture::Number;
-
   auto comm = Comm::world();
 
   VectorSpec vspec(comm, 1, 1);
@@ -79,8 +75,6 @@ TYPED_TEST(VectorStorageTest, Fill) {
 }
 
 TYPED_TEST(VectorStorageTest, InitializerLists) {
-  using Number = typename TestFixture::Number;
-
   auto comm = Comm::world();
 
   VectorSpec vspec(comm, 3, 3);
@@ -181,8 +175,6 @@ TYPED_TEST(VectorStorageTest, Add) {
 }
 
 TYPED_TEST(VectorStorageTest, Scale) {
-  using Number = typename TypeParam::Number;
-
   auto comm = Comm::world();
   VectorSpec vspec(comm, 1, 1);
   TypeParam v(vspec);
@@ -201,8 +193,6 @@ TYPED_TEST(VectorStorageTest, Scale) {
 }
 
 TYPED_TEST(VectorStorageTest, Norm) {
-  using Number = typename TypeParam::Number;
-
   auto comm = Comm::world();
   VectorSpec vspec(comm, 4, 4);
   TypeParam v(vspec);
