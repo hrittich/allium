@@ -184,12 +184,12 @@ void solve_f_impl(PetscMesh<2>& y, Problem pb, Real t, Number a, const PetscMesh
   // rhs = a r + Δ^b u^b
   PetscMesh<2> rhs(r.mesh_spec());
   rhs.assign(r);
-  rhs *= (a);
+  rhs *= (1.0/a);
   add_boundary(rhs, pb, t);
 
   // solve (-Δ + aI) y = a r + Δ^b u^b
   CgSolver<PetscMesh<2>> solver;
-  auto op = std::bind(apply_shifted_laplace, _1, pb, a, _2);
+  auto op = std::bind(apply_shifted_laplace, _1, pb, 1.0/a, _2);
   solver.setup(shared_copy(make_linear_operator<PetscMesh<2>>(op)));
   solver.solve(y, rhs);
 };
