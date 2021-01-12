@@ -40,9 +40,7 @@
     using DefaultVector = PetscVectorStorage<N>;
 
     template <typename N>
-    using DefaultSparseMatrix =
-      typename std::enable_if<std::is_same<N, PetscScalar>::value,
-                              PetscSparseMatrixStorage>::type;
+    using DefaultSparseMatrix = PetscSparseMatrixStorage<N>;
   }
 
 #else

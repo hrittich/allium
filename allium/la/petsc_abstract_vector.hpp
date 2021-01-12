@@ -22,7 +22,7 @@ namespace allium {}
 #include "petsc_object_ptr.hpp"
 #include <petscvec.h>
 #include "petsc_util.hpp"
-#include "vector.hpp"
+#include "vector_storage.hpp"
 #include <allium/util/except.hpp>
 #include <allium/util/assert.hpp>
 #include <allium/config.hpp>

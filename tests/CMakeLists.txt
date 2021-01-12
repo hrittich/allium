@@ -25,7 +25,6 @@ add_executable(test_suite
   point.cpp
   range.cpp
   sparse_matrix.cpp
-  vector.cpp
   vector_storage.cpp
   )
 target_link_libraries(test_suite ${ALLIUM_LIBRARIES} ${GTEST_LIBRARIES} ${LIBRARIES})

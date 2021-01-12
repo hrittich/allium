@@ -19,11 +19,12 @@
 #include <allium/util/cloning_ptr.hpp>
 
 namespace allium {
-  /**
-   @addtogroup linear_solver
-   @{
-   */
+  /// @addtogroup linear_solver
+  /// @{
 
+  /**
+    Linear operator for the use in iterative linear solvers.
+  */
   template <typename V>
   class LinearOperator {
     public:
@@ -37,6 +38,9 @@ namespace allium {
                          const Vector& arg) = 0;
   };
 
+  /**
+    Wraps a functor into a linear operator.
+  */
   template <typename V, typename F>
   class FunctorLinearOperator final : public LinearOperator<V> {
     public:
@@ -54,11 +58,13 @@ namespace allium {
 
   /**
    @brief Converts any functor into a LinearOperator.
+
+   @param [in] f A function implementing a linear(!) function.
    */
   template <typename V, typename F>
-    FunctorLinearOperator<V, typename std::remove_reference<F>::type>
+    FunctorLinearOperator<V, std::remove_reference_t<F>>
     make_linear_operator(F&& f) {
-      return FunctorLinearOperator<V, typename std::remove_reference<F>::type>(std::forward<F>(f));
+      return FunctorLinearOperator<V, std::remove_reference_t<F>>(std::forward<F>(f));
     }
 
   /// @}

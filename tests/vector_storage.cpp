@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 
 #include <allium/config.hpp>
-#include <allium/la/vector.hpp>
+#include <allium/la/vector_storage.hpp>
 #include <allium/la/petsc_vector.hpp>
 #include <allium/la/eigen_vector.hpp>
 
@@ -33,21 +33,24 @@ typedef
   VectorStorageTypes;
 
 template <typename T>
-class VectorStorageTest : public testing::Test {
-  public:
-    using Number = typename T::Number;
+struct VectorStorageTest : public testing::Test {
+  using Number = typename T::Number;
+
+  VectorStorageTest ()
+    : comm(Comm::world()),
+      spec_1d(comm, 1, 1),
+      spec_2d(comm, 2, 2)
+  {}
+
+  Comm comm;
+  VectorSpec spec_1d;
+  VectorSpec spec_2d;
 };
 
 TYPED_TEST_CASE(VectorStorageTest, VectorStorageTypes);
 
 TYPED_TEST(VectorStorageTest, Create) {
-  Comm comm = Comm::world();
-
-  VectorSpec vspec(comm, 1, 1);
-
-  TypeParam v(vspec);
-
-  VectorBase<TypeParam> v2(vspec);
+  TypeParam v(this->spec_1d);
 }
 
 TYPED_TEST(VectorStorageTest, Fill) {
@@ -123,10 +126,12 @@ TYPED_TEST(VectorStorageTest, Assign) {
 }
 
 TYPED_TEST(VectorStorageTest, AssignBase) {
+  using Number = typename TypeParam::Number;
+
   auto comm = Comm::world();
   VectorSpec vspec(comm, 1, 1);
   TypeParam v_(vspec);
-  VectorStorage<typename TypeParam::Number>& v(v_);
+  VectorStorage<Number>& v(v_);
   TypeParam w(vspec);
 
   local_slice(v) = { 1.0 };
@@ -144,6 +149,21 @@ TYPED_TEST(VectorStorageTest, AssignBase) {
   EXPECT_EQ(local_slice(v)[0], 1.0);
   EXPECT_EQ(local_slice(w)[0], 2.0);
 }
+
+TYPED_TEST(VectorStorageTest, LocalSliceAssign) {
+  auto comm = Comm::world();
+  VectorSpec spec(comm, 2, 2);
+  TypeParam v(spec);
+  TypeParam w(spec);
+
+  local_slice(v) = { 1.0, 2.0 };
+  local_slice(w) = local_slice(v);
+  {
+    auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 1.0);
+    EXPECT_EQ(loc[1], 2.0);
+  }
+} 
 
 TYPED_TEST(VectorStorageTest, Add) {
   using Number = typename TypeParam::Number;
@@ -205,21 +225,10 @@ TYPED_TEST(VectorStorageTest, Norm) {
   EXPECT_EQ(v.l2_norm(), 2.0);
 }
 
-TYPED_TEST(VectorStorageTest, CastToGeneric) {
-  using Number = typename TypeParam::Number;
-
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 1, 1);
-  auto v = VectorBase<TypeParam>(vspec);
-  auto v_gen = Vector<Number>(v);
-}
-
 TYPED_TEST(VectorStorageTest, SetZero) {
-  auto comm = Comm::world();
-  VectorSpec vspec(comm, 1, 1);
-  auto v = VectorBase<TypeParam>(vspec);
+  TypeParam v(this->spec_1d);
 
-  v.set_zero();
+  set_zero(v);
   {
     auto loc = local_slice(v);
     EXPECT_EQ(loc[0], 0.0);

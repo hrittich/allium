@@ -18,9 +18,8 @@
 
 #include <allium/main/init.hpp>
 #include <allium/ipc/comm.hpp>
-#include <allium/la/vector.hpp>
-#include <allium/la/sparse_matrix.hpp>
 #include <allium/la/cg.hpp>
+#include <allium/la/default.hpp>
 
 using namespace allium;
 
@@ -66,11 +65,11 @@ int main(int argc, char** argv) {
     }
   }
 
-  auto mat = make_sparse_matrix<std::complex<double>>(spec, spec);
-  mat.set_entries(lmat);
+  auto mat = std::make_shared<DefaultSparseMatrix<std::complex<double>>>(spec, spec);
+  mat->set_entries(lmat);
 
   // Create the right hand side vector
-  auto v = Vector<std::complex<double>>(spec);
+  DefaultVector<std::complex<double>> v(spec);
 
   auto v_loc = local_slice(v); // get access to the local portion of the vector
   for (global_size_t i_glob = spec.local_start(); i_glob < spec.local_end(); i_glob++)
@@ -86,7 +85,8 @@ int main(int argc, char** argv) {
   v_loc.release(); // commit local changes to vector
 
   // Solve the linear system using the CG algorithm
-  auto result = cg(mat, v);
+  DefaultVector<std::complex<double>> result(spec);
+  cg(result, mat, v);
 
   // Print the result
   for (int i_rank = 0; i_rank < comm.size(); ++i_rank) {

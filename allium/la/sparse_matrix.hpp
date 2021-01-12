@@ -18,22 +18,22 @@
 #include <allium/config.hpp>
 
 #include "local_coo_matrix.hpp"
-#include "vector.hpp"
+#include "linear_operator.hpp"
+#include "vector_storage.hpp"
 #include <memory>
 
 namespace allium {
-  template <typename N>
-  class SparseMatrixStorage {
+  template <typename V>
+  class SparseMatrixStorage : public LinearOperator<V> {
     public:
-      using Number = N;
-      using Real = real_part_t<N>;
+      using Number = typename V::Number;
+      using Real = real_part_t<Number>;
 
       SparseMatrixStorage(VectorSpec rows, VectorSpec cols)
         : m_row_spec(rows), m_col_spec(cols) {}
 
-      virtual void set_entries(LocalCooMatrix<N> mat) = 0;
-      virtual LocalCooMatrix<N> get_entries() = 0;
-      virtual Vector<N> vec_mult(const Vector<N>& v) = 0;
+      virtual void set_entries(LocalCooMatrix<Number> mat) = 0;
+      virtual LocalCooMatrix<Number> get_entries() = 0;
 
       VectorSpec row_spec() { return m_row_spec; }
       VectorSpec col_spec() { return m_col_spec; }
@@ -41,48 +41,6 @@ namespace allium {
       VectorSpec m_row_spec;
       VectorSpec m_col_spec;
   };
-
-  template <typename StorageT>
-  class SparseMatrixBase {
-    public:
-      using Storage = StorageT;
-      using Number = typename StorageT::Number;
-      using Real = typename StorageT::Real;
-
-      template <typename S2>
-      SparseMatrixBase(SparseMatrixBase<S2> other) : ptr(other.storage()) {}
-
-      SparseMatrixBase(VectorSpec rows, VectorSpec cols)
-        : ptr(std::make_shared<StorageT>(rows, cols)) {}
-      SparseMatrixBase(const std::shared_ptr<StorageT>& ptr) : ptr(ptr) {}
-
-      void set_entries(LocalCooMatrix<Number> mat) {
-        ptr->set_entries(std::move(mat));
-      }
-
-      LocalCooMatrix<Number> get_entries() {
-        return ptr->get_entries();
-      }
-
-      Vector<Number> operator* (const Vector<Number>& rhs) {
-        return ptr->vec_mult(rhs);
-      }
-
-      std::shared_ptr<Storage> storage() { return ptr; }
-      std::shared_ptr<const Storage> storage() const { return ptr; }
-    private:
-      std::shared_ptr<StorageT> ptr;
-  };
-
-  template <typename N>
-    using SparseMatrix = SparseMatrixBase<SparseMatrixStorage<N>>;
-
-  template <typename N>
-    SparseMatrix<N> make_sparse_matrix(VectorSpec row_spec, VectorSpec col_spec);
-
-  #define ALLIUM_LA_SPARSE_MATRIX_DECL(extern, N) \
-    extern template SparseMatrix<N> make_sparse_matrix(VectorSpec,VectorSpec);
-  ALLIUM_EXTERN_N(ALLIUM_LA_SPARSE_MATRIX_DECL)
 }
 
 #endif

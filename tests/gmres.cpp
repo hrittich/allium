@@ -144,17 +144,18 @@ TEST(GMRES, InnerSolve1)
   using Number = std::complex<double>;
 
   VectorSpec spec(Comm::world(), 1, 1);
-  auto v = Vector<Number>(spec);
+  DefaultVector<Number> v(spec);
 
   LocalCooMatrix<Number> coo;
   coo.add(0, 0, 5);
 
-  auto mat = make_sparse_matrix<Number>(spec, spec);
-  mat.set_entries(coo);
+  auto mat = std::make_shared<DefaultSparseMatrix<Number>>(spec, spec);
+  mat->set_entries(coo);
 
   local_slice(v) = { 1.0 };
 
-  auto w = gmres(mat, v, 1e-6);
+  DefaultVector<Number> w(spec);
+  gmres(w, mat, v, 1e-6);
 
   { auto loc = local_slice(w);
     EXPECT_EQ(loc[0], 0.2);
@@ -166,7 +167,7 @@ TEST(GMRES, solve2)
   using Number = std::complex<double>;
 
   VectorSpec spec(Comm::world(), 4, 4);
-  auto v = Vector<Number>(spec);
+  DefaultVector<Number> v(spec);
 
   LocalCooMatrix<Number> coo;
   coo.add(0, 0,  2);
@@ -183,12 +184,13 @@ TEST(GMRES, solve2)
   coo.add(3, 2, -1);
   coo.add(3, 3,  2);
 
-  auto mat = make_sparse_matrix<Number>(spec, spec);
-  mat.set_entries(coo);
+  auto mat = std::make_shared<DefaultSparseMatrix<Number>>(spec, spec);
+  mat->set_entries(coo);
 
   local_slice(v) = { 1.0, 0.0, 0.0, 1.0 };
 
-  auto w = gmres(mat, v, 1e-10);
+  DefaultVector<Number> w(spec);
+  gmres(w, mat, v, 1e-10);
   { auto loc = local_slice(w);
     EXPECT_LE(std::abs(loc[0] - 1.0), 1e-14);
     EXPECT_LE(std::abs(loc[1] - 1.0), 1e-14);

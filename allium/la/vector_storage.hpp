@@ -23,6 +23,10 @@
 #include "vector_spec.hpp"
 
 namespace allium {
+  /**
+   @defgroup vector Vector
+   @brief Generic vector interface.
+  */
 
   /**
    @addtogroup vector
@@ -280,6 +284,14 @@ namespace allium {
   void set_zero(VectorStorage<N>& vec)
   {
     fill(vec, N(0.0));
+  }
+
+  template <typename V>
+  std::unique_ptr<V> zeros_like(const V& vec)
+  {
+    auto v = allocate_like(vec);
+    set_zero(*v);
+    return v;
   }
 
   /// @}

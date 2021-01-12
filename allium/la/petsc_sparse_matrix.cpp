@@ -60,12 +60,12 @@ namespace allium {
       const PetscScalar* m_vals;
   };
 
-  PetscSparseMatrixStorage::PetscSparseMatrixStorage(VectorSpec rows, VectorSpec cols)
-    : SparseMatrixStorage<PetscScalar>(rows, cols)
+  PetscSparseMatrixStorage<PetscScalar>::PetscSparseMatrixStorage(VectorSpec rows, VectorSpec cols)
+    : SparseMatrixStorage(rows, cols)
   {
   }
 
-  void PetscSparseMatrixStorage::set_entries(LocalCooMatrix<PetscScalar> mat)
+  void PetscSparseMatrixStorage<PetscScalar>::set_entries(LocalCooMatrix<PetscScalar> mat)
   {
     PetscErrorCode ierr;
 
@@ -98,7 +98,7 @@ namespace allium {
     ierr = MatAssemblyEnd(ptr, MAT_FINAL_ASSEMBLY); chkerr(ierr);
   }
 
-  LocalCooMatrix<PetscScalar> PetscSparseMatrixStorage::get_entries()
+  LocalCooMatrix<PetscScalar> PetscSparseMatrixStorage<PetscScalar>::get_entries()
   {
     PetscErrorCode ierr;
     PetscInt start, end;
@@ -117,24 +117,9 @@ namespace allium {
     return lmat;
   }
 
-  Vector<PetscScalar>
-    PetscSparseMatrixStorage::vec_mult(const allium::Vector<Number>& v)
-  {
-    PetscErrorCode ierr;
-
-    auto v_store = dynamic_cast<const PetscVectorStorage<PetscScalar>*>(&v.storage());
-    if (!v_store)
-      throw std::runtime_error("Not implemented");
-
-    NativeVector w(row_spec());
-
-    ierr = MatMult(ptr, v_store->native(), w.storage().native()); chkerr(ierr);
-
-    return w;
-  }
-
-  void PetscSparseMatrixStorage::apply(PetscVectorStorage<PetscScalar>& result,
-                                       const PetscVectorStorage<PetscScalar>& arg)
+  void PetscSparseMatrixStorage<PetscScalar>
+          ::apply(PetscVectorStorage<PetscScalar>& result,
+                  const PetscVectorStorage<PetscScalar>& arg)
   {
     PetscErrorCode ierr;
 

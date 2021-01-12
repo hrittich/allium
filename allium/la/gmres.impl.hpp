@@ -198,53 +198,89 @@ namespace allium {
     return abs(m_rhs[n_columns]);
   }
 
+  template <typename N>
+  void GmresSolverBase<N>::solve(VectorStorage<N>& x, const VectorStorage<N>& rhs)
+  {
+    auto tmp1 = allocate_like(rhs);
+
+    m_max_krylov_size = 30;
+    set_zero(x);
+
+    // residual = rhs - mat * x
+    auto residual = allocate_like(rhs);
+    residual->assign(rhs);
+    this->apply_matrix(*tmp1, x);
+    residual->add_scaled(-1.0, *tmp1);
+    auto residual_norm = residual->l2_norm();
+
+    Real abs_tol = tolerance() * residual_norm;
+
+    while (true) {
+      if (residual_norm <= abs_tol)
+        break;
+
+      bool success = inner_solve(x, *residual, residual_norm, abs_tol);
+      if (success)
+        break;
+
+      // residual = rhs - mat * x
+      residual->assign(rhs);
+      this->apply_matrix(*tmp1, x);
+      residual->add_scaled(-1.0, *tmp1);
+      residual_norm = residual->l2_norm();
+    }
+  }
 
   template <typename N>
-    bool gmres_inner(Vector<N>& x,
-                     SparseMatrix<N> mat,
-                     Vector<N> residual,
-                     real_part_t<N> residual_norm,
-                     real_part_t<N> abs_tol,
-                     size_t max_iter)
+  bool GmresSolverBase<N>::inner_solve(VectorStorage<N>& x,
+                                       const VectorStorage<N>& residual,
+                                       real_part_t<N> residual_norm,
+                                       real_part_t<N> abs_tol)
   {
     using Number = N;
     using Real = real_part_t<Number>;
 
     bool success = false;
 
-    std::vector<Vector<N>> krylov_base;
+    std::vector<std::unique_ptr<VectorStorage<N>>> krylov_base;
 
     Real beta = residual_norm;
-    krylov_base.push_back(residual / beta);
+    // v0 = residual / beta
+    auto v0 = allocate_like(residual);
+    v0->assign(residual);
+    *v0 *= (1.0 / beta);
+    krylov_base.push_back(std::move(v0));
 
     HessenbergQr<N> qr(beta);
 
     for (size_t i_iteration = 0;
-         i_iteration < max_iter && !success;
+         i_iteration < m_max_krylov_size && !success;
          ++i_iteration)
     {
-      Vector<N> v_hat = mat * krylov_base.at(i_iteration);
+      auto v_hat = allocate_like(residual);
+      this->apply_matrix(*v_hat, *krylov_base.at(i_iteration));
 
       // current column of the Hessenberg matrix
       LocalVector<N> hessenberg_column(i_iteration + 2);
 
       // orthogonalize and store coefficients using modified Gram-Schmidt
-      // todo: The last orthogonalization does not need to be computed.
-      //       Hence, we could save some work here.
+      // @todo: The last orthogonalization does not need to be computed.
+      //        Hence, we could save some work here.
       for (size_t i_base = 0; i_base <= i_iteration; ++i_base) {
-        hessenberg_column[i_base] = v_hat.dot(krylov_base.at(i_base));
-        v_hat -= hessenberg_column[i_base] * krylov_base.at(i_base);
+        hessenberg_column[i_base] = v_hat->dot(*krylov_base.at(i_base));
+        v_hat->add_scaled(-hessenberg_column[i_base], *krylov_base.at(i_base));
       }
 
       // entry (i_iteration+2, i_iteration+1) in the Hessenberg matrix
-      Real hessenberg_extra = v_hat.l2_norm();
+      Real hessenberg_extra = v_hat->l2_norm();
       hessenberg_column[i_iteration+1] = hessenberg_extra;
 
       // normalize new basis vector
       //
       // @todo: normalization can be avoided if the scaling coefficient is
       //        stored instead
-      krylov_base.push_back(v_hat / hessenberg_extra);
+      *v_hat *= (1.0 / hessenberg_extra);
+      krylov_base.push_back(std::move(v_hat));
 
       // add new column to Hessenberg-QR decomposition and new RHS entry 0
       qr.add_column(std::move(hessenberg_column), 0.0);
@@ -258,47 +294,12 @@ namespace allium {
     // solution of the LGS
     assert(y.nrows() == krylov_base.size() - 1);
     for (size_t i_base = 0; i_base < y.nrows(); ++i_base) {
-      x += y[i_base] * krylov_base[i_base];
+      x.add_scaled(y[i_base], *krylov_base[i_base]);
     }
 
     return success;
   }
 
-  /** Implementation of the GMRES algorithm.
-   *
-   * Saad, Y. & Schultz, M. H.
-   * GMRES: A generalized minimal residual algorithm for solving nonsymmetric
-   * linear systems
-   * SIAM J. Sci. Statist. Comput., 1986, 7, 856-869
-   */
-  template <typename N>
-    Vector<N> gmres(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol)
-  {
-    // @todo: remove redundandent computation of the residual
-    using Real = real_part_t<N>;
-
-    const size_t max_krylov_size = 30;
-    auto x = rhs.zeros_like();
-
-    auto residual = rhs - mat * x;
-    auto residual_norm = residual.l2_norm();
-
-    Real abs_tol = tol * residual_norm;
-
-    while (true) {
-      if (residual_norm <= abs_tol)
-        break;
-
-      bool success = gmres_inner(x, mat, residual, residual_norm, abs_tol, max_krylov_size);
-      if (success)
-        break;
-
-      residual = rhs - mat * x;
-      residual_norm = residual.l2_norm();
-    }
-
-    return x;
-  }
 }
 
 #endif

@@ -123,7 +123,7 @@ void initialize_rhs(double h, PetscMesh<2>& rhs)
 
   initialize_boundary(domain, h);
 
-  print_mesh(domain); std::cout << std::endl;
+  // print_mesh(domain); std::cout << std::endl;
 
   apply_laplace(rhs, h, domain);
 
@@ -166,9 +166,9 @@ int main(int argc, char** argv)
   solver.setup(op);
 
   initialize_rhs(h, rhs);
-  print_mesh(rhs); std::cout << std::endl;
+  // print_mesh(rhs); std::cout << std::endl;
   set_zero(solution);
-  solver.solve(rhs, solution);
+  solver.solve(solution, rhs);
 
   PetscMesh<2> residual(spec);  // b - Ax
   PetscMesh<2> tmp1(spec);
@@ -177,16 +177,16 @@ int main(int argc, char** argv)
   residual.add_scaled(-1.0, tmp1);
   std::cout << "residual, l2 norm: " << residual.l2_norm() << std::endl;
 
-  print_mesh(solution);
-  std::cout << std::endl;
+  // print_mesh(solution);
+  // std::cout << std::endl;
 
   PetscMesh<2> error(spec);
   initialize_exact_solution(error, h);
-  print_mesh(error);
+  // print_mesh(error);
   error.add_scaled(-1.0, solution);
 
-  std::cout << std::endl;
-  print_mesh(error);
+  // std::cout << std::endl;
+  // print_mesh(error);
 
   std::cout << "l2 error: " << error.l2_norm() << std::endl;
 

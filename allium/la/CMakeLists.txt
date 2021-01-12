@@ -14,11 +14,10 @@
 
 add_library(allium_la
   cg.cpp cg.impl.hpp cg.hpp
-  vector_storage.cpp vector_storage.impl.hpp vector_storage.hpp
-  vector.cpp vector.impl.hpp vector.hpp
-  eigen_vector.cpp eigen_vector.impl.hpp eigen_vector.hpp
   eigen_sparse_matrix.hpp
+  eigen_vector.cpp eigen_vector.impl.hpp eigen_vector.hpp
   gmres.cpp gmres.impl.hpp gmres.hpp
+  iterative_solver.hpp
   linear_operator.hpp
   local_coo_matrix.hpp
   local_vector.cpp local_vector.hpp
@@ -26,8 +25,9 @@ add_library(allium_la
   petsc_sparse_matrix.cpp petsc_sparse_matrix.hpp
   petsc_util.cpp petsc_util.hpp
   petsc_vector.cpp petsc_vector.hpp
-  sparse_matrix.cpp sparse_matrix.impl.hpp sparse_matrix.hpp
+  sparse_matrix.hpp
   vector_spec.cpp vector_spec.hpp
+  vector_storage.cpp vector_storage.impl.hpp vector_storage.hpp
   vector_trait.hpp
   )
 

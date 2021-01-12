@@ -21,10 +21,10 @@ using namespace allium;
 
 typedef
   testing::Types<
-    EigenSparseMatrix<double>
-    , EigenSparseMatrix<std::complex<double>>
+    EigenSparseMatrixStorage<double>
+    , EigenSparseMatrixStorage<std::complex<double>>
     #ifdef ALLIUM_USE_PETSC
-    , PetscSparseMatrix
+    , PetscSparseMatrixStorage<PetscScalar>
     #endif
     > MatrixStorageTypes;
 
@@ -57,7 +57,7 @@ TYPED_TEST(SparseMatrixTest, SetAndReadEntries)
 TYPED_TEST(SparseMatrixTest, MatVecMult)
 {
   using Number = typename TypeParam::Number;
-  using NativeVector = typename TypeParam::Storage::NativeVector;
+  using Vector = typename TypeParam::Vector;
 
   VectorSpec spec(Comm::world(), 1, 1);
   TypeParam mat(spec, spec);
@@ -66,10 +66,11 @@ TYPED_TEST(SparseMatrixTest, MatVecMult)
   lmat.add(0, 0, 2);
   mat.set_entries(lmat);
 
-  NativeVector v(spec);
+  Vector v(spec);
   local_slice(v) = { 15 };
 
-  auto w = mat * v;
+  Vector w(spec);
+  mat.apply(w, v);
 
   { auto loc = local_slice(w);
     ASSERT_EQ(loc[0], 30.0);
@@ -79,7 +80,7 @@ TYPED_TEST(SparseMatrixTest, MatVecMult)
 TYPED_TEST(SparseMatrixTest, MatVecMult2)
 {
   using Number = typename TypeParam::Number;
-  using NativeVector = typename TypeParam::Storage::NativeVector;
+  using Vector = typename TypeParam::Vector;
 
   VectorSpec spec(Comm::world(), 2, 2);
   TypeParam mat(spec, spec);
@@ -91,10 +92,11 @@ TYPED_TEST(SparseMatrixTest, MatVecMult2)
   lmat.add(1, 1, 3);
   mat.set_entries(lmat);
 
-  NativeVector v(spec);
+  Vector v(spec);
   local_slice(v) = { 3, -1 };
 
-  auto w = mat * v;
+  Vector w(spec);
+  mat.apply(w, v);
 
   { auto loc = local_slice(w);
     ASSERT_EQ(loc[0], -2.0);

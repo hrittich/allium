@@ -49,9 +49,6 @@ namespace allium {
         return new PetscVectorStorage(this->petsc_clone());
       }
   };
-
-  template <typename N>
-  using PetscVector = VectorBase<PetscVectorStorage<N>>;
 }
 
 #endif

@@ -21,7 +21,7 @@
   #include <mpi4py/mpi4py.h>
 #endif // ALLIUM_USE_MPI4PY
 #include <cstdint>
-#include <allium/la/vector.hpp>
+#include <allium/la/vector_storage.hpp>
 #include <allium/la/eigen_vector.hpp>
 #include <allium/la/sparse_matrix.hpp>
 #include <allium/la/eigen_sparse_matrix.hpp>
@@ -92,18 +92,6 @@ PYBIND11_MODULE(native, m)
     .def(py::init<allium::Comm, allium::global_size_t, size_t>())
     .def("global_size", &allium::VectorSpec::global_size)
     .def("local_size", &allium::VectorSpec::local_size);
-
-  py::class_<allium::Vector<double>>(m, "VectorD")
-    .def(py::init([] (allium::VectorSpec spec) {
-                    return allium::EigenVector<double>(spec);
-                  }));
-
-  py::class_<allium::SparseMatrix<double>>(m, "SparseMatrixD")
-    .def(py::init([] (allium::VectorSpec row_spec, allium::VectorSpec col_spec) {
-                    return
-                      allium::SparseMatrix<double>(
-                        allium::EigenSparseMatrix<double>(row_spec, col_spec));
-                  }));
 
 }
 

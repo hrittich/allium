@@ -64,24 +64,23 @@ namespace allium {
 
   template <typename N>
   class EigenSparseMatrixStorage final
-      : public SparseMatrixStorage<N>,
-        public LinearOperator<EigenVectorStorage<N>>
+      : public SparseMatrixStorage<EigenVectorStorage<N>>
   {
     public:
-      using SparseMatrixStorage<N>::Number;
-      using SparseMatrixStorage<N>::Real;
-      using NativeVector = EigenVector<N>;
-      using SparseMatrixStorage<N>::row_spec;
-      using SparseMatrixStorage<N>::col_spec;
+      using Vector = EigenVectorStorage<N>;
+      using SparseMatrixStorage<Vector>::Number;
+      using SparseMatrixStorage<Vector>::Real;
+      using SparseMatrixStorage<Vector>::row_spec;
+      using SparseMatrixStorage<Vector>::col_spec;
 
       EigenSparseMatrixStorage(VectorSpec rows, VectorSpec cols)
-        : SparseMatrixStorage<N>(rows, cols),
-          mat(rows.global_size(), cols.global_size()) {}
+        : SparseMatrixStorage<Vector>(rows, cols),
+          m_mat(rows.global_size(), cols.global_size()) {}
 
       void set_entries(LocalCooMatrix<N> lmat) override {
         auto entries = std::move(lmat).get_entries();
 
-        mat.setFromTriplets(
+        m_mat.setFromTriplets(
           triplet_iterator<N>(entries.begin()),
           triplet_iterator<N>(entries.end()));
       };
@@ -89,8 +88,8 @@ namespace allium {
       LocalCooMatrix<N> get_entries() override {
         LocalCooMatrix<N> lmat;
 
-        for (long k=0; k < mat.outerSize(); ++k) {
-          for (typename Eigen::SparseMatrix<N>::InnerIterator it(mat,k); it; ++it)
+        for (long k=0; k < m_mat.outerSize(); ++k) {
+          for (typename Eigen::SparseMatrix<N>::InnerIterator it(m_mat,k); it; ++it)
           {
             lmat.add(it.row(), it.col(), it.value());
           }
@@ -99,27 +98,13 @@ namespace allium {
         return lmat;
       }
 
-      Vector<N> vec_mult(const Vector<N>& v) override {
-        auto ptr = dynamic_cast<const EigenVectorStorage<N>*>(&v.storage());
-        if (!ptr)
-          throw not_implemented();
-
-        NativeVector ret(row_spec());
-        ret.storage().native()
-          = mat * (const_cast<EigenVectorStorage<N>*>(ptr)->native());
-        return ret;
-      }
-
       void apply(EigenVectorStorage<N>& result, const EigenVectorStorage<N>& arg) {
-        result.native() = mat * arg.native();
+        result.native() = m_mat * arg.native();
       }
 
     private:
-      Eigen::SparseMatrix<N> mat;
+      Eigen::SparseMatrix<N> m_mat;
   };
-
-  template <typename N>
-  using EigenSparseMatrix = SparseMatrixBase<EigenSparseMatrixStorage<N>>;
 }
 
 #endif

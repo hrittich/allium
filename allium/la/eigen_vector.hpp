@@ -16,7 +16,7 @@
 #define ALLIUM_LA_EIGEN_VECTOR_HPP
 
 #include <allium/util/extern.hpp>
-#include "vector.hpp"
+#include "vector_storage.hpp"
 #include <Eigen/Core>
 
 namespace allium {
@@ -64,12 +64,8 @@ namespace allium {
       }
   };
 
-  template <typename N>
-  using EigenVector = VectorBase<EigenVectorStorage<N>>;
-
   #define ALLIUM_EIGEN_VECTOR_DECL(extern, N) \
-    extern template class EigenVectorStorage<N>; \
-    extern template class VectorBase<EigenVectorStorage<N>>;
+    extern template class EigenVectorStorage<N>;
   ALLIUM_EXTERN_N(ALLIUM_EIGEN_VECTOR_DECL)
 }
 

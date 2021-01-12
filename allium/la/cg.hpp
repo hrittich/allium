@@ -16,20 +16,12 @@
 #define ALLIUM_LA_CG_HPP
 
 #include <allium/util/extern.hpp>
-#include "vector.hpp"
+#include "vector_storage.hpp"
 #include "sparse_matrix.hpp"
 #include "linear_solver.hpp"
 #include <allium/util/warnings.hpp>
 
 namespace allium {
-  template <typename N>
-    Vector<N> cg_(SparseMatrix<N> mat, Vector<N> rhs, real_part_t<N> tol = 1e-6);
-
-  template <typename Mat, typename... Args>
-    Vector<typename Mat::Number> cg(Mat mat, Args&&... args)
-    {
-      return cg_<typename Mat::Number>(mat, std::forward<Args>(args)...);
-    }
 
   template <typename N>
   class CgSolverBase {
@@ -49,6 +41,10 @@ namespace allium {
       virtual void matvec(VectorStorage<N>& out, const VectorStorage<N>& in) = 0;
   };
 
+  /**
+   The conjugate gradient method, solves @f$ A x = b @f$.
+   @ingroup linear_solver
+   */
   template <typename V>
   class CgSolver
       : public CgSolverBase<typename V::Number>,
@@ -84,9 +80,23 @@ namespace allium {
       }
   };
 
+  /**
+    The conjugate gradient method.
+
+    Convenience method for using CgSolver.
+
+    @ingroup linear_solver
+   */
+  template <typename V, typename M>
+    void cg(V& solution, std::shared_ptr<M> mat, const V& rhs, real_part_t<typename V::Number> tol = 1e-8)
+  {
+    CgSolver<V> solver(tol);
+    solver.setup(mat);
+    solver.solve(solution, rhs);
+  }
+
   #define ALLIUM_CG_DECL(extern, N) \
-    extern template class CgSolverBase<N>; \
-    extern template Vector<N> cg_<N>(SparseMatrix<N>, Vector<N>, real_part_t<N>);
+    extern template class CgSolverBase<N>;
   ALLIUM_EXTERN_N(ALLIUM_CG_DECL)
 }
 
