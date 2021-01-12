@@ -15,7 +15,7 @@ case "$1" in
     exec sudo -HE -u developer bash
   ;;
   tests)
-    exec sudo -HE -u developer container-tests.sh
+    exec sudo -HE -u developer container-tests.sh "$2"
   ;;
   sh|bash)
     # This section is needed for GitLab-CI and allows for execution of
