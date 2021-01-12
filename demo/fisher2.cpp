@@ -178,25 +178,25 @@ void apply_shifted_laplace(PetscMesh<2>& f, Problem pb, Number a, const PetscMes
 }
 
 /**
- Solves y - a f(t, y) = r, where f(t, y) = Δy.
+ Solves y - a f_i(t, y) = r, where f_i(t, y) = Δy.
 */
 void solve_f_impl(PetscMesh<2>& y, Problem pb, Real t, Number a, const PetscMesh<2>& r) {
   using namespace std::placeholders;
 
-  // rhs = a r + Δ^b u^b
+  // rhs = (1/a) r + Δ^b u^b
   PetscMesh<2> rhs(r.mesh_spec());
   rhs.assign(r);
   rhs *= (1.0/a);
   add_boundary(rhs, pb, t);
 
-  // solve (-Δ + aI) y = a r + Δ^b y^b
+  // solve (-Δ + (1/a) I) y = (1/a) r + Δ^b y^b
   CgSolver<PetscMesh<2>> solver;
   auto op = std::bind(apply_shifted_laplace, _1, pb, 1.0/a, _2);
   solver.setup(shared_copy(make_linear_operator<PetscMesh<2>>(op)));
   solver.solve(y, rhs);
 };
 
-/** The explicit part of the ODE, G(y) = y*(1-y) */
+/** The explicit part of the ODE, f_e(y) = y*(1-y) */
 void f_expl(PetscMesh<2>& result, Real t, const PetscMesh<2>& u)
 {
   auto range = u.mesh_spec()->local_range();

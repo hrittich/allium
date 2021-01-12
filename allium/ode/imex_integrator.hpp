@@ -30,7 +30,7 @@ namespace allium {
    implicit part.
 
    @f[
-      \dot{y} = F_\mathrm{ex}(t, y) + F_\mathrm{im}(t, y)
+      \dot{y} = f_\mathrm{ex}(t, y) + f_\mathrm{im}(t, y)
    @f]
 
    *Experimental interface*; this interface might change.
@@ -55,18 +55,19 @@ namespace allium {
        Set the callback functions for the solver.
 
        @param[in] f_ex Function that evaluates the explicit part.
-       @param[in] solve_impl Function that solves the implicit part.
+       @param[in] solve_im Function that solves the implicit part.
 
        The function f_ex should evaluate the right hand side
-       @f$ G(t, y) @f$.
+       @f$ f_\mathrm{ex}(t, y) @f$.
 
-       The function solve_impl should solve
+       The function solve_im should solve the equation (system)
        @f[
-        y - a f(t, y) = r
+        y - a f_\mathrm{im}(t, y) = r
+        \,.
        @f]
 
        */
-      virtual void setup(ExplicitF f_ex, ImplicitSolve solve_impl) = 0;
+      virtual void setup(ExplicitF f_ex, ImplicitSolve solve_im) = 0;
       virtual void initial_values(real_part_t<Number> t0, const Vector& y0) = 0;
   };
 

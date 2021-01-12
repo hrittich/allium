@@ -55,9 +55,9 @@ namespace allium {
 
       ImexEuler() {}
 
-      void setup(ExplicitF f_ex, ImplicitSolve f_impl) override {
+      void setup(ExplicitF f_ex, ImplicitSolve f_im) override {
         m_f_ex = f_ex;
-        m_f_impl = f_impl;
+        m_f_im = f_im;
       }
 
       void initial_values(real_part_t<Number> t0, const Vector& y0) override {
@@ -75,7 +75,7 @@ namespace allium {
       real_part_t<Number> m_t0;
       std::unique_ptr<Vector> m_y0;
       ExplicitF m_f_ex;
-      ImplicitSolve m_f_impl;
+      ImplicitSolve m_f_im;
 
       void apply_f_ex(VectorStorage<Number>& out, Real t, const VectorStorage<Number>& in) override {
         m_f_ex(static_cast<Vector&>(out), t, static_cast<const Vector&>(in));
@@ -84,7 +84,7 @@ namespace allium {
                           Real t,
                           Number a,
                           const VectorStorage<Number>& r) override {
-        m_f_impl(static_cast<Vector&>(out),
+        m_f_im(static_cast<Vector&>(out),
                  t, a,
                  static_cast<const Vector&>(r));
       }
