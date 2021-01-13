@@ -19,36 +19,47 @@
 #include <vector>
 
 namespace allium {
-  template <typename NumberT>
+  template <typename N>
   class MatrixEntry {
     public:
-      MatrixEntry(global_size_t row, global_size_t col, NumberT value)
-        : row(row), col(col), value(value) {}
+      MatrixEntry() {}
+
+      MatrixEntry(global_size_t row, global_size_t col, N value)
+        : m_row(row), m_col(col), m_value(value) {}
 
       bool operator==(const MatrixEntry& rhs) const {
-        return (row == rhs.row && col == rhs.col && value == rhs.value);
+        return (m_row == rhs.m_row && m_col == rhs.m_col && m_value == rhs.m_value);
       }
 
-      global_size_t get_row() { return row; }
-      global_size_t get_col() { return col; }
-      NumberT get_value() { return value; }
+      global_size_t row() { return m_row; }
+      global_size_t col() { return m_col; }
+      N value() { return m_value; }
     private:
-      global_size_t row, col;
-      NumberT value;
+      global_size_t m_row, m_col;
+      N m_value;
   };
 
-  template <typename NumberT>
+  template <typename N>
   class LocalCooMatrix {
     public:
-      void add(global_size_t row, global_size_t col, NumberT value) {
-        entries.push_back(MatrixEntry<NumberT>(row, col, value));
+      LocalCooMatrix() {}
+      template <typename T>
+      explicit LocalCooMatrix(T&& entries)
+        : m_entries(std::forward<T>(entries))
+      {}
+
+      void add(global_size_t row, global_size_t col, N value) {
+        m_entries.push_back(MatrixEntry<N>(row, col, value));
       }
 
-      const std::vector<MatrixEntry<NumberT>> get_entries() const& { return entries; }
-      const std::vector<MatrixEntry<NumberT>> get_entries() && { return std::move(entries); }
+      size_t entry_count() { return m_entries.size(); }
+
+      const std::vector<MatrixEntry<N>> entries() const& { return m_entries; }
+      const std::vector<MatrixEntry<N>> entries() && { return std::move(m_entries); }
     private:
-      std::vector<MatrixEntry<NumberT>> entries;
+      std::vector<MatrixEntry<N>> m_entries;
   };
+
 
 }
 

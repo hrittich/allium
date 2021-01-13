@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
   // Create a sparse matrix, representing a discrete version of the 1D
   // Laplace operator
-  LocalCooMatrix<std::complex<double>> lmat;
+  LocalCooMatrix<double> lmat;
 
   //   Every rank sets its local entries
   for (global_size_t i = spec.local_start(); i < spec.local_end(); ++i) {
@@ -65,11 +65,11 @@ int main(int argc, char** argv) {
     }
   }
 
-  auto mat = std::make_shared<DefaultSparseMatrix<std::complex<double>>>(spec, spec);
+  auto mat = std::make_shared<DefaultSparseMatrix<double>>(spec, spec);
   mat->set_entries(lmat);
 
   // Create the right hand side vector
-  DefaultVector<std::complex<double>> v(spec);
+  DefaultVector<double> v(spec);
 
   auto v_loc = local_slice(v); // get access to the local portion of the vector
   for (global_size_t i_glob = spec.local_start(); i_glob < spec.local_end(); i_glob++)
@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
   v_loc.release(); // commit local changes to vector
 
   // Solve the linear system using the CG algorithm
-  DefaultVector<std::complex<double>> result(spec);
+  DefaultVector<double> result(spec);
   cg(result, mat, v);
 
   // Print the result

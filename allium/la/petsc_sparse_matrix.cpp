@@ -86,11 +86,11 @@ namespace allium {
                         NULL, // o_nnz,
                         ptr.writable_ptr()); chkerr(ierr);
 
-    auto entries = std::move(mat).get_entries();
+    auto entries = std::move(mat).entries();
 
-    // ToDo: This is probably slow and can be optimized by using MatSetValues
+    // @ToDo This is probably slow and can be optimized by using MatSetValues
     for (auto& e : entries) {
-      ierr = MatSetValue(ptr, e.get_row(), e.get_col(), e.get_value(), ADD_VALUES);
+      ierr = MatSetValue(ptr, e.row(), e.col(), e.value(), ADD_VALUES);
       chkerr(ierr);
     }
 
@@ -118,8 +118,8 @@ namespace allium {
   }
 
   void PetscSparseMatrixStorage<PetscScalar>
-          ::apply(PetscVectorStorage<PetscScalar>& result,
-                  const PetscVectorStorage<PetscScalar>& arg)
+          ::apply(PetscAbstractVectorStorage<PetscScalar>& result,
+                  const PetscAbstractVectorStorage<PetscScalar>& arg)
   {
     PetscErrorCode ierr;
 

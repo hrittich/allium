@@ -142,7 +142,7 @@ TEST(CgSolver, solve4)
 
   local_slice(v) = { 1.0, 0.0, 0.0, 1.0 };
 
-  CgSolver<DefaultVector<Number>> solver;
+  CgSolver<typename DefaultSparseMatrix<Number>::Vector> solver;
   DefaultVector<Number> w(spec);
 
   solver.setup(std::move(mat));

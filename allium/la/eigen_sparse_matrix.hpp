@@ -41,9 +41,9 @@ namespace allium {
       }
 
       reference operator* () {
-        current = Eigen::Triplet<N>(base->get_row(),
-                                    base->get_col(),
-                                    base->get_value());
+        current = Eigen::Triplet<N>(base->row(),
+                                    base->col(),
+                                    base->value());
         return current;
       }
 
@@ -68,6 +68,7 @@ namespace allium {
   {
     public:
       using Vector = EigenVectorStorage<N>;
+      using DefaultVector = EigenVectorStorage<N>;
       using SparseMatrixStorage<Vector>::Number;
       using SparseMatrixStorage<Vector>::Real;
       using SparseMatrixStorage<Vector>::row_spec;
@@ -78,7 +79,7 @@ namespace allium {
           m_mat(rows.global_size(), cols.global_size()) {}
 
       void set_entries(LocalCooMatrix<N> lmat) override {
-        auto entries = std::move(lmat).get_entries();
+        auto entries = std::move(lmat).entries();
 
         m_mat.setFromTriplets(
           triplet_iterator<N>(entries.begin()),

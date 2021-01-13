@@ -31,29 +31,62 @@ namespace allium {
   template <typename T>
   using real_part_t = typename real_part<T>::type;
 
+  /**
+   Narrows a number type, which can result in a loss of information or
+   accuracy.
+
+   Allows the conversion of double to float, and the conversion of
+   complex to real types by dropping the imaginary part.
+   */
+  template <typename To, typename From>
+  struct narrow_number {};
+
+  template <>
+  struct narrow_number<float, double> {
+    float operator() (double x) { return x; }
+  };
+
+  template <typename T>
+  struct narrow_number<T, T> {
+    T operator() (T x) { return x; }
+  };
+
+  template <>
+  struct narrow_number<std::complex<float>, std::complex<double>> {
+    std::complex<float> operator() (std::complex<double> x) {
+      return std::complex<float>(x.real(), x.imag());
+    }
+  };
+
+  template <typename To, typename From>
+  struct narrow_number<To, std::complex<From>> {
+    To operator() (std::complex<From> x) {
+      allium_assert(x.imag() == 0);
+      return narrow_number<To, From>()(x.real());
+    }
+  };
 
   /**
    Computes `a <= b`, where a comparison between signed and unsigned types is
    safe.
    */
   template <typename T1, typename T2>
-  bool safe_le(T1 a, T2 b) {
-    ALLIUM_NO_SIGN_COMPARE_WARNING
-    if (std::signbit(a) && std::signbit(b)) {
-      // both negative
-      return a <= b; // comparison safe, a and b are both unsigned
-    }
-    if (std::signbit(a) && !std::signbit(b)) {
-      // a negative, b non-negative ==> a <= b == true
-      return true;
-    }
-    if (!std::signbit(a) && std::signbit(b)) {
-      // a non-negative, b negative ==> a <= b == false
-      return false;
-    }
-    // both positive
+  std::enable_if_t<std::is_signed<T1>::value && std::is_unsigned<T2>::value, bool>
+  safe_le(T1 a, T2 b) {
+    // b is always >= 0, hence a <= b if a < 0, otherwise a comparison is safe
+    return (a < 0) || (static_cast<std::make_unsigned_t<T1>>(a) <= b);
+  }
+  template <typename T1, typename T2>
+  std::enable_if_t<std::is_unsigned<T1>::value && std::is_signed<T2>::value, bool>
+  safe_le(T1 a, T2 b) {
+    // a is always >= 0, hence a <= b requires b >= 0, then a comparison is safe
+    return (b >= 0) && (a <= static_cast<std::make_unsigned_t<T2>>(b));
+  }
+  template <typename T1, typename T2>
+  std::enable_if_t<std::is_signed<T1>::value == std::is_signed<T2>::value, bool>
+  safe_le(T1 a, T2 b) {
+    // same signage, comparison is safe
     return a <= b;
-    ALLIUM_RESTORE_WARNING
   }
 
   /**
@@ -70,23 +103,22 @@ namespace allium {
    safe.
    */
   template <typename T1, typename T2>
-  bool safe_lt(T1 a, T2 b) {
-    ALLIUM_NO_SIGN_COMPARE_WARNING
-    if (std::signbit(a) && std::signbit(b)) {
-      // both negative
-      return a < b; // comparison safe, a and b are both unsigned
-    }
-    if (std::signbit(a) && !std::signbit(b)) {
-      // a negative, b non-negative ==> a < b == true
-      return true;
-    }
-    if (!std::signbit(a) && std::signbit(b)) {
-      // a non-negative, b negative ==> a < b == false
-      return false;
-    }
-    // both positive
+  std::enable_if_t<std::is_signed<T1>::value && std::is_unsigned<T2>::value, bool>
+  safe_lt(T1 a, T2 b) {
+    // b is always >= 0, hence a < b if a < 0, otherwise a comparison is safe
+    return (a < 0) || (static_cast<std::make_unsigned_t<T1>>(a) < b);
+  }
+  template <typename T1, typename T2>
+  std::enable_if_t<std::is_unsigned<T1>::value && std::is_signed<T2>::value, bool>
+  safe_lt(T1 a, T2 b) {
+    // a is always >= 0, hence a < b requires b >= 0, then a comparison is safe
+    return (b >= 0) && (a < static_cast<std::make_unsigned_t<T2>>(b));
+  }
+  template <typename T1, typename T2>
+  std::enable_if_t<std::is_signed<T1>::value == std::is_signed<T2>::value, bool>
+  safe_lt(T1 a, T2 b) {
+    // same signage, comparison is safe
     return a < b;
-    ALLIUM_RESTORE_WARNING
   }
 
   /**

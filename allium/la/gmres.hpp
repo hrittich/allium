@@ -70,7 +70,7 @@ namespace allium {
                const V& rhs,
                real_part_t<typename V::Number> tol = 1e-6)
   {
-    GmresSolver<V> solver;
+    GmresSolver<typename M::Vector> solver;
     solver.tolerance(tol);
     solver.setup(mat);
     solver.solve(result, rhs);

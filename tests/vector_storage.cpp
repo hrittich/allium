@@ -27,7 +27,9 @@ typedef
     , EigenVectorStorage<std::complex<double>>
     #ifdef ALLIUM_USE_PETSC
       , PetscVectorStorage<double>
+      #ifdef ALLIUM_PETSC_HAS_COMPLEX
       , PetscVectorStorage<std::complex<double>>
+      #endif
     #endif
     >
   VectorStorageTypes;

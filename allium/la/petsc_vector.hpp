@@ -28,17 +28,19 @@ namespace allium {
   {
     public:
       using PetscAbstractVectorStorage<N>::PetscAbstractVectorStorage;
-      using PetscAbstractVectorStorage<N>::m_ptr;
+      using PetscAbstractVectorStorage<N>::native;
 
       PetscVectorStorage(VectorSpec spec)
         : PetscAbstractVectorStorage<N>(spec)
       {
         PetscErrorCode ierr;
 
+        PetscObjectPtr<Vec> vec;
         ierr = VecCreateMPI(spec.comm().handle(),
                             spec.local_size(),
                             spec.global_size(),
-                            m_ptr.writable_ptr()); petsc::chkerr(ierr);
+                            vec.writable_ptr()); petsc::chkerr(ierr);
+        native(vec);
       }
 
       PetscVectorStorage* allocate_like() const& override {

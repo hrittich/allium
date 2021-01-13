@@ -22,6 +22,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif()
 
+include(CheckCXXSourceCompiles)
+
 add_subdirectory(contrib)
 
 # Options
@@ -94,15 +96,30 @@ find_package(PkgConfig)
 # Find PETSc
 if(PKG_CONFIG_FOUND)
   pkg_check_modules(PETSC PETSc)
+endif()
 
-  if(PETSC_FOUND)
-    list(APPEND COMPILE_OPTIONS ${PETSC_CFLAGS})
-    include_directories(${PETSC_INCLUDE_DIRS})
-    list(APPEND LINK_OPTIONS ${PETSC_LDFLAGS})
-    list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
+if(PETSC_FOUND)
+  list(APPEND COMPILE_OPTIONS ${PETSC_CFLAGS})
+  include_directories(${PETSC_INCLUDE_DIRS})
+  list(APPEND LINK_OPTIONS ${PETSC_LDFLAGS})
+  list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
 
-    set(ALLIUM_USE_PETSC ON CACHE BOOL "Use PETSc")
-  endif()
+  set(ALLIUM_USE_PETSC ON CACHE BOOL "Use PETSc")
+
+  set(CMAKE_REQUIRED_FLAGS ${PETSC_CFLAGS})
+  set(CMAKE_REQUIRED_INCLUDES "${PETSC_INCLUDE_DIRS}")
+  check_cxx_source_compiles("
+    #include <complex>
+    #include <petscsystypes.h>
+    static_assert(std::is_same<PetscScalar, std::complex<PetscReal>>::value);
+    int main() { return 0; }
+  " ALLIUM_PETSC_HAS_COMPLEX)
+
+  check_cxx_source_compiles("
+    #include <petscsystypes.h>
+    static_assert(std::is_same<double, PetscReal>::value);
+    int main() { return 0; }
+  " ALLIUM_PETSC_HAS_DOUBLE)
 endif()
 
 # Eigen3
@@ -185,6 +202,10 @@ show_status("Global Index Type" ALLIUM_GLOBAL_SIZE_T)
 show_status("Debug" ALLIUM_DEBUG)
 show_status("Bound Checks" ALLIUM_BOUND_CHECKS)
 show_status("Use PETSc" ALLIUM_USE_PETSC)
+if(ALLIUM_USE_PETSC)
+  show_status("  Has Double" ALLIUM_PETSC_HAS_DOUBLE)
+  show_status("  Has Complex" ALLIUM_PETSC_HAS_COMPLEX)
+endif()
 show_status("Show internal API" ALLIUM_INTERNAL_DOCS)
 show_status("Python Module" ALLIUM_USE_PYTHON)
 if(ALLIUM_USE_PYTHON)

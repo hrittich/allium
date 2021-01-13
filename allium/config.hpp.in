@@ -17,6 +17,8 @@
 
 #cmakedefine ALLIUM_DEBUG
 #cmakedefine ALLIUM_USE_PETSC
+#cmakedefine ALLIUM_PETSC_HAS_COMPLEX
+#cmakedefine ALLIUM_PETSC_HAS_DOUBLE
 #cmakedefine ALLIUM_USE_PYTHON
 #cmakedefine ALLIUM_USE_MPI4PY
 #cmakedefine ALLIUM_GLOBAL_SIZE_T @ALLIUM_GLOBAL_SIZE_T@

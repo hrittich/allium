@@ -24,7 +24,10 @@ typedef
     EigenSparseMatrixStorage<double>
     , EigenSparseMatrixStorage<std::complex<double>>
     #ifdef ALLIUM_USE_PETSC
-    , PetscSparseMatrixStorage<PetscScalar>
+      , PetscSparseMatrixStorage<double>
+      #ifdef ALLIUM_PETSC_HAS_COMPLEX
+        , PetscSparseMatrixStorage<std::complex<double>>
+      #endif
     #endif
     > MatrixStorageTypes;
 
@@ -51,13 +54,13 @@ TYPED_TEST(SparseMatrixTest, SetAndReadEntries)
 
   mat.set_entries(lmat);
 
-  ASSERT_EQ(lmat.get_entries(), mat.get_entries().get_entries());
+  ASSERT_EQ(lmat.entries(), mat.get_entries().entries());
 }
 
 TYPED_TEST(SparseMatrixTest, MatVecMult)
 {
   using Number = typename TypeParam::Number;
-  using Vector = typename TypeParam::Vector;
+  using Vector = typename TypeParam::DefaultVector;
 
   VectorSpec spec(Comm::world(), 1, 1);
   TypeParam mat(spec, spec);
@@ -80,7 +83,7 @@ TYPED_TEST(SparseMatrixTest, MatVecMult)
 TYPED_TEST(SparseMatrixTest, MatVecMult2)
 {
   using Number = typename TypeParam::Number;
-  using Vector = typename TypeParam::Vector;
+  using Vector = typename TypeParam::DefaultVector;
 
   VectorSpec spec(Comm::world(), 2, 2);
   TypeParam mat(spec, spec);

@@ -30,87 +30,44 @@ namespace allium {}
 
 namespace allium {
 
-  /// @cond INTERNAL
+  template <typename N> class PetscAbstractVectorStorage;
 
-  template <typename To, typename From> struct numerical_cast {
-    To operator() (From x) {
-      return static_cast<To>(x);
-    }
-  };
-  template <typename T> struct numerical_cast<T, T> {
-    T operator() (T x) { return x; }
-  };
-  template <> struct numerical_cast<double, std::complex<double>> {
-    double operator() (std::complex<double> x) {
-      allium_assert(x.imag() == 0);
-      return x.real();
-    }
-  };
-  template <> struct numerical_cast<float, std::complex<double>> {
-    float operator() (std::complex<double> x) {
-      return numerical_cast<double, std::complex<double>>()(x);
-    }
-  };
-
-  template <typename T>
-  inline T* convert_if_needed(PetscScalar* begin, PetscScalar* end) {
-    T* converted = new T[end - begin];
-    std::transform(begin, end, converted, numerical_cast<T, PetscScalar>());
-    return converted;
-  }
   template <>
-  inline PetscScalar* convert_if_needed(PetscScalar* begin, PetscScalar* end) {
-    return begin;
-  }
-
-  template <typename T>
-  inline void copy_back_if_needed(T* begin, T* end, PetscScalar* original) {
-    std::transform(begin, end, original, numerical_cast<PetscScalar, T>());
-    delete [] begin;
-  }
-  template <>
-  inline void copy_back_if_needed(PetscScalar* begin, PetscScalar* end, PetscScalar* original) {
-  }
-
-  /// @endcond
-
-  template <typename N>
-  class PetscAbstractVectorStorage
-      : public VectorStorageTrait<PetscAbstractVectorStorage<N>, N>
+  class PetscAbstractVectorStorage<PetscScalar>
+      : public VectorStorageTrait<PetscAbstractVectorStorage<PetscScalar>, PetscScalar>
   {
     public:
       template <typename> friend class LocalSlice;
+      template <typename N> friend class PetscAbstractVectorStorage;
 
-      using typename VectorStorageTrait<PetscAbstractVectorStorage, N>::Number;
-      using typename VectorStorageTrait<PetscAbstractVectorStorage, N>::Real;
-      using VectorStorageTrait<PetscAbstractVectorStorage, N>::spec;
+      using typename VectorStorageTrait<PetscAbstractVectorStorage, PetscScalar>::Number;
+      using typename VectorStorageTrait<PetscAbstractVectorStorage, PetscScalar>::Real;
+      using VectorStorageTrait<PetscAbstractVectorStorage, PetscScalar>::spec;
 
     protected:
       PetscAbstractVectorStorage(VectorSpec spec)
-        : VectorStorageTrait<PetscAbstractVectorStorage, N>(spec),
+        : VectorStorageTrait<PetscAbstractVectorStorage, PetscScalar>(spec)
         #ifdef ALLIUM_DEBUG
-          m_dirty(false),
+          , m_dirty(false)
         #endif
-          m_entries(nullptr)
       {}
 
     public:
       PetscAbstractVectorStorage(const PetscObjectPtr<Vec>& vec)
-        : VectorStorageTrait<PetscAbstractVectorStorage, N>(
+        : VectorStorageTrait<PetscAbstractVectorStorage, PetscScalar>(
             VectorSpec(petsc::object_comm(vec),
                        petsc::vec_local_size(vec),
                        petsc::vec_global_size(vec))),
-          m_ptr(vec),
+          m_ptr(vec)
         #ifdef ALLIUM_DEBUG
-          m_dirty(false),
+          , m_dirty(false)
         #endif
-          m_entries(nullptr)
       {}
 
       PetscAbstractVectorStorage(const PetscAbstractVectorStorage&) = delete;
       PetscAbstractVectorStorage& operator= (const PetscAbstractVectorStorage&) = delete;
 
-      using VectorStorageTrait<PetscAbstractVectorStorage, N>::operator+=;
+      using VectorStorageTrait<PetscAbstractVectorStorage, PetscScalar>::operator+=;
       PetscAbstractVectorStorage& operator+= (const PetscAbstractVectorStorage& other) {
         allium_assert(!m_dirty && !other.m_dirty);
 
@@ -135,14 +92,14 @@ namespace allium {
         return *this;
       }
 
-      using VectorStorageTrait<PetscAbstractVectorStorage, N>::dot;
-      Number dot(const PetscAbstractVectorStorage& other) const {
+      using VectorStorageTrait<PetscAbstractVectorStorage, PetscScalar>::dot;
+      PetscScalar dot(const PetscAbstractVectorStorage& other) const {
         allium_assert(!m_dirty && !other.m_dirty);
 
         PetscErrorCode ierr;
         PetscScalar result;
         ierr = VecDot(m_ptr, other.m_ptr, &result); petsc::chkerr(ierr);
-        return numerical_cast<Number, PetscScalar>()(result);
+        return result;
       }
 
       Real l2_norm() const override {
@@ -156,6 +113,7 @@ namespace allium {
         return result;
       }
 
+      void native(PetscObjectPtr<Vec> ptr) { m_ptr = ptr; }
       PetscObjectPtr<Vec> native() const { return m_ptr; }
     protected:
 
@@ -167,8 +125,9 @@ namespace allium {
         #endif
         PetscErrorCode ierr;
 
-        ierr = VecGetArray(m_ptr, &m_entries); petsc::chkerr(ierr);
-        return convert_if_needed<Number>(m_entries, m_entries+spec().local_size());
+        PetscScalar* data = nullptr;
+        ierr = VecGetArray(m_ptr, &data); petsc::chkerr(ierr);
+        return data;
       }
 
       void release_data_ptr(Number* data) override
@@ -179,9 +138,7 @@ namespace allium {
         #endif
         PetscErrorCode ierr;
 
-        copy_back_if_needed<Number>(data, data+spec().local_size(), m_entries);
-
-        ierr = VecRestoreArray(m_ptr, &m_entries); petsc::chkerr(ierr);
+        ierr = VecRestoreArray(m_ptr, &data); petsc::chkerr(ierr);
       }
 
       PetscObjectPtr<Vec> m_ptr;
@@ -189,7 +146,6 @@ namespace allium {
       #ifdef ALLIUM_DEBUG
         bool m_dirty;
       #endif
-      PetscScalar* m_entries;
 
     protected:
       PetscObjectPtr<Vec> petsc_allocate_like() const& {
@@ -208,6 +164,114 @@ namespace allium {
         ierr = VecCopy(m_ptr, new_vec); petsc::chkerr(ierr);
 
         return new_vec;
+      }
+
+    private:
+      PetscAbstractVectorStorage* allocate_like() const& override {
+        return new PetscAbstractVectorStorage(this->petsc_allocate_like());
+      }
+
+      PetscAbstractVectorStorage* clone() const& override {
+        return new PetscAbstractVectorStorage(this->petsc_clone());
+      }
+  };
+
+
+  template <typename N>
+  class PetscAbstractVectorStorage
+      : public VectorStorageTrait<PetscAbstractVectorStorage<N>, N>
+  {
+    public:
+      template <typename> friend class LocalSlice;
+
+      using typename VectorStorageTrait<PetscAbstractVectorStorage, N>::Number;
+      using typename VectorStorageTrait<PetscAbstractVectorStorage, N>::Real;
+      using VectorStorageTrait<PetscAbstractVectorStorage, N>::spec;
+
+    protected:
+      PetscAbstractVectorStorage(VectorSpec spec)
+        : VectorStorageTrait<PetscAbstractVectorStorage, N>(spec),
+          m_native(spec),
+          m_entries(nullptr)
+      {}
+
+    public:
+      PetscAbstractVectorStorage(const PetscObjectPtr<Vec>& vec)
+        : VectorStorageTrait<PetscAbstractVectorStorage, N>(
+            VectorSpec(petsc::object_comm(vec),
+                       petsc::vec_local_size(vec),
+                       petsc::vec_global_size(vec))),
+          m_native(vec),
+          m_entries(nullptr)
+      {}
+
+      PetscAbstractVectorStorage(const PetscAbstractVectorStorage&) = delete;
+      PetscAbstractVectorStorage& operator= (const PetscAbstractVectorStorage&) = delete;
+
+      using VectorStorageTrait<PetscAbstractVectorStorage, N>::operator+=;
+      PetscAbstractVectorStorage& operator+= (const PetscAbstractVectorStorage& other) {
+        m_native += other.m_native;
+        return *this;
+      }
+
+      void add_scaled(Number factor, const PetscAbstractVectorStorage& other) {
+        m_native.add_scaled(factor, other.m_native);
+      }
+
+      PetscAbstractVectorStorage& operator*=(const Number& factor) override {
+        m_native *= factor;
+        return *this;
+      }
+
+      using VectorStorageTrait<PetscAbstractVectorStorage, N>::dot;
+      Number dot(const PetscAbstractVectorStorage& other) const {
+        return narrow_number<N, PetscScalar>()(m_native.dot(other.m_native));
+      }
+
+      Real l2_norm() const override {
+        return narrow_number<Real, PetscReal>()(m_native.l2_norm());
+      }
+
+      void native(PetscObjectPtr<Vec> v) { m_native.native(v); }
+      PetscObjectPtr<Vec> native() const { return m_native.native(); }
+
+      PetscAbstractVectorStorage<PetscScalar>& native_scalar() { return m_native; }
+      const PetscAbstractVectorStorage<PetscScalar>& native_scalar() const { return m_native; }
+    protected:
+
+      Number* aquire_data_ptr() override
+      {
+        m_entries = m_native.aquire_data_ptr();
+
+        // convert to desired type
+        N* converted = new N[spec().local_size()];
+        std::transform(m_entries, m_entries+spec().local_size(),
+                       converted,
+                       narrow_number<N, PetscScalar>());
+
+        return converted;
+      }
+
+      void release_data_ptr(Number* data) override
+      {
+        // convert to PETSc (we should not need a cast, because we want that
+        // the conversion is not narrowing)
+        std::copy(data, data+spec().local_size(), m_entries);
+        m_native.release_data_ptr(m_entries);
+        m_entries = nullptr;
+      }
+
+    private:
+      PetscAbstractVectorStorage<PetscScalar> m_native;
+      PetscScalar *m_entries;
+
+    protected:
+      PetscObjectPtr<Vec> petsc_allocate_like() const& {
+        return m_native.petsc_allocate_like();
+      }
+
+      PetscObjectPtr<Vec> petsc_clone() const& {
+        return m_native.petsc_clone();
       }
   };
 }

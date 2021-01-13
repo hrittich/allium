@@ -90,7 +90,7 @@ namespace allium {
   template <typename V, typename M>
     void cg(V& solution, std::shared_ptr<M> mat, const V& rhs, real_part_t<typename V::Number> tol = 1e-8)
   {
-    CgSolver<V> solver(tol);
+    CgSolver<typename M::Vector> solver(tol);
     solver.setup(mat);
     solver.solve(solution, rhs);
   }
