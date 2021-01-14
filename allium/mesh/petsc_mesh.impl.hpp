@@ -18,30 +18,37 @@
 
 namespace allium {
 
-  PetscMesh<2>::PetscMesh(std::shared_ptr<PetscMeshSpec<2>> spec)
-    : PetscAbstractVectorStorage<PetscScalar>(spec->vector_spec()),
+  template <typename N, int D>
+  PetscMesh<N, D>::PetscMesh(std::shared_ptr<PetscMeshSpec<D>> spec)
+    : PetscAbstractVectorStorage<N>(spec->vector_spec()),
       m_spec(spec)
   {
     using namespace petsc;
     PetscErrorCode ierr;
 
-    ierr = DMCreateGlobalVector(spec->dm(), m_ptr.writable_ptr());
+    PetscObjectPtr<Vec> ptr;
+    ierr = DMCreateGlobalVector(spec->dm(), ptr.writable_ptr());
+    this->native(ptr);
+
     chkerr(ierr);
   }
 
-  PetscMesh<2>::PetscMesh(std::shared_ptr<PetscMeshSpec<2>> spec,
-              PetscObjectPtr<Vec> ptr)
-      : PetscAbstractVectorStorage<PetscScalar>(spec->vector_spec()),
+  template <typename N, int D>
+  PetscMesh<N, D>::PetscMesh(std::shared_ptr<PetscMeshSpec<D>> spec,
+                             PetscObjectPtr<Vec> ptr)
+      : PetscAbstractVectorStorage<N>(spec->vector_spec()),
         m_spec(spec)
     {
-      m_ptr = ptr;
+      this->native(ptr);
     }
 
-  PetscMesh<2>* PetscMesh<2>::allocate_like() const& {
+  template <typename N, int D>
+  PetscMesh<N, D>* PetscMesh<N, D>::allocate_like() const& {
     return new PetscMesh(m_spec);
   }
 
-  PetscMesh<2>* PetscMesh<2>::clone() const& {
+  template <typename N, int D>
+  PetscMesh<N, D>* PetscMesh<N, D>::clone() const& {
     std::unique_ptr<PetscMesh> cloned(allocate_like());
     cloned->assign(*this);
     return cloned.release();

@@ -22,6 +22,8 @@ TEST(Range, OneElement1D)
 {
   Range<1> r({1}, {2});
 
+  EXPECT_EQ(r.size(), 1);
+
   auto iter = r.begin();
   EXPECT_EQ(*iter, (Point<int, 1>{1}));
 
@@ -32,6 +34,8 @@ TEST(Range, OneElement1D)
 TEST(Range, TwoElement1D)
 {
   Range<1> r({1}, {3});
+
+  EXPECT_EQ(r.size(), 2);
 
   auto iter = r.begin();
   EXPECT_EQ(*iter, (Point<int, 1>{1}));
@@ -46,6 +50,8 @@ TEST(Range, TwoElement1D)
 TEST(Range, SixElement2D)
 {
   Range<2> r({1, 2}, {4, 4});
+
+  EXPECT_EQ(r.size(), 6);
 
   auto iter = r.begin();
   EXPECT_EQ(*iter, (Point<int, 2>{1, 2}));
@@ -78,5 +84,25 @@ TEST(Range, In)
   EXPECT_FALSE(r.in({0, 3}));
   EXPECT_FALSE(r.in({3, 8}));
   EXPECT_FALSE(r.in({4,7}));
+}
+
+TEST(Range, RangeIndex1D)
+{
+  Range<1> r({1}, {3});
+
+  EXPECT_EQ(0, r.index(Point<int, 1>{1}));
+  EXPECT_EQ(1, r.index(Point<int, 1>{2}));
+}
+
+TEST(Range, RangeIndex2D)
+{
+  Range<2> r({3,1}, {5,4});
+
+  EXPECT_EQ(0, r.index({3,1}));
+  EXPECT_EQ(1, r.index({3,2}));
+  EXPECT_EQ(2, r.index({3,3}));
+  EXPECT_EQ(3, r.index({4,1}));
+  EXPECT_EQ(4, r.index({4,2}));
+  EXPECT_EQ(5, r.index({4,3}));
 }
 

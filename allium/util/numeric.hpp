@@ -42,7 +42,7 @@ namespace allium {
    Allows the conversion of double to float, and the conversion of
    complex to real types by dropping the imaginary part.
    */
-  template <typename To, typename From>
+  template <typename To, typename From, typename Enabled = void>
   struct narrow_number {};
 
   template <>
@@ -63,7 +63,9 @@ namespace allium {
   };
 
   template <typename To, typename From>
-  struct narrow_number<To, std::complex<From>> {
+  struct narrow_number<To, std::complex<From>,
+                       std::enable_if_t<std::is_floating_point<To>::value>>
+  {
     To operator() (std::complex<From> x) {
       allium_assert(x.imag() == 0);
       return narrow_number<To, From>()(x.real());

@@ -55,7 +55,7 @@ namespace {
       </VTKFile>
   */
   void vtk_write_local(std::string filename,
-                       const PetscLocalMesh<2>& mesh,
+                       const PetscLocalMesh<double, 2>& mesh,
                        Range<2> range)
   {
     std::fstream os(filename, std::ios_base::out);
@@ -78,7 +78,7 @@ namespace {
         else
           os << " ";
 
-        os << std::real(lmesh(ix, iy));
+        os << lmesh(ix, iy);
       }
     }
 
@@ -120,7 +120,7 @@ namespace {
         </PImageData>
       </VTKFile>
 */
-void write_vtk(std::string filename, const PetscMesh<2>& mesh)
+void write_vtk(std::string filename, const PetscMesh<double, 2>& mesh)
 {
   Comm comm = mesh.spec().comm();
 
@@ -128,7 +128,7 @@ void write_vtk(std::string filename, const PetscMesh<2>& mesh)
 
   // VTK expects an overlap of the vertices on the domain boundary. Hence,
   // we need to receive the ghost cells.
-  PetscLocalMesh<2> ghosted_mesh(mesh.mesh_spec());
+  PetscLocalMesh<double, 2> ghosted_mesh(mesh.mesh_spec());
   ghosted_mesh.assign(mesh);
 
   auto global_range = mesh.mesh_spec()->range();

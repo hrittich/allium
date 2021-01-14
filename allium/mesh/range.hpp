@@ -39,11 +39,36 @@ namespace allium {
         return true;
       }
 
+      int index(Point<int, D> p) {
+        int idx = p[0] - m_begin_pos[0];
+        for (int i = 1; i < D; ++i) {
+          int dim_size = m_end_pos[i] - m_begin_pos[i];
+          idx = (p[i] - m_begin_pos[i]) + dim_size * idx;
+        }
+        return idx;
+      }
+
       Point<int, D> begin_pos() const { return m_begin_pos; }
       Point<int, D> end_pos() const { return m_end_pos; }
 
       RangeIterator<D> begin() const;
       RangeIterator<D> end() const;
+
+      /**
+        The number of points per dimension.
+      */
+      Point<int, D> shape() const { return m_end_pos - m_begin_pos; }
+
+      /**
+        The total number of points.
+      */
+      size_t size() const {
+        size_t s = 1;
+        for (int i=0; i < D; ++i) {
+          s *= shape()[i];
+        }
+        return s;
+      }
     private:
       Point<int, D> m_begin_pos, m_end_pos;
   };

@@ -72,6 +72,15 @@ namespace allium {
         }
         return *this;
       }
+
+      Point<N, D+1> joined(N x) {
+        Point<N, D+1> result;
+        for (int i = 0; i < D; ++i) {
+          result[i] = (*this)[i];
+        }
+        result[D] = x;
+        return result;
+      }
     private:
       std::array<N, D> m_entries;
   };

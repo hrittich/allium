@@ -23,7 +23,10 @@
 
 using namespace allium;
 
-void zero_boundary(PetscLocalMesh<2>& mesh)
+using Mesh = PetscMesh<double, 2>;
+using LocalMesh = PetscLocalMesh<double, 2>;
+
+void zero_boundary(::LocalMesh& mesh)
 {
   auto global_range = mesh.mesh_spec()->range();
   auto range = mesh.mesh_spec()->local_ghost_range();
@@ -43,7 +46,7 @@ double solution(double x, double y) {
   return x*x*x - 3 * x*y*y;
 }
 
-void initialize_exact_solution(PetscMesh<2>& mesh, double h)
+void initialize_exact_solution(Mesh& mesh, double h)
 {
   auto range = mesh.mesh_spec()->local_range();
   auto val = local_mesh(mesh);
@@ -55,7 +58,7 @@ void initialize_exact_solution(PetscMesh<2>& mesh, double h)
   }
 }
 
-void initialize_boundary(PetscLocalMesh<2>& mesh, double h)
+void initialize_boundary(::LocalMesh& mesh, double h)
 {
   auto global_range = mesh.mesh_spec()->range();
   auto range = mesh.mesh_spec()->local_ghost_range();
@@ -78,7 +81,7 @@ void initialize_boundary(PetscLocalMesh<2>& mesh, double h)
   }
 }
 
-void apply_laplace(PetscMesh<2>& f, double h, const PetscLocalMesh<2>& u)
+void apply_laplace(Mesh& f, double h, const ::LocalMesh& u)
 {
   auto range = u.mesh_spec()->local_range();
 
@@ -117,9 +120,9 @@ void print_mesh(const M& mesh) {
   }
 }
 
-void initialize_rhs(double h, PetscMesh<2>& rhs)
+void initialize_rhs(double h, Mesh& rhs)
 {
-  PetscLocalMesh<2> domain(rhs.mesh_spec());
+  ::LocalMesh domain(rhs.mesh_spec());
 
   initialize_boundary(domain, h);
 
@@ -151,14 +154,14 @@ int main(int argc, char** argv)
                   1, // ndof
                   1)); // stencil_width
 
-  PetscMesh<2> rhs(spec);
-  PetscMesh<2> solution(spec);
+  Mesh rhs(spec);
+  Mesh solution(spec);
 
-  CgSolver<PetscMesh<2>> solver(1e-10);
+  CgSolver<Mesh> solver(1e-10);
   auto op
-    = shared_copy(make_linear_operator<PetscMesh<2>>(
-        [h](PetscMesh<2>& result, const PetscMesh<2>& arg) {
-          PetscLocalMesh<2> local_arg(arg.mesh_spec());
+    = shared_copy(make_linear_operator<Mesh>(
+        [h](Mesh& result, const Mesh& arg) {
+          ::LocalMesh local_arg(arg.mesh_spec());
           local_arg.assign(arg);
           zero_boundary(local_arg);
           apply_laplace(result, h, local_arg);
@@ -170,8 +173,8 @@ int main(int argc, char** argv)
   set_zero(solution);
   solver.solve(solution, rhs);
 
-  PetscMesh<2> residual(spec);  // b - Ax
-  PetscMesh<2> tmp1(spec);
+  Mesh residual(spec);  // b - Ax
+  Mesh tmp1(spec);
   op->apply(tmp1, solution);
   residual.assign(rhs);
   residual.add_scaled(-1.0, tmp1);
@@ -180,7 +183,7 @@ int main(int argc, char** argv)
   // print_mesh(solution);
   // std::cout << std::endl;
 
-  PetscMesh<2> error(spec);
+  Mesh error(spec);
   initialize_exact_solution(error, h);
   // print_mesh(error);
   error.add_scaled(-1.0, solution);

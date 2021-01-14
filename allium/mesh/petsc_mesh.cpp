@@ -19,7 +19,7 @@
 #ifdef ALLIUM_USE_PETSC
 
 namespace allium {
-
+  ALLIUM_NOEXTERN_N(ALLIUM_PETSC_MESH_DECL)
 }
 
 #endif

@@ -22,6 +22,7 @@
 #include <allium/la/petsc_abstract_vector.hpp>
 #include "petsc_mesh_spec.hpp"
 #include "range.hpp"
+#include "local_mesh.hpp"
 
 #include <petscdm.h>
 #include <petscdmda.h>
@@ -36,39 +37,33 @@ class IPetscMesh {
     virtual Range<D> local_range() const = 0;
 };
 
-template <int D>
-class PetscMesh {};
-
-template <>
-class PetscMesh<2>
-  : public PetscAbstractVectorStorage<PetscScalar>,
-    public IPetscMesh<2>
+template <typename N, int D>
+class PetscMesh
+  : public PetscAbstractVectorStorage<N>,
+    public IPetscMesh<D>
 {
   public:
-    using PetscAbstractVectorStorage<PetscScalar>::PetscAbstractVectorStorage;
+    using PetscAbstractVectorStorage<N>::PetscAbstractVectorStorage;
 
-    explicit PetscMesh(std::shared_ptr<PetscMeshSpec<2>> spec);
+    explicit PetscMesh(std::shared_ptr<PetscMeshSpec<D>> spec);
     PetscMesh(const PetscMesh&) = delete;
     PetscMesh& operator= (const PetscMesh&) = delete;
 
-    PetscMesh(std::shared_ptr<PetscMeshSpec<2>> spec,
+    PetscMesh(std::shared_ptr<PetscMeshSpec<D>> spec,
               PetscObjectPtr<Vec> ptr);
 
-    std::shared_ptr<PetscMeshSpec<2>> mesh_spec() const override { return m_spec; }
-    PetscObjectPtr<Vec> petsc_vec() override { return m_ptr; }
-    Range<2> local_range() const override { return m_spec->local_range(); }
+    std::shared_ptr<PetscMeshSpec<D>> mesh_spec() const override { return m_spec; }
+    PetscObjectPtr<Vec> petsc_vec() override { return this->native(); }
+    Range<D> local_range() const override { return m_spec->local_range(); }
   private:
-    std::shared_ptr<PetscMeshSpec<2>> m_spec;
+    std::shared_ptr<PetscMeshSpec<D>> m_spec;
 
     PetscMesh* allocate_like() const& override;
     PetscMesh* clone() const& override;
 };
 
-template <int D>
-class PetscLocalMesh {};
-
-template <>
-class PetscLocalMesh<2> : public IPetscMesh<2>
+template <typename N, int D>
+class PetscLocalMesh : public IPetscMesh<D>
 {
   public:
     explicit PetscLocalMesh(std::shared_ptr<PetscMeshSpec<2>> spec)
@@ -84,7 +79,7 @@ class PetscLocalMesh<2> : public IPetscMesh<2>
     PetscLocalMesh(const PetscLocalMesh&) = delete;
     PetscLocalMesh& operator= (const PetscLocalMesh&) = delete;
 
-    void assign(const PetscMesh<2>& global_mesh)
+    void assign(const PetscMesh<N,D>& global_mesh)
     {
       using namespace petsc;
       PetscErrorCode ierr;
@@ -93,26 +88,28 @@ class PetscLocalMesh<2> : public IPetscMesh<2>
       chkerr(ierr);
     }
 
-    std::shared_ptr<PetscMeshSpec<2>> mesh_spec() const override { return m_spec; }
+    std::shared_ptr<PetscMeshSpec<D>> mesh_spec() const override { return m_spec; }
     PetscObjectPtr<Vec> petsc_vec() override { return m_ptr; }
-    Range<2> local_range() const override { return m_spec->local_ghost_range(); }
+    Range<D> local_range() const override { return m_spec->local_ghost_range(); }
   private:
-    std::shared_ptr<PetscMeshSpec<2>> m_spec;
+    std::shared_ptr<PetscMeshSpec<D>> m_spec;
     PetscObjectPtr<Vec> m_ptr;
 };
+
+template <typename N, int D, bool is_mutable=true>
+class PetscMeshValues;
 
 /// @cond INTERNAL
 template <int D> struct PetscArrayType {
   using type = typename PetscArrayType<D-1>::type*;
 };
 template <> struct PetscArrayType<0> { using type = PetscScalar; };
+
 /// @endcond
 
-template <int D, bool is_mutable=true>
-class PetscMeshValues {};
 
 template <bool is_mutable>
-class PetscMeshValues<2, is_mutable>
+class PetscMeshValues<PetscScalar, 2, is_mutable>
 {
   public:
     using Mesh
@@ -171,6 +168,9 @@ class PetscMeshValues<2, is_mutable>
       return m_values[j][i * m_ndof + dof];
     }
 
+    int dof_count() const { return m_ndof; }
+    Range<2> local_range() const { return m_mesh->local_range(); }
+
   private:
     typename PetscArrayType<2>::type m_values;
     Mesh* m_mesh;
@@ -180,16 +180,70 @@ class PetscMeshValues<2, is_mutable>
     #endif
 };
 
-template <int D>
-PetscMeshValues<D, true> local_mesh(IPetscMesh<D>& mesh) {
-  return PetscMeshValues<D, true>(mesh);
+template <typename N, int D, bool is_mutable>
+class PetscMeshValues
+{
+  public:
+    using Mesh = typename PetscMeshValues<PetscScalar, 2, is_mutable>::Mesh;
+
+    PetscMeshValues(Mesh& mesh)
+      : m_native_values(mesh),
+        m_converted_values(
+          Range<D+1>(mesh.local_range().begin_pos().joined(0),
+                     mesh.local_range().end_pos().joined(mesh.mesh_spec()->ndof())))
+    {
+      for (auto p : mesh.local_range()) {
+        for (int i_dof=0; i_dof < m_native_values.dof_count(); ++i_dof) {
+          m_converted_values[p.joined(i_dof)]
+            = narrow_number<N, PetscScalar>()(m_native_values(p[0], p[1], i_dof));
+        }
+      }
+    }
+
+    PetscMeshValues(PetscMeshValues&& other) = default;
+
+    ~PetscMeshValues()
+    {
+      for (auto p : m_native_values.local_range()) {
+        for (int i_dof=0; i_dof < m_native_values.dof_count(); ++i_dof) {
+          m_native_values(p[0], p[1], i_dof) = m_converted_values[p.joined(i_dof)];
+        }
+      }
+    }
+
+    N& operator() (int i, int j, int dof = 0) {
+      return m_converted_values[Point<int, D+1>({i, j, dof})];
+    }
+
+  private:
+    PetscMeshValues<PetscScalar, 2, is_mutable> m_native_values;
+    LocalMesh<N, D+1> m_converted_values;
+};
+
+template <typename N, int D>
+PetscMeshValues<N, D, true> local_mesh(PetscMesh<N, D>& mesh) {
+  return PetscMeshValues<N, D, true>(mesh);
 }
 
-template <int D>
-PetscMeshValues<D, false> local_mesh(const IPetscMesh<D>& mesh) {
-  return PetscMeshValues<D, false>(mesh);
+template <typename N, int D>
+PetscMeshValues<N, D, false> local_mesh(const PetscMesh<N, D>& mesh) {
+  return PetscMeshValues<N, D, false>(mesh);
 }
 
+template <typename N, int D>
+PetscMeshValues<N, D, true> local_mesh(PetscLocalMesh<N, D>& mesh) {
+  return PetscMeshValues<N, D, true>(mesh);
+}
+
+template <typename N, int D>
+PetscMeshValues<N, D, false> local_mesh(const PetscLocalMesh<N, D>& mesh) {
+  return PetscMeshValues<N, D, false>(mesh);
+}
+
+#define ALLIUM_PETSC_MESH_DECL(extern, N) \
+  extern template class PetscMesh<N, 2>; \
+  extern template class PetscLocalMesh<N, 2>;
+ALLIUM_EXTERN_N(ALLIUM_PETSC_MESH_DECL)
 
 }
 

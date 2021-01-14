@@ -24,8 +24,10 @@
 
 using namespace allium;
 
-using Number = PetscScalar;
+using Number = double;
 using Real = real_part_t<Number>;
+using Mesh = PetscMesh<double, 2>;
+using LocalMesh = PetscLocalMesh<double, 2>;
 
 /** Stores the problem specific parameters. */
 struct Problem {
@@ -65,7 +67,7 @@ double exact_solution(Problem pb, double t, double x, double y)
 /**
   Set the boundary values of the mesh to zero.
 */
-void zero_boundary(PetscLocalMesh<2>& mesh)
+void zero_boundary(::LocalMesh& mesh)
 {
   // the range of the whole mesh
   auto global_range = mesh.mesh_spec()->range();
@@ -91,7 +93,7 @@ void zero_boundary(PetscLocalMesh<2>& mesh)
 
 /** Add the contribution of the boundary points when applying the Laplace
  operator to the given vector. */
-void add_boundary(PetscMesh<2>& mesh, Problem pb, double t)
+void add_boundary(Mesh& mesh, Problem pb, double t)
 {
   // the range of the whole mesh
   auto global_range = mesh.mesh_spec()->range();
@@ -132,7 +134,7 @@ void add_boundary(PetscMesh<2>& mesh, Problem pb, double t)
 }
 
 /** Set the mesh values to the exact solution. */
-void set_solution(PetscMesh<2>& result, Problem pb, double t)
+void set_solution(Mesh& result, Problem pb, double t)
 {
   auto range = result.mesh_spec()->local_range();
 
@@ -147,11 +149,11 @@ void set_solution(PetscMesh<2>& result, Problem pb, double t)
 /**
  Compute `f = (-Δ + a I) u`.
  */
-void apply_shifted_laplace(PetscMesh<2>& f, Problem pb, Number a, const PetscMesh<2>& u)
+void apply_shifted_laplace(Mesh& f, Problem pb, Number a, const Mesh& u)
 {
   // PETSc require to create a "local mesh" to have access to the ghost
   // nodes.
-  PetscLocalMesh<2> u_aux(u.mesh_spec());
+  ::LocalMesh u_aux(u.mesh_spec());
   u_aux.assign(u); // copy to determine the ghost nodes
 
   // We set the boundary to zero such that we can apply the same stencil
@@ -180,24 +182,24 @@ void apply_shifted_laplace(PetscMesh<2>& f, Problem pb, Number a, const PetscMes
 /**
  Solves y - a f_i(t, y) = r, where f_i(t, y) = Δy.
 */
-void solve_f_impl(PetscMesh<2>& y, Problem pb, Real t, Number a, const PetscMesh<2>& r) {
+void solve_f_impl(Mesh& y, Problem pb, Real t, Number a, const Mesh& r) {
   using namespace std::placeholders;
 
   // rhs = (1/a) r + Δ^b u^b
-  PetscMesh<2> rhs(r.mesh_spec());
+  Mesh rhs(r.mesh_spec());
   rhs.assign(r);
   rhs *= (1.0/a);
   add_boundary(rhs, pb, t);
 
   // solve (-Δ + (1/a) I) y = (1/a) r + Δ^b y^b
-  CgSolver<PetscMesh<2>> solver;
+  CgSolver<Mesh> solver;
   auto op = std::bind(apply_shifted_laplace, _1, pb, 1.0/a, _2);
-  solver.setup(shared_copy(make_linear_operator<PetscMesh<2>>(op)));
+  solver.setup(shared_copy(make_linear_operator<Mesh>(op)));
   solver.solve(y, rhs);
 };
 
 /** The explicit part of the ODE, f_e(y) = y*(1-y) */
-void f_expl(PetscMesh<2>& result, Real t, const PetscMesh<2>& u)
+void f_expl(Mesh& result, Real t, const Mesh& u)
 {
   auto range = u.mesh_spec()->local_range();
   auto lresult = local_mesh(result);
@@ -233,13 +235,13 @@ int main(int argc, char** argv)
                   1, // ndof
                   1)); // stencil_width
 
-  PetscMesh<2> u(spec);
-  PetscMesh<2> error(spec);
+  Mesh u(spec);
+  Mesh error(spec);
 
   Problem pb = { 1.0, 0.5, h };
 
   // setup the integrator
-  ImexEuler<PetscMesh<2>> integrator;
+  ImexEuler<Mesh> integrator;
   integrator.setup(f_expl,
                    std::bind(solve_f_impl, _1, pb, _2, _3, _4));
 

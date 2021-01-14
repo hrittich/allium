@@ -1,4 +1,4 @@
-// Copyright 2021 Hannah Rittich
+// Copyright 2020 Hannah Rittich
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,34 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ALLIUM_MESH_VTK_IO_HPP
-#define ALLIUM_MESH_VTK_IO_HPP
+#include <allium/mesh/local_mesh.hpp>
 
-#include <allium/config.hpp>
-#include <allium/ipc/comm.hpp>
-#include "petsc_mesh.hpp"
-#include <ostream>
+#include <gtest/gtest.h>
 
-/**
- @defgroup io IO
- @brief Input and output routines.
-*/
+using namespace allium;
 
-namespace allium {
- /**
- @addtogroup io
- @{
- */
+TEST(LocalMesh, CreateFillRead)
+{
+  Range<2> range({0,0}, {2,2});
 
-#ifdef ALLIUM_USE_PETSC
-  /**
-   Write the mesh values into a VTK file.
-   */
-  void write_vtk(std::string filename, const PetscMesh<double, 2>& mesh);
-#endif
+  LocalMesh<double, 2> mesh(range);
 
-/// @}
+  for (auto p : range) {
+    mesh[p] = 100 * p[1] + p[0];
+  }
+
+  for (auto p : range) {
+    EXPECT_EQ(mesh[p], 100 * p[1] + p[0]);
+  }
 }
-
-
-#endif

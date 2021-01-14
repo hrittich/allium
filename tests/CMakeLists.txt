@@ -19,6 +19,7 @@ add_executable(test_suite
   gmres.cpp
   hash.cpp
   imex_euler.cpp
+  local_mesh.cpp
   local_vector.cpp
   main.cpp
   numeric.cpp

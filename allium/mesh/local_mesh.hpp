@@ -12,34 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ALLIUM_MESH_VTK_IO_HPP
-#define ALLIUM_MESH_VTK_IO_HPP
+#ifndef ALLIUM_MESH_LOCAL_MESH_HPP
+#define ALLIUM_MESH_LOCAL_MESH_HPP
 
-#include <allium/config.hpp>
-#include <allium/ipc/comm.hpp>
-#include "petsc_mesh.hpp"
-#include <ostream>
-
-/**
- @defgroup io IO
- @brief Input and output routines.
-*/
+#include <vector>
+#include "range.hpp"
 
 namespace allium {
- /**
- @addtogroup io
- @{
- */
 
-#ifdef ALLIUM_USE_PETSC
-  /**
-   Write the mesh values into a VTK file.
-   */
-  void write_vtk(std::string filename, const PetscMesh<double, 2>& mesh);
-#endif
+template <typename N, int D>
+class LocalMesh
+{
+  public:
+    using Number = N;
 
-/// @}
+    LocalMesh(Range<D> range)
+      : m_range(range),
+        m_entries(range.size())
+    {}
+
+    N& operator[] (Point<int, D> pos) {
+      return m_entries[m_range.index(pos)];
+    }
+
+    const N& operator[] (Point<int, D> pos) const {
+      return const_cast<LocalMesh&>(*this)[pos];
+    }
+
+  private:
+    Range<D> m_range;
+    std::vector<double> m_entries;
+};
+
 }
-
 
 #endif

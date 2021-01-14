@@ -48,3 +48,13 @@ TEST(Point, Scale)
   EXPECT_EQ(p[0], 6);
 }
 
+TEST(Point, Join)
+{
+  Point<int, 2> p{2, 3};
+  auto q = p.joined(4);
+
+  EXPECT_EQ(q[0], 2);
+  EXPECT_EQ(q[1], 3);
+  EXPECT_EQ(q[2], 4);
+}
+

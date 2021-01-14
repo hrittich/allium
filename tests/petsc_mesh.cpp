@@ -23,8 +23,24 @@
 
 using namespace allium;
 
-TEST(PetscMesh, Simple4x4)
+typedef
+  testing::Types<
+    double,
+    std::complex<double>
+    >
+  MeshTypes;
+
+template <typename T>
+struct PetscMeshTest : public testing::Test {
+  using Number = T;
+};
+
+TYPED_TEST_CASE(PetscMeshTest, MeshTypes);
+
+TYPED_TEST(PetscMeshTest, Simple4x4)
 {
+  using Number = TypeParam;
+
   auto comm = Comm::world();
   if (comm.size() < 4) {
     std::cerr << "WARNING: at least 4 ranks required" << std::endl;
@@ -46,19 +62,19 @@ TEST(PetscMesh, Simple4x4)
                   1, // ndof
                   1)); // stencil_width
 
-  PetscMesh<2> global(spec);
+  PetscMesh<Number, 2> global(spec);
 
   auto p = spec->local_range().begin_pos();
   {
-    PetscMeshValues<2> v(global);
+    PetscMeshValues<Number, 2> v(global);
     v(p[0], p[1]) = 10 * p[0] + p[1];
   }
 
-  PetscLocalMesh<2> local(spec);
+  PetscLocalMesh<Number, 2> local(spec);
   local.assign(global);
 
   {
-    PetscMeshValues<2> v(local);
+    PetscMeshValues<Number, 2> v(local);
     EXPECT_EQ(v(0,0), 00.0);
     EXPECT_EQ(v(0,1), 01.0);
     EXPECT_EQ(v(1,0), 10.0);
@@ -66,7 +82,8 @@ TEST(PetscMesh, Simple4x4)
   }
 }
 
-TEST(PetscMesh, FixedLocalSize2D) {
+TYPED_TEST(PetscMeshTest, FixedLocalSize2D) {
+  using Number = PetscScalar;
   auto comm = Comm::world();
 
   unsigned int N = (int)(100 * sqrt(comm.size()));
@@ -81,11 +98,11 @@ TEST(PetscMesh, FixedLocalSize2D) {
                   1, // ndof
                   1)); // stencil_width
 
-  PetscMesh<2> global(spec);
-  PetscLocalMesh<2> local(spec);
+  PetscMesh<Number, 2> global(spec);
+  PetscLocalMesh<Number, 2> local(spec);
 
   {
-    PetscMeshValues<2> val(global);
+    PetscMeshValues<Number, 2> val(global);
 
     std::cout <<
       "normal: " << spec->local_range() << " "
@@ -100,7 +117,7 @@ TEST(PetscMesh, FixedLocalSize2D) {
   local.assign(global);
 
   {
-    PetscMeshValues<2> val(local);
+    PetscMeshValues<Number, 2> val(local);
 
     for (auto p : spec->local_ghost_range()) {
       if (p[0] < 0 || p[1] < 0 || safe_ge(p[0], N) || safe_ge(p[1], N))

@@ -22,7 +22,8 @@
 namespace allium {
 
   /**
-    A (mathematical) vector stored locally on one processor.
+   Implements a (mathematical) vector in the mathematical sense, which is
+   stored locally, i.e., not distributed accross different processors.
   */
   template <typename N>
   class LocalVector
@@ -60,6 +61,9 @@ namespace allium {
         return (*const_cast<LocalVector*>(this))[i_element];
       }
 
+      /**
+        The length of the vector.
+      */
       size_t nrows() const { return m_storage.rows(); }
     private:
       Eigen::Matrix<N, Eigen::Dynamic, 1> m_storage;
