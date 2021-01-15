@@ -8,8 +8,10 @@ sudo apt-get install -y python3-dev python3-mpi4py
 sudo apt-get install -y \
   doxygen \
   gfortran \
+  ghostscript \
   graphviz \
   libatlas-base-dev \
   libgsl-dev \
-  pkg-config
+  pkg-config \
+  texlive-latex-base
 
