@@ -23,6 +23,7 @@ add_executable(test_suite
   numeric.cpp
   petsc_mesh.cpp
   point.cpp
+  polynomial.cpp
   range.cpp
   sparse_matrix.cpp
   vector_storage.cpp

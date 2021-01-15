@@ -122,6 +122,18 @@ if(PETSC_FOUND)
   " ALLIUM_PETSC_HAS_DOUBLE)
 endif()
 
+# GNU Scientific library
+if(PKG_CONFIG_FOUND)
+  pkg_check_modules(GSL gsl)
+endif()
+
+if(GSL_FOUND)
+  set(ALLIUM_USE_GSL ON CACHE BOOL "Use the GNU Scientific Library")
+
+  include_directories(${GSL_INCLUDE_DIRS})
+  list(APPEND LIBRARIES ${GSL_LIBRARIES})
+endif()
+
 # Eigen3
 include_directories(${CMAKE_BINARY_DIR}/contrib/eigen)
 
@@ -206,6 +218,7 @@ if(ALLIUM_USE_PETSC)
   show_status("  Has Double" ALLIUM_PETSC_HAS_DOUBLE)
   show_status("  Has Complex" ALLIUM_PETSC_HAS_COMPLEX)
 endif()
+show_status("Use GSL" ALLIUM_USE_GSL)
 show_status("Show internal API" ALLIUM_INTERNAL_DOCS)
 show_status("Python Module" ALLIUM_USE_PYTHON)
 if(ALLIUM_USE_PYTHON)

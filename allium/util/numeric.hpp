@@ -26,6 +26,10 @@ namespace allium {
   template <> struct real_part<int> { typedef int type; };
   template <> struct real_part<long> { typedef long type; };
   template <typename T> struct real_part<std::complex<T>> { typedef T type; };
+
+
+  template <typename N> struct is_complex : public std::false_type {};
+  template <typename N> struct is_complex<std::complex<N>> : public std::true_type {};
   /// @endcond
 
   template <typename T>

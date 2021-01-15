@@ -5,5 +5,11 @@ export SCRIPTDIR="$(dirname "$0")"
 . "$SCRIPTDIR/install-minimal-dependencies.sh"
 
 sudo apt-get install -y python3-dev python3-mpi4py
-sudo apt-get install -y doxygen graphviz libatlas-base-dev gfortran pkg-config
+sudo apt-get install -y \
+  doxygen \
+  gfortran \
+  graphviz \
+  libatlas-base-dev \
+  libgsl-dev \
+  pkg-config
 

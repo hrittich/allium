@@ -20,7 +20,10 @@ add_library(allium_util
   except.hpp
   extern.hpp
   hash.cpp hash.hpp
+  memory.hpp
   numeric.hpp
+  polynomial.hpp
+  preprocess.hpp
   types.hpp
 )
 
