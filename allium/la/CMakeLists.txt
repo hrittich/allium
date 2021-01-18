@@ -26,6 +26,7 @@ add_library(allium_la
   petsc_util.cpp petsc_util.hpp
   petsc_vector.cpp petsc_vector.hpp
   sparse_matrix.hpp
+  txt_io.cpp txt_io.hpp
   vector_spec.cpp vector_spec.hpp
   vector_storage.cpp vector_storage.impl.hpp vector_storage.hpp
   vector_trait.hpp
