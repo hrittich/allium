@@ -21,6 +21,9 @@
 
 namespace allium {
 
+  /**
+    A (mathematical) vector stored locally on one processor.
+  */
   template <typename N>
   class LocalVector
     : public VectorTrait<LocalVector<N>, N>
@@ -81,6 +84,20 @@ namespace allium {
     LocalVector<N> w = v;
     w *= s;
     return w;
+  }
+
+  template <typename N>
+  std::ostream& operator<< (std::ostream& os, const LocalVector<N>& v)
+  {
+    bool first = true;
+    for (size_t i = 0; i < v.nrows(); ++i) {
+      if (first) first = false;
+      else os << " ";
+
+      os << v[i];
+    }
+
+    return os;
   }
 
   #define ALLIUM_LOCAL_VECTOR_DECL(extern, N) \
