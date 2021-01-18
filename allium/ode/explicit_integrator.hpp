@@ -15,6 +15,8 @@
 #ifndef ALLIUM_ODE_EXPLICIT_INTEGRATOR_HPP
 #define ALLIUM_ODE_EXPLICIT_INTEGRATOR_HPP
 
+#include <functional>
+
 namespace allium {
 
   /**

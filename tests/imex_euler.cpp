@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-
 #include <allium/util/memory.hpp>
 #include <allium/la/default.hpp>
 #include <allium/ode/imex_euler.hpp>
+
+#include <gtest/gtest.h>
 
 using namespace allium;
 

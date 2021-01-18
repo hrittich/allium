@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
 #include <allium/config.hpp>
 #include <allium/la/eigen_sparse_matrix.hpp>
 #include <allium/la/petsc_sparse_matrix.hpp>
+
+#include <gtest/gtest.h>
 
 using namespace allium;
 

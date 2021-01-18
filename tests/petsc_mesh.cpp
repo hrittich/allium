@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
 #include <allium/config.hpp>
 
 #ifdef ALLIUM_USE_PETSC
 
 #include <allium/mesh/petsc_mesh.hpp>
 #include <allium/util/hash.hpp>
+
+#include <gtest/gtest.h>
 
 using namespace allium;
 

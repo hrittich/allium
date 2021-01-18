@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <allium/util/hash.hpp>
+
 #include <gtest/gtest.h>
 
-#include <allium/util/hash.hpp>
 using namespace allium;
 
 TEST(Hash, BitScatter)

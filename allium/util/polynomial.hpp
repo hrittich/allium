@@ -18,6 +18,8 @@
 #include <allium/util/assert.hpp>
 #include <allium/config.hpp>
 #include <type_traits>
+#include <vector>
+#include <algorithm>
 #include <complex>
 #include "numeric.hpp"
 

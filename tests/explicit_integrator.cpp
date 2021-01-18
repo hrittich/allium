@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-
 #include <allium/la/default.hpp>
 #include <allium/ode/explicit_euler.hpp>
 #include <allium/ode/runge_kutta_4.hpp>
+
+#include <gtest/gtest.h>
 
 using namespace allium;
 

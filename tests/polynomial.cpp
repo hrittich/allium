@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <allium/util/polynomial.hpp>
 #include <complex>
 
 #include <gtest/gtest.h>
-#include <allium/util/polynomial.hpp>
 
 using namespace allium;
 
