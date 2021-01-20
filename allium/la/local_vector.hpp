@@ -47,6 +47,19 @@ namespace allium {
         }
       }
 
+      /**
+        Return a vector whose entries are all equal.
+
+        @param [in] x The value of the entries.
+      */
+      static LocalVector constant(size_t nrows, Number x) {
+        LocalVector v(nrows);
+        for (size_t i=0; i < nrows; ++i) {
+          v[i] = x;
+        }
+        return v;
+      }
+
       LocalVector& operator+= (const LocalVector& rhs);
       LocalVector& operator*= (Number rhs);
 
