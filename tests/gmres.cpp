@@ -72,7 +72,7 @@ TEST(GMRES, HessenbergQrSolve1)
   EXPECT_EQ(1, qr.residual_norm());
 
   LocalVector<double> solution = qr.solution();
-  ASSERT_EQ(1, solution.nrows());
+  ASSERT_EQ(1, solution.rows());
   EXPECT_DOUBLE_EQ(2.0, solution[0]);
 }
 
@@ -96,7 +96,7 @@ TEST(GMRES, HessenbergQrSolve2)
   EXPECT_DOUBLE_EQ(qr.residual_norm(), 0);
 
   LocalVector<double> solution = qr.solution();
-  ASSERT_EQ(solution.nrows(), 2);
+  ASSERT_EQ(solution.rows(), 2);
   EXPECT_DOUBLE_EQ(solution[0], -1);
   EXPECT_DOUBLE_EQ(solution[1],  1);
 }
@@ -117,7 +117,7 @@ TEST(GMRES, HessenbergQrSolve3)
   EXPECT_DOUBLE_EQ(qr.residual_norm(), sqrt(2)*3);
 
   LocalVector<complex> solution = qr.solution();
-  ASSERT_EQ(solution.nrows(), 2);
+  ASSERT_EQ(solution.rows(), 2);
   EXPECT_DOUBLE_EQ(std::abs(solution[0] - 1.0), 0);
   EXPECT_DOUBLE_EQ(std::abs(solution[1] - 2.0), 0);
 }
@@ -136,7 +136,7 @@ TEST(GMRES, HessenbergQrSolve4)
   EXPECT_DOUBLE_EQ(qr.residual_norm(), 1);
 
   LocalVector<Number> solution = qr.solution();
-  ASSERT_EQ(solution.nrows(), 1);
+  ASSERT_EQ(solution.rows(), 1);
   EXPECT_DOUBLE_EQ(std::abs(solution[0] - 2.0), 0);
 }
 

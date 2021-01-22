@@ -24,7 +24,7 @@ TEST(LocalVectorTest, constant)
   auto v = LocalVector<double>::constant(3, 42);
   std::stringstream s;
 
-  EXPECT_EQ(v.nrows(), 3);
+  EXPECT_EQ(v.rows(), 3);
   EXPECT_EQ(v[0], 42);
   EXPECT_EQ(v[1], 42);
   EXPECT_EQ(v[2], 42);

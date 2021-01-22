@@ -34,8 +34,8 @@ namespace allium {
       using Real = real_part_t<Number>;
       using EigenVector = Eigen::Matrix<N, Eigen::Dynamic, 1>;
 
-      explicit LocalVector(size_t nrows)
-        : m_storage(nrows)
+      explicit LocalVector(size_t rows)
+        : m_storage(rows)
       {}
 
       explicit LocalVector(std::initializer_list<N> entries)
@@ -57,9 +57,9 @@ namespace allium {
 
         @param [in] x The value of the entries.
       */
-      static LocalVector constant(size_t nrows, Number x) {
-        LocalVector v(nrows);
-        for (size_t i=0; i < nrows; ++i) {
+      static LocalVector constant(size_t rows, Number x) {
+        LocalVector v(rows);
+        for (size_t i=0; i < rows; ++i) {
           v[i] = x;
         }
         return v;
@@ -82,7 +82,10 @@ namespace allium {
       /**
         The length of the vector.
       */
-      size_t nrows() const { return m_storage.rows(); }
+      size_t rows() const { return m_storage.rows(); }
+
+      [[deprecated ("Use the 'rows' method instead.")]]
+        size_t nrows() const { return rows(); }
 
       const EigenVector& native() const { return m_storage; } 
     private:
@@ -114,7 +117,7 @@ namespace allium {
   std::ostream& operator<< (std::ostream& os, const LocalVector<N>& v)
   {
     bool first = true;
-    for (size_t i = 0; i < v.nrows(); ++i) {
+    for (size_t i = 0; i < v.rows(); ++i) {
       if (first) first = false;
       else os << " ";
 

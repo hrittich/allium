@@ -21,14 +21,14 @@ void write_txt(std::string filename, std::vector<LocalVector<double>> columns)
 {
   // check that the columns have equal length
   for (size_t i = 1; i < columns.size(); ++i) {
-    if (columns.at(0).nrows() != columns.at(i).nrows()) {
+    if (columns.at(0).rows() != columns.at(i).rows()) {
       throw std::runtime_error("Columns have different lengths.");
     }
   }
 
   std::fstream fp(filename, std::ios_base::out);
 
-  for (size_t i_row = 0; i_row < columns.at(0).nrows(); ++i_row)
+  for (size_t i_row = 0; i_row < columns.at(0).rows(); ++i_row)
   {
     bool first = true;
     for (size_t i_col = 0; i_col < columns.size(); ++i_col) {

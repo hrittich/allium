@@ -292,8 +292,8 @@ namespace allium {
     LocalVector<N> y = qr.solution();
     // compute linear combination of basis vectors to approximate the
     // solution of the LGS
-    assert(y.nrows() == krylov_base.size() - 1);
-    for (size_t i_base = 0; i_base < y.nrows(); ++i_base) {
+    assert(y.rows() == krylov_base.size() - 1);
+    for (size_t i_base = 0; i_base < y.rows(); ++i_base) {
       x.add_scaled(y[i_base], *krylov_base[i_base]);
     }
 
