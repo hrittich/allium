@@ -32,6 +32,7 @@ namespace allium {
     public:
       using Number = N;
       using Real = real_part_t<Number>;
+      using EigenVector = Eigen::Matrix<N, Eigen::Dynamic, 1>;
 
       explicit LocalVector(size_t nrows)
         : m_storage(nrows)
@@ -46,6 +47,10 @@ namespace allium {
           ++i_entry;
         }
       }
+
+      explicit LocalVector(const EigenVector& v)
+        : m_storage(v)
+      {}
 
       /**
         Return a vector whose entries are all equal.
@@ -78,8 +83,10 @@ namespace allium {
         The length of the vector.
       */
       size_t nrows() const { return m_storage.rows(); }
+
+      const EigenVector& native() const { return m_storage; } 
     private:
-      Eigen::Matrix<N, Eigen::Dynamic, 1> m_storage;
+      EigenVector m_storage;
   };
 
   template <typename N>
