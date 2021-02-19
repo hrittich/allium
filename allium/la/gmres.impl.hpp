@@ -136,7 +136,7 @@ namespace allium {
   {
     size_t n_columns = m_r_columns.size();
 
-    assert(next_column.nrows() == n_columns + 2);
+    assert(next_column.rows() == n_columns + 2);
 
     // First, apply previous rotations to the new column
     for (size_t i_rot = 0; i_rot < n_columns; ++i_rot) {
