@@ -259,6 +259,8 @@ namespace allium {
         std::copy(data, data+spec().local_size(), m_entries);
         m_native.release_data_ptr(m_entries);
         m_entries = nullptr;
+
+        delete[] data; // delete the buffer for the converted data
       }
 
     private:

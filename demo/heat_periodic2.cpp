@@ -43,7 +43,6 @@ struct Problem {
 */
 double exact_solution(Problem pb, double t, double x, double y)
 {
-  //std::cout << x << " " << y << " " << sin(y*pi*2) << std::endl;
   return exp(-8*pi*pi*t) * sin(x*pi*2) * sin(y*pi*2);
 }
 
@@ -130,7 +129,7 @@ int main(int argc, char** argv)
   auto comm = Comm::world();
 
   if (comm.rank() == 0)
-    std::cout << "Fisher 2D solver" << std::endl;
+    std::cout << "Periodic heat 2D solver" << std::endl;
 
   // Create a mesh. For description of the parameters, see the PETSc manual
   auto spec = std::shared_ptr<PetscMeshSpec<2>>(
