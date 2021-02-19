@@ -82,6 +82,65 @@ TYPED_TEST(PetscMeshTest, Simple4x4)
   }
 }
 
+TYPED_TEST(PetscMeshTest, Periodic)
+{
+  using Number = TypeParam;
+
+  auto comm = Comm::world();
+
+  // we use only 1 rank
+  auto sub = comm.split(comm.rank() < 1 ? 0 : 1, 0);
+  if (comm.rank() >= 1)
+    return;
+
+  auto spec = std::shared_ptr<PetscMeshSpec<2>>(
+                new PetscMeshSpec<2>(
+                  sub,
+                  {DM_BOUNDARY_PERIODIC, DM_BOUNDARY_PERIODIC},
+                  DMDA_STENCIL_BOX,
+                  {2, 2}, // global size
+                  {1, 1}, // processors per dim
+                  1, // ndof
+                  1)); // stencil_width
+
+  PetscMesh<Number, 2> global(spec);
+
+  {
+    PetscMeshValues<Number, 2> v(global);
+    v(0, 0) = 00.0;
+    v(0, 1) = 01.0;
+    v(1, 0) = 10.0;
+    v(1, 1) = 11.0;
+  }
+
+  PetscLocalMesh<Number, 2> local(spec);
+  local.assign(global);
+
+  {
+    PetscMeshValues<Number, 2> v(local);
+    EXPECT_EQ(v(0,0), 00.0);
+    EXPECT_EQ(v(0,1), 01.0);
+    EXPECT_EQ(v(1,0), 10.0);
+    EXPECT_EQ(v(1,1), 11.0);
+
+    // top
+    EXPECT_EQ(v(0,-1), 01.0);
+    EXPECT_EQ(v(1,-1), 11.0);
+
+    // left
+    EXPECT_EQ(v(-1,0), 10.0);
+    EXPECT_EQ(v(-1,1), 11.0);
+
+    // right
+    EXPECT_EQ(v(2,0), 00.0);
+    EXPECT_EQ(v(2,1), 01.0);
+
+    // bottom
+    EXPECT_EQ(v(0,2), 00.0);
+    EXPECT_EQ(v(1,2), 10.0);
+  }
+}
+
 TYPED_TEST(PetscMeshTest, FixedLocalSize2D) {
   using Number = PetscScalar;
   auto comm = Comm::world();
