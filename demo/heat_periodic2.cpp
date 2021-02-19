@@ -29,108 +29,22 @@ using Real = real_part_t<Number>;
 using Mesh = PetscMesh<double, 2>;
 using LocalMesh = PetscLocalMesh<double, 2>;
 
+constexpr double pi = 4.0 * atan(1.0);
+
 /** Stores the problem specific parameters. */
 struct Problem {
-  double alpha;
-  double beta;
   double h;
 };
 
 /**
   The exact analytic solution of the problem.
   The solution for this particular case is known, hence, we can check the
-  correctness of out code.
-
-  The exact solution we are using there is a generalization to 2d of the
-  solution derived in [Malfliet, 1992],
-  @f[
-    u(x,t) = (1/4)\{1-\tanh[(1/2\sqrt{6})(x-(5/\sqrt{6})t)]\}^2
-    \,.
-  @f]
-
-  Malfliet, W. 1992. “Solitary Wave Solutions of Nonlinear Wave Equations.”
-  American Journal of Physics, American Journal of Physics, 60 (7): 650–54.
-  https://doi.org/10.1119/1.17120.
+  correctness of our code.
 */
 double exact_solution(Problem pb, double t, double x, double y)
 {
-  double norm = sqrt(pb.alpha*pb.alpha + pb.beta*pb.beta);
-  double alpha = pb.alpha / norm;
-  double beta = pb.beta / norm;
-
-  double r = alpha * x + beta * y;
-
-  double gamma = (1 - tanh((1.0/(2*sqrt(6)))*(r-(5.0/sqrt(6))*t)));
-  return (1.0/4) * gamma * gamma;
-}
-
-/**
-  Set the boundary values of the mesh to zero.
-*/
-void zero_boundary(::LocalMesh& mesh)
-{
-  // the range of the whole mesh
-  auto global_range = mesh.mesh_spec()->range();
-
-  // the range associated to the current processor
-  auto range = mesh.mesh_spec()->local_ghost_range();
-
-  // Access the local data of the mesh.
-  // Note, this can be a costly operation in the case that the data has to
-  // be transferred from an accelerator.
-  auto lmesh = local_mesh(mesh);
-
-  // Iterate over all mesh points
-  for (auto p : range) {
-    if (p[0] == -1
-        || p[1] == -1
-        || p[0] == global_range.end_pos()[0]
-        || p[1] == global_range.end_pos()[1]) {
-      lmesh(p[0], p[1]) = 0;
-    }
-  }
-}
-
-/** Add the contribution of the boundary points when applying the Laplace
- operator to the given vector. */
-void add_boundary(Mesh& mesh, Problem pb, double t)
-{
-  // the range of the whole mesh
-  auto global_range = mesh.mesh_spec()->range();
-
-  // the range associated to the current processor
-  auto range = mesh.mesh_spec()->local_range();
-
-  // Access the local data of the mesh.
-  // Note, this can be a costly operation in the case that the data has to
-  // be transferred from an accelerator.
-  auto lmesh = local_mesh(mesh);
-
-  double h = pb.h;
-
-  // Iterate over all mesh points
-  for (auto p : range) {
-    if (p[0] == 0) { // left boundary
-      double x = -1.0 * h;
-      double y = p[1] * h;
-      lmesh(p[0], p[1]) += (1.0 / (h*h)) * exact_solution(pb, t, x, y);
-    }
-    if (p[1] == 0) { // top boundary
-      double x = p[0] * h;
-      double y = -1 * h;
-      lmesh(p[0], p[1]) += (1.0 / (h*h)) * exact_solution(pb, t, x, y);
-    }
-    if (p[0] == global_range.end_pos()[0]-1) { // right boundary
-      double x = global_range.end_pos()[0] * h;
-      double y = p[1] * h;
-      lmesh(p[0], p[1]) += (1.0 / (h*h)) * exact_solution(pb, t, x, y);
-    }
-    if (p[1] == global_range.end_pos()[1]-1) { // right boundary
-      double x = p[0] * h;
-      double y = global_range.end_pos()[1] * h;
-      lmesh(p[0], p[1]) += (1.0 / (h*h)) * exact_solution(pb, t, x, y);
-    }
-  }
+  //std::cout << x << " " << y << " " << sin(y*pi*2) << std::endl;
+  return exp(-8*pi*pi*t) * sin(x*pi*2) * sin(y*pi*2);
 }
 
 /** Set the mesh values to the exact solution. */
@@ -155,10 +69,6 @@ void apply_shifted_laplace(Mesh& f, Problem pb, Number a, const Mesh& u)
   // nodes.
   ::LocalMesh u_aux(u.mesh_spec());
   u_aux.assign(u); // copy to determine the ghost nodes
-
-  // We set the boundary to zero such that we can apply the same stencil
-  // everywhere (also at the boundary).
-  zero_boundary(u_aux);
 
   auto range = u.mesh_spec()->local_range();
   auto lu = local_mesh(u_aux);
@@ -189,7 +99,6 @@ void solve_f_impl(Mesh& y, Problem pb, Real t, Number a, const Mesh& r) {
   Mesh rhs(r.mesh_spec());
   rhs.assign(r);
   rhs *= (1.0/a);
-  add_boundary(rhs, pb, t);
 
   // solve (-Δ + (1/a) I) y = (1/a) r + Δ^b y^b
   CgSolver<Mesh> solver;
@@ -198,15 +107,14 @@ void solve_f_impl(Mesh& y, Problem pb, Real t, Number a, const Mesh& r) {
   solver.solve(y, rhs);
 };
 
-/** The explicit part of the ODE, f_e(y) = y*(1-y) */
+/** The explicit part of the ODE, f_e(y) = 0 */
 void f_expl(Mesh& result, Real t, const Mesh& u)
 {
   auto range = u.mesh_spec()->local_range();
   auto lresult = local_mesh(result);
-  auto lu = local_mesh(u);
 
   for (auto p : range) {
-    lresult(p[0], p[1]) = lu(p[0], p[1]) * (1.0 - lu(p[0], p[1]));
+    lresult(p[0], p[1]) = 0.0;
   }
 }
 
@@ -217,7 +125,7 @@ int main(int argc, char** argv)
   Init init(argc, argv);  // initialize Allium
 
   const int N = 64;
-  double h = 20.0 / (N-1);
+  double h = 1.0 / N; // in the periodic case h is 1.0 / N
 
   auto comm = Comm::world();
 
@@ -228,7 +136,7 @@ int main(int argc, char** argv)
   auto spec = std::shared_ptr<PetscMeshSpec<2>>(
                 new PetscMeshSpec<2>(
                   comm,
-                  {DM_BOUNDARY_GHOSTED, DM_BOUNDARY_GHOSTED},
+                  {DM_BOUNDARY_PERIODIC, DM_BOUNDARY_PERIODIC},
                   DMDA_STENCIL_STAR,
                   {N, N}, // global size
                   {PETSC_DECIDE, PETSC_DECIDE}, // processors per dim
@@ -238,7 +146,7 @@ int main(int argc, char** argv)
   Mesh u(spec);
   Mesh error(spec);
 
-  Problem pb = { 1.0, 0.5, h };
+  Problem pb = { h };
 
   // setup the integrator
   ImexEuler<Mesh> integrator;
@@ -248,7 +156,7 @@ int main(int argc, char** argv)
   double t0 = 0;
   set_solution(u, pb, t0);
   integrator.initial_values(t0, u);
-  integrator.dt(0.01);
+  integrator.dt(1e-4);
 
   auto filename = [](int frame) {
     std::stringstream s;
@@ -259,8 +167,8 @@ int main(int argc, char** argv)
   write_vtk(filename(0), u);
 
   for (int i = 0; i < 200; ++i) {
-    double t0 = i * 0.1;
-    double t1 = (i+1)*0.1;
+    double t0 = i * 2e-4;
+    double t1 = (i+1)*2e-4;
     integrator.initial_values(t0, u);
     integrator.integrate(u, t1);
 

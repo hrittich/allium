@@ -23,5 +23,8 @@ if(ALLIUM_USE_PETSC)
   target_link_libraries(poisson2 ${ALLIUM_LIBRARIES} ${LIBRARIES})
 
   add_executable(fisher2 fisher2.cpp)
-  target_link_libraries(fisher2 ${ALLIUM_LIBRARIES} ${LIBRARIES}) 
+  target_link_libraries(fisher2 ${ALLIUM_LIBRARIES} ${LIBRARIES})
+
+  add_executable(heat_periodic2 heat_periodic2.cpp)
+  target_link_libraries(heat_periodic2 ${ALLIUM_LIBRARIES} ${LIBRARIES})
 endif()

@@ -69,9 +69,9 @@ namespace {
 
     // the mesh needs to be written in x-y-z order (x is the fastest running
     // index)
-    bool first = true;
     auto lmesh = local_mesh(mesh);
     for (int iy = range.begin_pos()[1]; iy < range.end_pos()[1]; ++iy) {
+      bool first = true;
       for (int ix = range.begin_pos()[0]; ix < range.end_pos()[0]; ++ix) {
         if (!first)
           first = false;
@@ -80,6 +80,7 @@ namespace {
 
         os << lmesh(ix, iy);
       }
+      os << std::endl;
     }
 
     os
