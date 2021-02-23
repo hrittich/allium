@@ -36,9 +36,9 @@ namespace allium {
     auto p = allocate_like(rhs);
     p->assign(*residual);
 
-    Real rel_tol = rhs.l2_norm() * m_tol;
+    Real abs_tol = rhs.l2_norm() * m_tol;
 
-    if (sqrt(residual_norm_sq) > rel_tol)
+    if (sqrt(residual_norm_sq) > abs_tol)
     {
       auto Ap = allocate_like(rhs);
       while (true) {
@@ -56,7 +56,7 @@ namespace allium {
         Real new_residual_norm_sq
           = std::real(new_residual->dot(*new_residual));
 
-        if (sqrt(new_residual_norm_sq) <= rel_tol) break;
+        if (sqrt(new_residual_norm_sq) <= abs_tol) break;
 
         Real beta = new_residual_norm_sq / residual_norm_sq;
         // p = beta * p + new_residual

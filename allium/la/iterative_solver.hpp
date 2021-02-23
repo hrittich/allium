@@ -25,6 +25,7 @@ namespace allium {
     public:
       using Number = N;
 
+      IterativeSolverBase(real_part_t<N> tol = 1e-8) : m_tol(tol) {}
       virtual ~IterativeSolverBase() {};
 
       real_part_t<N> tolerance() { return m_tol; }

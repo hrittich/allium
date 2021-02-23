@@ -213,7 +213,7 @@ namespace allium {
     residual->add_scaled(-1.0, *tmp1);
     auto residual_norm = residual->l2_norm();
 
-    Real abs_tol = tolerance() * residual_norm;
+    Real abs_tol = tolerance() * rhs.l2_norm();
 
     while (true) {
       if (residual_norm <= abs_tol)

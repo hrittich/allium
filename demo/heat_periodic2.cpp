@@ -19,6 +19,7 @@
 #include <allium/ipc/comm.hpp>
 #include <allium/util/memory.hpp>
 #include <allium/ode/imex_euler.hpp>
+#include <allium/la/gmres.hpp>
 #include <sstream>
 #include <iomanip>
 
@@ -104,7 +105,7 @@ void solve_f_impl(Mesh& y, Problem pb, Real t, Number a, const Mesh& r) {
   auto op = std::bind(apply_shifted_laplace, _1, pb, 1.0/a, _2);
   solver.setup(shared_copy(make_linear_operator<Mesh>(op)));
   solver.solve(y, rhs);
-};
+}
 
 /** The explicit part of the ODE, f_e(y) = 0 */
 void f_expl(Mesh& result, Real t, const Mesh& u)
