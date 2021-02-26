@@ -44,6 +44,9 @@ namespace allium {
       using ExplicitF = std::function<void(Vector&,
                                            real_part_t<Number>,
                                            const Vector&)>;
+      using ImplicitF = std::function<void(Vector&,
+                                           real_part_t<Number>,
+                                           const Vector&)>;
       using ImplicitSolve = std::function<void(Vector& y,
                                                real_part_t<Number> t,
                                                Number a,
@@ -67,7 +70,7 @@ namespace allium {
        @f]
 
        */
-      virtual void setup(ExplicitF f_ex, ImplicitSolve solve_im) = 0;
+      virtual void setup(ExplicitF f_ex, ImplicitF f_im, ImplicitSolve solve_im) = 0;
       virtual void initial_values(real_part_t<Number> t0, const Vector& y0) = 0;
   };
 

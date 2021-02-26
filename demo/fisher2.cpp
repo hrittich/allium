@@ -243,6 +243,7 @@ int main(int argc, char** argv)
   // setup the integrator
   ImexEuler<Mesh> integrator;
   integrator.setup(f_expl,
+                   [](Mesh& out, double t, const Mesh& in) {}, // not needed for Euler
                    std::bind(solve_f_impl, _1, pb, _2, _3, _4));
 
   double t0 = 0;
