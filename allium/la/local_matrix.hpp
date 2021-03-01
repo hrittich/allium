@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef ALLIUM_LA_LOCAL_MATRIX_HPP
+#define ALLIUM_LA_LOCAL_MATRIX_HPP
+
 #include <cstdlib>
 #include <Eigen/Core>
 #include "local_vector.hpp"
@@ -113,3 +116,4 @@ namespace allium {
   }
 }
 
+#endif
