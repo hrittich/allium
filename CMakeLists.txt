@@ -87,7 +87,7 @@ find_package(MPI REQUIRED)
 
 list(APPEND COMPILE_OPTIONS ${MPI_CXX_COMPILE_OPTIONS})
 include_directories("${MPI_CXX_INCLUDE_DIRS}")
-list(APPEND LINK_OPTIONS ${MPI_CXX_LINK_FLAGS})
+set(LINK_FLAGS "${LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 list(APPEND LIBRARIES ${MPI_CXX_LIBRARIES})
 
 # PkgConfig
@@ -101,7 +101,7 @@ endif()
 if(PETSC_FOUND)
   list(APPEND COMPILE_OPTIONS ${PETSC_CFLAGS})
   include_directories(${PETSC_INCLUDE_DIRS})
-  list(APPEND LINK_OPTIONS ${PETSC_LDFLAGS})
+  set(LINK_FLAGS "${LINK_FLAGS} ${PETSC_LDFLAGS}")
   list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
 
   set(ALLIUM_USE_PETSC ON CACHE BOOL "Use PETSc")
@@ -182,7 +182,7 @@ set(ALLIUM_LIBRARIES "")
 
 add_compile_options(${COMPILE_OPTIONS})
 include_directories("${CMAKE_SOURCE_DIR}")
-add_link_options(${LINK_OPTIONS})
+set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} ${LINK_FLAGS}")
 
 add_subdirectory(allium)
 add_subdirectory(doc)
