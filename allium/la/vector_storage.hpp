@@ -271,10 +271,10 @@ namespace allium {
 
   };
 
-  template <typename N>
-  void fill(VectorStorage<N>& vec, N value)
+  template <typename V>
+  enable_if_vector_t<V> fill(V& vec, typename V::Number value)
   {
-    auto loc = LocalSlice<VectorStorage<N>*>(&vec);
+    auto loc = LocalSlice<V*>(&vec);
     for (size_t i_loc=0; i_loc < loc.size(); ++i_loc) {
       loc[i_loc] = value;
     }

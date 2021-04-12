@@ -83,12 +83,23 @@ set(GTEST_LIBRARIES "gtest")
 
 # Configure MPI
 
-find_package(MPI REQUIRED)
+find_package(MPI REQUIRED COMPONENTS CXX)
 
 list(APPEND COMPILE_OPTIONS ${MPI_CXX_COMPILE_OPTIONS})
 include_directories("${MPI_CXX_INCLUDE_DIRS}")
 set(LINK_FLAGS "${LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 list(APPEND LIBRARIES ${MPI_CXX_LIBRARIES})
+
+# Find CUDA
+
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+  set(ALLIUM_USE_CUDA ON CACHE BOOL "Use CUDA")
+endif()
+if(ALLIUM_USE_CUDA)
+  enable_language(CUDA)
+endif()
 
 # PkgConfig
 find_package(PkgConfig)
@@ -99,12 +110,13 @@ if(PKG_CONFIG_FOUND)
 endif()
 
 if(PETSC_FOUND)
+  set(ALLIUM_USE_PETSC ON CACHE BOOL "Use PETSc")
+endif()
+if(ALLIUM_USE_PETSC)
   list(APPEND COMPILE_OPTIONS ${PETSC_CFLAGS})
   include_directories(${PETSC_INCLUDE_DIRS})
   set(LINK_FLAGS "${LINK_FLAGS} ${PETSC_LDFLAGS}")
   list(APPEND LIBRARIES ${PETSC_LINK_LIBRARIES})
-
-  set(ALLIUM_USE_PETSC ON CACHE BOOL "Use PETSc")
 
   set(CMAKE_REQUIRED_FLAGS ${PETSC_CFLAGS})
   set(CMAKE_REQUIRED_INCLUDES "${PETSC_INCLUDE_DIRS}")
@@ -218,6 +230,7 @@ if(ALLIUM_USE_PETSC)
   show_status("  Has Double" ALLIUM_PETSC_HAS_DOUBLE)
   show_status("  Has Complex" ALLIUM_PETSC_HAS_COMPLEX)
 endif()
+show_status("Use CUDA" ALLIUM_USE_CUDA)
 show_status("Use GSL" ALLIUM_USE_GSL)
 show_status("Show internal API" ALLIUM_INTERNAL_DOCS)
 show_status("Python Module" ALLIUM_USE_PYTHON)

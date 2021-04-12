@@ -16,6 +16,7 @@
 #include <allium/la/vector_storage.hpp>
 #include <allium/la/petsc_vector.hpp>
 #include <allium/la/eigen_vector.hpp>
+#include <allium/la/cuda_vector.hpp>
 
 #include <gtest/gtest.h>
 
@@ -30,6 +31,10 @@ typedef
       #ifdef ALLIUM_PETSC_HAS_COMPLEX
       , PetscVectorStorage<std::complex<double>>
       #endif
+    #endif
+    #ifdef ALLIUM_USE_CUDA
+      , CudaVector<double>
+      , CudaVector<float>
     #endif
     >
   VectorStorageTypes;
@@ -214,6 +219,28 @@ TYPED_TEST(VectorStorageTest, Scale) {
   }
 }
 
+TYPED_TEST(VectorStorageTest, AddScaled) {
+  auto comm = Comm::world();
+  VectorSpec vspec(comm, 1, 1);
+  TypeParam v(vspec), w(vspec);
+
+  {
+    auto loc = LocalSlice<TypeParam*>(&v);
+    loc[0] = 2;
+  }
+  {
+    auto loc = LocalSlice<TypeParam*>(&w);
+    loc[0] = 3;
+  }
+
+  v.add_scaled(2, w);
+
+  {
+    auto loc = LocalSlice<TypeParam*>(&v);
+    EXPECT_EQ(loc[0], 8.0);
+  }
+}
+
 TYPED_TEST(VectorStorageTest, Norm) {
   auto comm = Comm::world();
   VectorSpec vspec(comm, 4, 4);
@@ -225,6 +252,26 @@ TYPED_TEST(VectorStorageTest, Norm) {
   }
 
   EXPECT_EQ(v.l2_norm(), 2.0);
+}
+
+TYPED_TEST(VectorStorageTest, LargeNorm) {
+  using Number = typename TypeParam::Number;
+  auto comm = Comm::world();
+  const int m = 2000;
+
+  VectorSpec vspec(comm, m, m);
+  TypeParam v(vspec);
+
+  {
+    auto lv = local_slice(v);
+    for (size_t i = 0; i < m; ++i) {
+      lv[i] = sqrt(i+1);
+    }
+  }
+
+  EXPECT_LE(
+    std::abs(v.l2_norm() - sqrt(Number(m * (m+1) / 2))),
+    1e-4);
 }
 
 TYPED_TEST(VectorStorageTest, SetZero) {
@@ -244,7 +291,7 @@ TYPED_TEST(VectorStorageTest, Dot) {
   TypeParam v(vspec);
   TypeParam w(vspec);
 
-  // todo: test with complex numbers
+  // @todo: test with complex numbers
 
   { auto loc = local_slice(v);
     loc[0] = 2; }
@@ -256,6 +303,27 @@ TYPED_TEST(VectorStorageTest, Dot) {
   EXPECT_EQ(v.dot(static_cast<VectorStorage<Number>&>(w)), 6.0);
   EXPECT_EQ(static_cast<VectorStorage<Number>&>(v)
             .dot(static_cast<VectorStorage<Number>&>(w)), 6.0);
+}
+
+TYPED_TEST(VectorStorageTest, LargeDot) {
+  using Number = typename TypeParam::Number;
+  auto comm = Comm::world();
+  const int m = 2000;
+
+  VectorSpec vspec(comm, m, m);
+  TypeParam v(vspec);
+  TypeParam w(vspec);
+
+  {
+    auto lv = local_slice(v);
+    for (size_t i = 0; i < m; ++i) {
+      lv[i] = i+1;
+    }
+  }
+
+  fill(w, 1.0);
+
+  EXPECT_EQ(v.dot(w), Number(m * (m+1) / 2));
 }
 
 TYPED_TEST(VectorStorageTest, AllocateLike) {

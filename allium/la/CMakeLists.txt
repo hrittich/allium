@@ -12,6 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+if(ALLIUM_USE_CUDA)
+  set(CUDA_SOURCES cuda_vector.cu cuda_vector.hpp)
+endif()
+
 add_library(allium_la
   cg.cpp cg.impl.hpp cg.hpp
   eigen_sparse_matrix.hpp
@@ -30,7 +34,11 @@ add_library(allium_la
   vector_spec.cpp vector_spec.hpp
   vector_storage.cpp vector_storage.impl.hpp vector_storage.hpp
   vector_trait.hpp
+  ${CUDA_SOURCES}
   )
+
+set_target_properties(allium_la
+                      PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 list(APPEND ALLIUM_LIBRARIES allium_la)
 set(ALLIUM_LIBRARIES ${ALLIUM_LIBRARIES} PARENT_SCOPE)

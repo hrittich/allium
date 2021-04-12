@@ -19,6 +19,7 @@
 #cmakedefine ALLIUM_USE_PETSC
 #cmakedefine ALLIUM_PETSC_HAS_COMPLEX
 #cmakedefine ALLIUM_PETSC_HAS_DOUBLE
+#cmakedefine ALLIUM_USE_CUDA
 #cmakedefine ALLIUM_USE_GSL
 #cmakedefine ALLIUM_USE_PYTHON
 #cmakedefine ALLIUM_USE_MPI4PY
