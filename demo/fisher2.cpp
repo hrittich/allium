@@ -20,6 +20,7 @@
 #include <allium/util/memory.hpp>
 #include <allium/ode/imex_euler.hpp>
 #include <sstream>
+#include <iostream>
 #include <iomanip>
 
 using namespace allium;

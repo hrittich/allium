@@ -17,6 +17,7 @@
 #include <allium/la/petsc_vector.hpp>
 #include <allium/la/eigen_vector.hpp>
 #include <allium/la/cuda_vector.hpp>
+#include <allium/mesh/cuda_mesh.hpp>
 
 #include <gtest/gtest.h>
 
@@ -35,6 +36,8 @@ typedef
     #ifdef ALLIUM_USE_CUDA
       , CudaVector<double>
       , CudaVector<float>
+      , CudaMesh<double, 2>
+      , CudaMesh<float, 2>
     #endif
     >
   VectorStorageTypes;

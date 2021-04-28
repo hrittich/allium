@@ -13,7 +13,9 @@
 #  limitations under the License.
 
 if(ALLIUM_USE_CUDA)
-  set(CUDA_SOURCES cuda_vector.cu cuda_vector.hpp)
+  set(CUDA_SOURCES
+    cuda_vector.cu cuda_vector.hpp
+    cuda_util.cu cuda_util.hpp)
 endif()
 
 add_library(allium_la

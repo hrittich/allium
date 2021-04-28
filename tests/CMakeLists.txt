@@ -12,6 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+if(ALLIUM_USE_CUDA)
+  set(CUDA_SOURCES cuda.cu)
+endif()
+
 add_executable(test_suite
   cg.cpp
   eigen.cpp
@@ -30,6 +34,7 @@ add_executable(test_suite
   range.cpp
   sparse_matrix.cpp
   vector_storage.cpp
+  ${CUDA_SOURCES}
   )
 target_link_libraries(test_suite ${ALLIUM_LIBRARIES} ${GTEST_LIBRARIES} ${LIBRARIES})
 

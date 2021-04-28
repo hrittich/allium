@@ -106,3 +106,9 @@ TEST(Range, RangeIndex2D)
   EXPECT_EQ(5, r.index({4,3}));
 }
 
+TEST(Range, RangeSize)
+{
+  Range<2> range({0,1},{2,4});
+  EXPECT_EQ(range.size(), 6);
+}
+

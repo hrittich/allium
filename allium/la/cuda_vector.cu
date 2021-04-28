@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "cuda_vector.hpp"
+#include "cuda_util.hpp"
 #include <allium/util/assert.hpp>
 
 #include <cuda_runtime.h>
@@ -23,94 +24,6 @@
 #include <cassert>
 
 namespace allium {
-  const size_t block_size = 512;
-
-  template <typename N>
-  struct CudaSum {
-    __device__ N operator() (N a, N b) {
-      return a+b;
-    }
-  };
-
-  template <typename N>
-  struct CudaProd {
-    __device__ N operator() (N a, N b) {
-      return a*b;
-    }
-  };
-
-  template <typename N>
-  struct CudaId {
-    __device__ N operator() (N a) { return a; }
-  };
-
-  template <typename N>
-  struct CudaSquare {
-    __device__ N operator() (N a) { return a*a; }
-  };
-
-  /**
-    Applies a map-reduce operation for each block. The result is stored
-    in the output array for each block.
-  */
-  template <typename N, typename ReduceOp, typename MapOp, typename ...Args>
-  __global__ void partial_map_reduce(N* out, size_t n, Args ...a)
-  {
-    using Number = N;
-    MapOp map_op;
-    ReduceOp reduce_op;
-    const int i_thread = threadIdx.x;
-    const int i_block = blockIdx.x;
-    const int i_global = threadIdx.x + blockIdx.x * blockDim.x;
-    const int grid_size = blockDim.x * gridDim.x;
-
-    assert(blockDim.x == block_size); // actually we only need that the block size is a power of 2
-
-    // Each thread applies the map operation to a portion of the input.
-    // Furthermore each thread applies the reduction operation to its portion
-    // of the data.
-
-    Number thread_result = 0.0;
-    for (int i = i_global; i < n; i += grid_size) {
-      thread_result = reduce_op(thread_result, map_op(a[i]...));
-    }
-
-    __shared__ Number block_result[block_size];
-    block_result[i_thread] = thread_result;
-
-    // Apply the reduction operation to obtain one value per block.
-    __syncthreads();
-    for (int size = block_size/2; size > 0; size /= 2) {
-      if (i_thread < size) {
-        block_result[i_thread]
-          = reduce_op(block_result[i_thread], block_result[i_thread + size]);
-      }
-      __syncthreads();
-    }
-
-    // block_result[0] contains the sum of the block
-    if (i_thread == 0) {
-      out[i_block] = block_result[0];
-    }
-  }
-
-  void cuda_check_status(cudaError_t err, std::string msg = "") {
-    if (err != cudaSuccess)
-    {
-      std::stringstream os;
-      os << "CUDA Failure "
-         << "(" << cudaGetErrorString(err) << ")";
-
-      if (!msg.empty())
-        os << ": " << msg;
-
-      throw std::runtime_error(os.str());
-    }
-  }
-
-  void cuda_check_last_status(std::string msg = "") {
-    cuda_check_status(cudaGetLastError(), msg);
-  }
 
   template <typename T>
   CudaArray<T>::CudaArray(size_t element_count)
@@ -179,8 +92,7 @@ namespace allium {
 
     CudaArray<Number> d_partial(grid_size);
 
-    allium_assert(grid_size <= block_size);
-
+    const auto block_size = partial_map_reduce_block_size;
     partial_map_reduce<Number, ReduceOp, MapOp>
                       <<<grid_size, block_size>>>
                       (d_partial.ptr(), n, a...);
@@ -188,7 +100,7 @@ namespace allium {
 
 
     CudaArray<Number> d_result(1);
-    partial_map_reduce<Number, ReduceOp, CudaId<N>>
+    partial_map_reduce<Number, ReduceOp, cuda_op::Id<N>>
                       <<<1, block_size>>>
                       (d_result.ptr(), grid_size, d_partial.ptr());
     cuda_check_last_status("execute partial_vec_sum");
@@ -212,36 +124,14 @@ namespace allium {
   template <typename N, typename Op, typename ...Args>
   void cuda_map(Op op, int n, N* a, Args ...args)
   {
+    const auto block_size = partial_map_reduce_block_size;
     int grid_size = (n + block_size - 1) / block_size;
 
     map_kernel<<<grid_size, block_size>>>(op, n, a, args...);
     cuda_check_last_status("execute map_kernel");
   }
 
-  template <typename N>
-  class CudaMulBy {
-    public:
-      CudaMulBy(N s) : s(s) {}
-
-      __device__ N operator() (N a) {
-        return a * s;
-      }
-
-    private:
-      N s;
-  };
-
-  template <typename N>
-  class CudaAddScaled {
-    public:
-      CudaAddScaled(N s) : m_factor(s) {}
-
-      __device__ N operator() (N a, N b) {
-        return a + m_factor * b;
-      }
-    private:
-      N m_factor;
-  };
+  
 
 // === CudaVector ============================================================
 
@@ -273,7 +163,7 @@ namespace allium {
   auto CudaVector<N>::operator+=(const CudaVector<N>& rhs) -> CudaVector&
   {
     size_t n = this->spec().local_size();
-    cuda_map(CudaSum<N>(), n, m_device_data.ptr(), rhs.m_device_data.ptr());
+    cuda_map(cuda_op::Sum<N>(), n, m_device_data.ptr(), rhs.m_device_data.ptr());
 
     return *this;
   }
@@ -282,7 +172,7 @@ namespace allium {
   auto CudaVector<N>::operator*=(const N& factor) -> CudaVector&
   {
     size_t n = this->spec().local_size();
-    cuda_map(CudaMulBy<N>(factor), n, m_device_data.ptr());
+    cuda_map(cuda_op::MulBy<N>(factor), n, m_device_data.ptr());
 
     return *this;
   }
@@ -292,7 +182,7 @@ namespace allium {
   {
     size_t n = this->spec().local_size();
 
-    cuda_map(CudaAddScaled<N>(factor), n, m_device_data.ptr(), other.m_device_data.ptr());
+    cuda_map(cuda_op::AddScaled<N>(factor), n, m_device_data.ptr(), other.m_device_data.ptr());
   }
 
   template <typename N>
@@ -300,7 +190,7 @@ namespace allium {
   {
     size_t n = this->spec().local_size();
 
-    return cuda_map_reduce<Number, CudaSum<N>, CudaProd<N>>(n, m_device_data.ptr(), rhs.m_device_data.ptr());
+    return cuda_map_reduce<Number, cuda_op::Sum<N>, cuda_op::Prod<N>>(n, m_device_data.ptr(), rhs.m_device_data.ptr());
   }
 
   template <typename N>
@@ -308,7 +198,7 @@ namespace allium {
   {
     size_t n = this->spec().local_size();
 
-    return sqrt(cuda_map_reduce<Number, CudaSum<N>, CudaSquare<N>>(n, m_device_data.ptr()));
+    return sqrt(cuda_map_reduce<Number, cuda_op::Sum<N>, cuda_op::Square<N>>(n, m_device_data.ptr()));
   }
 
   template <typename N>

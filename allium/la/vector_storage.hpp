@@ -115,9 +115,12 @@ namespace allium {
               typename std::conditional<std::is_const<Vector>::value,
                                         const Number*,
                                         Number*>::type;
-      using Reference = typename std::conditional<std::is_const<Vector>::value,
-                                                  Number,
-                                                  Number&>::type;
+      using Reference = std::conditional_t<std::is_const<Vector>::value,
+                                           Number,
+                                           Number&>;
+      using Base = std::conditional_t<std::is_const<Vector>::value,
+                                      const VectorStorage<Number>,
+                                      VectorStorage<Number>>;
 
       explicit LocalSlice(const Pointer& ptr)
         : m_data(nullptr), m_size(0)
@@ -166,13 +169,13 @@ namespace allium {
         release();
 
         m_ptr = ptr;
-        m_data = m_ptr->aquire_data_ptr();
+        m_data = static_cast<Base*>(m_ptr)->aquire_data_ptr();
         m_size = m_ptr->spec().local_size();
       }
 
       void release() {
         if (m_data != nullptr) {
-          m_ptr->release_data_ptr(m_data);
+          static_cast<Base*>(m_ptr)->release_data_ptr(m_data);
           m_data = nullptr;
           m_size = 0;
         }

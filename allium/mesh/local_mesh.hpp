@@ -39,9 +39,23 @@ class LocalMesh
       return const_cast<LocalMesh&>(*this)[pos];
     }
 
+    template <typename ...Args>
+    N& operator() (Args ...args) {
+      return (*this)[Point<int, D>({args...})];
+    }
+
+    template <typename ...Args>
+    const N& operator() (Args ...args) const {
+      return (*this)[Point<int, D>({args...})];
+    }
+
+    Range<D> range() const { return m_range; }
+
+    Number* data() { return m_entries.data(); }
+    const Number* data() const { return m_entries.data(); }
   private:
     Range<D> m_range;
-    std::vector<double> m_entries;
+    std::vector<Number> m_entries;
 };
 
 }

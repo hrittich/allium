@@ -65,7 +65,7 @@ namespace allium {
       ~CudaVector() override;
 
       using VectorStorageTrait<CudaVector, N>::operator+=;
-      CudaVector& operator+=(const CudaVector<N>& rhs);
+      CudaVector& operator+=(const CudaVector& rhs);
 
       CudaVector& operator*=(const N& factor) override;
 

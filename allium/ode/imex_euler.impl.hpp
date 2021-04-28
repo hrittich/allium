@@ -28,8 +28,6 @@ namespace allium {
 
     Real t_old = t0;
 
-    CgSolver<Vector> solver;
-
     while (t_old < t1) {
       Real t_new = t_old + m_dt;
       t_new = std::min(t1, t_new);

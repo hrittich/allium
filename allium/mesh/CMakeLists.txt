@@ -12,12 +12,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+if(ALLIUM_USE_CUDA)
+  set(CUDA_SOURCES
+      cuda_mesh.cu cuda_mesh.hpp
+      cuda_narray.cu cuda_narray.hpp)
+endif()
+
 add_library(allium_mesh
   petsc_mesh.cpp petsc_mesh.hpp
   petsc_mesh_spec.cpp petsc_mesh_spec.hpp
   point.hpp
   regular_mesh.hpp
   vtk_io.cpp vtk_io.hpp
+  ${CUDA_SOURCES}
   )
 
 list(APPEND ALLIUM_LIBRARIES allium_mesh)

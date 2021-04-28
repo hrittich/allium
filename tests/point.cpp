@@ -58,3 +58,10 @@ TEST(Point, Join)
   EXPECT_EQ(q[2], 4);
 }
 
+TEST(Point, Prod)
+{
+  Point<int, 2> p{2, 3};
+
+  EXPECT_EQ(p.prod(), 6);
+}
+

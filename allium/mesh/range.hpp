@@ -31,6 +31,11 @@ namespace allium {
           m_end_pos(end_pos)
       {}
 
+      bool operator== (const Range& other) const {
+        return m_begin_pos == other.m_begin_pos
+                && m_end_pos == other.m_end_pos;
+      }
+
       bool in(Point<int, D> p) {
         for (int i = 0; i < D; ++i) {
           if (p[i] < m_begin_pos[i] || p[i] >= m_end_pos[i])
@@ -63,11 +68,7 @@ namespace allium {
         The total number of points.
       */
       size_t size() const {
-        size_t s = 1;
-        for (int i=0; i < D; ++i) {
-          s *= shape()[i];
-        }
-        return s;
+        return shape().prod();
       }
     private:
       Point<int, D> m_begin_pos, m_end_pos;

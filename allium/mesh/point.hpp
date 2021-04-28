@@ -18,6 +18,8 @@
 #include <allium/util/assert.hpp>
 #include <allium/la/vector_trait.hpp>
 #include <ostream>
+#include <algorithm>
+#include <numeric>
 
 namespace allium {
 
@@ -38,6 +40,12 @@ namespace allium {
           m_entries[i] = e;
           ++i;
         }
+      }
+
+      static Point full(N initial_value) {
+        Point p;
+        std::fill(p.m_entries.begin(), p.m_entries.end(), initial_value);
+        return p;
       }
 
       size_t rows() { return D; }
@@ -81,6 +89,18 @@ namespace allium {
         result[D] = x;
         return result;
       }
+
+      template <typename Pred>
+      bool all_of(Pred pred) {
+        return std::all_of(m_entries.begin(), m_entries.end(), pred);
+      }
+
+      N prod() const {
+        return std::accumulate(m_entries.begin(), m_entries.end(),
+                               N(1),
+                               [](N a, N b) { return a*b; });
+      }
+
     private:
       std::array<N, D> m_entries;
   };

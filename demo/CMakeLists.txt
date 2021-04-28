@@ -28,3 +28,9 @@ if(ALLIUM_USE_PETSC)
   add_executable(heat_periodic2 heat_periodic2.cpp)
   target_link_libraries(heat_periodic2 ${ALLIUM_LIBRARIES} ${LIBRARIES})
 endif()
+
+if(ALLIUM_USE_CUDA)
+  add_executable(poisson2_cuda poisson2_cuda.cpp)
+  target_link_libraries(poisson2_cuda ${ALLIUM_LIBRARIES} ${LIBRARIES})
+endif()
+
