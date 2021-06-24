@@ -87,7 +87,9 @@ find_package(MPI REQUIRED COMPONENTS CXX)
 
 list(APPEND COMPILE_OPTIONS ${MPI_CXX_COMPILE_OPTIONS})
 include_directories("${MPI_CXX_INCLUDE_DIRS}")
-list(APPEND LINK_FLAGS ${MPI_CXX_LINK_FLAGS})
+# The shell prefix is needed, otherwise option de-duplication breaks the
+# linker flags.
+list(APPEND LINK_FLAGS "SHELL:${MPI_CXX_LINK_FLAGS}")
 list(APPEND LIBRARIES ${MPI_CXX_LIBRARIES})
 
 # Find CUDA
