@@ -26,8 +26,7 @@ namespace allium {
   /// @{
 
   /**
-   Interface for implicit-explicit time-stepping schemes have a linear
-   implicit part.
+   @brief Interface for implicit-explicit time-stepping schemes.
 
    @f[
       \dot{y} = f_\mathrm{ex}(t, y) + f_\mathrm{im}(t, y)
@@ -55,13 +54,20 @@ namespace allium {
       virtual ~ImexIntegrator() {}
 
       /**
-       Set the callback functions for the solver.
+       @brief Set the callback functions for the solver.
 
        @param[in] f_ex Function that evaluates the explicit part.
-       @param[in] solve_im Function that solves the implicit part.
+       @param[in] f_im Function that evaluates the implicit part.
+       @param[in] solve_im Function that solves a system involving the
+                  implicit part.
 
-       The function f_ex should evaluate the right hand side
+       The function f_ex should evaluate the explicit part of the right hand
+       side
        @f$ f_\mathrm{ex}(t, y) @f$.
+
+       The function f_im should evaluate the implicit part of the right hand
+       side
+       @f$ f_\mathrm{im}(t, y) @f$.
 
        The function solve_im should solve the equation (system)
        @f[
@@ -71,6 +77,10 @@ namespace allium {
 
        */
       virtual void setup(ExplicitF f_ex, ImplicitF f_im, ImplicitSolve solve_im) = 0;
+
+      /**
+       @brief Set the initial values of the ODE to solve.
+       */
       virtual void initial_values(real_part_t<Number> t0, const Vector& y0) = 0;
   };
 

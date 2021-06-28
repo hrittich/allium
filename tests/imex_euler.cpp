@@ -46,10 +46,11 @@ TEST(ImexEuler, TestEquation)
     out *= alpha;
   };
 
+  // solves y - a * f_im(t, y) = r
   auto f_solve = [alpha, spec](Vector& out, double t, double a, const Vector& r) {
-    // out = (1 / (alpha - a)) * r
+    // out = (1 / (1 - alpha * a)) * r
     out.assign(r);
-    out *= (1.0 / (alpha - a));
+    out *= (1.0 / (1 - alpha * a));
   };
 
   integrator.setup(f_ex, f_im, f_solve);
