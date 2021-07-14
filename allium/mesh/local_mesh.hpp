@@ -20,6 +20,9 @@
 
 namespace allium {
 
+/**
+ @brief A mesh stored locally on the current processor.
+ */
 template <typename N, int D>
 class LocalMesh
 {

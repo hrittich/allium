@@ -16,6 +16,12 @@
 #define ALLIUM_IPC_INIT_HPP
 
 namespace allium {
+
+  /**
+   @brief Initialize the inter-process communication (IPC).
+
+   This is usually automatically created by allium::Init.
+   */
   class IpcInit {
     public:
       IpcInit(int& argc, char** &argv);

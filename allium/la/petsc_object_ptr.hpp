@@ -34,7 +34,7 @@ namespace allium {
 
 /// @cond INTERNAL
 
-// make a list of objects castable to PetscObject such that we do not
+// make a list of objects that can be casted to PetscObject such that we do not
 // accidentally cast other operators
 template <typename T>
 struct is_petsc_object : std::false_type {};
@@ -57,8 +57,10 @@ petsc_object_cast(T value) {
 
 /// @endcond
 
-/** Petsc Wrapper Object for memory management.
- * Takes care of increasing and decreasing reference counts.
+/**
+ @brief PETSc wrapper object for memory management.
+
+ Takes care of increasing and decreasing reference counts.
  */
 template <typename T>
 class PetscObjectPtr final {

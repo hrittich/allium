@@ -20,7 +20,10 @@
 
 namespace allium {
 
-  class VectorSpec final { //: public std::enable_shared_from_this<VectorSpec> {
+  /**
+   @brief The specification of a vector, needed to create distributed vectors.
+   */
+  class VectorSpec final {
     public:
       VectorSpec(const VectorSpec&) = default;
       VectorSpec(VectorSpec&&) = default;

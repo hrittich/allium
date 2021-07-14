@@ -21,6 +21,9 @@
 namespace allium {
   template <int> class RangeIterator;
 
+  /**
+   @brief An n-d range.
+   */
   template <int D>
   class Range {
     public:
@@ -93,6 +96,9 @@ namespace allium {
   };
   /// @endcond
 
+  /**
+   @brief Iterator over the points in an n-d range (allium::Range).
+   */
   template <int D>
   class RangeIterator {
     public:

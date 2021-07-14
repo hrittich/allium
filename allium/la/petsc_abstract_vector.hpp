@@ -30,6 +30,9 @@ namespace allium {}
 
 namespace allium {
 
+  /**
+   @brief A vector based on a PETSc vector.
+   */
   template <typename N> class PetscAbstractVectorStorage;
 
   template <>

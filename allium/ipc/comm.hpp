@@ -21,10 +21,13 @@
 
 namespace allium {
   /** The communicator class.
-   This class just wraps an MPI communicator to make MPI easier to use.
+   @brief Wraps an MPI communicator to make MPI easier to use.
   */
   class Comm {
     public:
+	  /**
+	   @brief Create a Comm from an MPI_Comm handle.
+	   */
       Comm(::MPI_Comm handle);
 
       bool operator!= (const Comm& other) {
@@ -45,6 +48,9 @@ namespace allium {
       // === IPC =============================================================
       void barrier(void);
 
+      /**
+       @brief Information about the data that was just received.
+       */
       struct RecvInfo {
         int source;
         int tag;

@@ -28,8 +28,10 @@ namespace allium {
     return static_cast<const typename T::DerivedType&>(*p);
   }
 
-  /** Trait that implements the self helper routine for the curiously
-   * recurring template pattern. */
+  /**
+   @brief Trait that implements the self helper routine for the curiously
+          recurring template pattern.
+  */
   template <typename Derived>
   struct CrtpTrait {
       using DerivedType = Derived;

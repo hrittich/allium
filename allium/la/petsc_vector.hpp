@@ -22,6 +22,9 @@ namespace allium {}
 
 namespace allium {
 
+  /**
+   @brief A distributed vector based on PETSc.
+   */
   template <typename N>
   class PetscVectorStorage
     : public PetscAbstractVectorStorage<N>

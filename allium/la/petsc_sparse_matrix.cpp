@@ -19,6 +19,11 @@
 namespace allium {
   using namespace petsc;
 
+  /// @cond INTERNAL
+
+  /**
+   @brief Accessor for a row of a PETSc matrix.
+   */
   class PetscMatRow final {
     public:
       PetscMatRow(PetscObjectPtr<Mat> mat, PetscInt row) : m_mat(mat), m_row(row)
@@ -59,6 +64,8 @@ namespace allium {
       const PetscInt* m_cols;
       const PetscScalar* m_vals;
   };
+
+  /// @endcond
 
   PetscSparseMatrixStorage<PetscScalar>::PetscSparseMatrixStorage(VectorSpec rows, VectorSpec cols)
     : SparseMatrixStorage(rows, cols)

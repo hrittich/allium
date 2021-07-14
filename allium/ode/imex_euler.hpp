@@ -18,12 +18,17 @@
 
 namespace allium {
 
+  /**
+   @brief Base for the IMEX Euler integrator.
+   */
   template <typename N>
   class ImexEulerBase {
     public:
       using Vector = VectorStorage<N>;
       using Number = N;
       using Real = real_part_t<N>;
+
+      virtual ~ImexEulerBase() {}
 
       void dt(real_part_t<Number> dt) { m_dt = dt; }
 
@@ -40,6 +45,9 @@ namespace allium {
       Real m_dt;
   };
 
+  /**
+   @brief IMEX Euler time integration scheme.
+   */
   template <typename V>
   class ImexEuler
     : public ImexEulerBase<typename V::Number>,

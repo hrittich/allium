@@ -23,11 +23,16 @@
 
 namespace allium {
 
+  /**
+   @brief Base for the conjugate gradient method.
+   */
   template <typename N>
   class CgSolverBase {
     public:
       using Number = N;
       using Real = real_part_t<N>;
+
+      virtual ~CgSolverBase();
 
       CgSolverBase(Real tolerance = 1e-8)
       {
@@ -42,7 +47,7 @@ namespace allium {
   };
 
   /**
-   The conjugate gradient method, solves @f$ A x = b @f$.
+   @brief The conjugate gradient method, solves @f$ A x = b @f$.
    @ingroup linear_solver
    */
   template <typename V>
@@ -81,7 +86,7 @@ namespace allium {
   };
 
   /**
-    The conjugate gradient method.
+    @brief The conjugate gradient method.
 
     Convenience method for using CgSolver.
 

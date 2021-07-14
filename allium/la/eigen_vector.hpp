@@ -20,6 +20,10 @@
 #include <Eigen/Core>
 
 namespace allium {
+
+  /**
+    @brief A vector implementation based on Eigen.
+   */
   template <typename N>
   class EigenVectorStorage final
     : public VectorStorageTrait<EigenVectorStorage<N>, N>

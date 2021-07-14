@@ -24,7 +24,7 @@
 namespace allium {
 
   /**
-   A point in D dimensions.
+   @brief A point in D dimensions.
 
    This class is a short, fixed-length, stack-allocated vector. */
   template <typename N, int D>

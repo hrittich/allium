@@ -16,14 +16,14 @@
 #define ALLIUM_LA_LINEAR_OPERATOR_HPP
 
 #include <memory>
-#include <allium/util/cloning_ptr.hpp>
 
 namespace allium {
   /// @addtogroup linear_solver
+  /// @brief Implementation of linear solvers.
   /// @{
 
   /**
-    Linear operator for the use in iterative linear solvers.
+    @brief Linear operator for the use in iterative linear solvers.
   */
   template <typename V>
   class LinearOperator {
@@ -39,7 +39,7 @@ namespace allium {
   };
 
   /**
-    Wraps a functor into a linear operator.
+    @brief Wraps a functor into a linear operator.
   */
   template <typename V, typename F>
   class FunctorLinearOperator final : public LinearOperator<V> {

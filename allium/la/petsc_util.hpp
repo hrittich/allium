@@ -27,6 +27,11 @@ namespace allium {
   namespace petsc {
 
     #ifdef ALLIUM_USE_PETSC
+    /**
+     @brief Check PETSc error code.
+
+     Raises an exception in case of an error.
+     */
     inline void chkerr(PetscErrorCode ierr) {
       if (PetscUnlikely(ierr)) {
         const char* text = nullptr;

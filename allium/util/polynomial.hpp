@@ -30,7 +30,7 @@
 namespace allium {
 
   /**
-   A polynomial given by their coefficients.
+   @brief A polynomial given by their coefficients.
 
    The polynomial is given in the form
    @f[

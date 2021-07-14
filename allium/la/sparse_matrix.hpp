@@ -25,7 +25,7 @@
 namespace allium {
 
   /**
-    Abstarct base type for all sparse-matrix classes.
+    @brief Abstract base type for all sparse-matrix classes.
   */
   template <typename V>
   class SparseMatrixStorage : public LinearOperator<V> {

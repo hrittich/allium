@@ -25,7 +25,7 @@ namespace allium {
   /// @{
 
   /**
-    Write a set of columns into a text file.
+    @brief Write a set of columns into a text file.
 
     The numbers of each row are written as ASCII encoded text, separated by
     spaces. Each row is terminated by a new-line character.

@@ -19,6 +19,9 @@
 #include <vector>
 
 namespace allium {
+  /**
+   @brief Entry of a matrix given by row, coloumn and value.
+   */
   template <typename N>
   class MatrixEntry {
     public:
@@ -39,6 +42,9 @@ namespace allium {
       N m_value;
   };
 
+  /**
+   @brief Local (non-distributed) matrix which stores the entries in coordinate format.
+   */
   template <typename N>
   class LocalCooMatrix {
     public:

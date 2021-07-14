@@ -22,8 +22,8 @@
 namespace allium {
 
   /**
-   Implements a (mathematical) vector in the mathematical sense, which is
-   stored locally, i.e., not distributed accross different processors.
+   @brief Implements a (mathematical) vector in the mathematical sense, which is
+   stored locally, i.e., not distributed across different processors.
   */
   template <typename N>
   class LocalVector

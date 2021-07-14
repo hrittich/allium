@@ -36,7 +36,7 @@ namespace allium {
   using real_part_t = typename real_part<T>::type;
 
   /**
-   Narrows a number type, which can result in a loss of information or
+   @brief Narrows a number type, which can result in a loss of information or
    accuracy.
 
    Allows the conversion of double to float, and the conversion of

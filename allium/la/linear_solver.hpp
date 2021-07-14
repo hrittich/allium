@@ -22,10 +22,12 @@ namespace allium {
 
   /**
    @defgroup linear_solver Linear Solver
-   @brief Linear solver interface.
    @{
-   */
+  */
 
+  /**
+   @brief Linear solver interface.
+   */
   template <typename V>
   class LinearSolver
   {

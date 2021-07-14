@@ -15,7 +15,6 @@
 add_library(allium_util
   assert.hpp
   cloneable.cpp cloneable.hpp
-  cloning_ptr.hpp
   crtp.hpp
   except.hpp
   extern.hpp

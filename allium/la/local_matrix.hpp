@@ -22,6 +22,9 @@
 
 namespace allium {
 
+  /**
+   @brief A dense, local (non-distributed) matrix.
+   */
   template <typename N>
   class LocalMatrix {
     public:

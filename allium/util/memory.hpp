@@ -19,12 +19,18 @@
 
 namespace allium {
 
+  /**
+   @brief Creates a heap-allocated, unique_ptr-stored copy of an object.
+   */
   template <typename T>
     std::unique_ptr<typename std::remove_reference<T>::type>
     unique_copy(T&& v) {
       return std::make_unique<typename std::remove_reference<T>::type>(std::forward<T>(v));
     }
 
+  /**
+   @brief Creates a heap-allocated, shared_ptr-stored copy of an object.
+   */
   template <typename T>
     std::shared_ptr<typename std::remove_reference<T>::type>
     shared_copy(T&& v) {

@@ -18,6 +18,10 @@
 #include <stdexcept>
 
 namespace allium {
+  /**
+   @brief An exception thrown when trying to use a functionality that is not
+     implemented.
+   */
   class not_implemented : public std::logic_error {
     public:
       not_implemented() : std::logic_error("Not implemented.") {};

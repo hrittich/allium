@@ -61,11 +61,13 @@ namespace allium {
   };
   /** @endcond */
 
-
+  /**
+    @brief A sparse matrix implementation based on Eigen.
+   */
   template <typename N>
   class EigenSparseMatrixStorage final
       : public SparseMatrixStorage<EigenVectorStorage<N>>
-  {
+		{
     public:
       using Vector = EigenVectorStorage<N>;
       using DefaultVector = EigenVectorStorage<N>;

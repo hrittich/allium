@@ -29,14 +29,22 @@
 
 namespace allium {
 
+/**
+ @brief Interface to PETSc based meshes.
+ */
 template <int D>
 class IPetscMesh {
   public:
+    virtual ~IPetscMesh() {}
+
     virtual std::shared_ptr<PetscMeshSpec<D>> mesh_spec() const = 0;
     virtual PetscObjectPtr<Vec> petsc_vec() = 0;
     virtual Range<D> local_range() const = 0;
 };
 
+/**
+ @brief A mesh implementation based on PETSc.
+ */
 template <typename N, int D>
 class PetscMesh
   : public PetscAbstractVectorStorage<N>,
@@ -62,6 +70,9 @@ class PetscMesh
     PetscMesh* clone() const& override;
 };
 
+/**
+ @brief A (portion of a) PETSc mesh that is stored locally.
+ */
 template <typename N, int D>
 class PetscLocalMesh : public IPetscMesh<D>
 {
@@ -96,6 +107,9 @@ class PetscLocalMesh : public IPetscMesh<D>
     PetscObjectPtr<Vec> m_ptr;
 };
 
+/**
+ @brief Accessor to the values stored in a PETSc mesh.
+ */
 template <typename N, int D, bool is_mutable=true>
 class PetscMeshValues;
 

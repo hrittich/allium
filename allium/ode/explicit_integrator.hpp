@@ -25,6 +25,9 @@ namespace allium {
    @{
    */
 
+  /**
+   @brief Base class for explicit time integrators.
+   */
   template <typename V>
   class ExplicitIntegrator {
     public:
@@ -32,6 +35,8 @@ namespace allium {
       using Number = typename Vector::Number;
       using Real = real_part_t<Number>;
       using F = std::function<void(Vector&, Real, const Vector&)>;
+
+      virtual ~ExplicitIntegrator() {}
 
       virtual void setup(F f) = 0;
       virtual void initial_values(Real t0, const Vector& y0) = 0;

@@ -35,7 +35,7 @@ namespace allium {
 
   template <typename> class LocalSlice;
 
-  /** Abstract base class for any vector storage. */
+  /** @brief Abstract base class for any vector storage. */
   template <typename N>
   class VectorStorage : public Cloneable
   {
@@ -104,6 +104,9 @@ namespace allium {
     return std::unique_ptr<T>(static_cast<T*>(allocated));
   }
 
+  /**
+   @brief Accessor for the locally stored part of a vector.
+   */
   template <typename P>
   class LocalSlice final {
     public:
@@ -230,6 +233,9 @@ namespace allium {
     local_slice(dest) = local_slice(src);
   }
 
+  /**
+   @brief Implements a set of common vector operations.
+   */
   template <typename Derived, typename N>
   class VectorStorageTrait
     : public VectorStorage<N>,

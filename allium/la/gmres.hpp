@@ -24,7 +24,7 @@
 namespace allium {
 
   /**
-    Implementation of the GMRES algorithm (Saad and Schultz, 1986).
+    @brief Implementation of the GMRES algorithm (Saad and Schultz, 1986).
 
     @ingroup linear_solver
 

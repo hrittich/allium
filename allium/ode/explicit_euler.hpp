@@ -19,6 +19,9 @@
 
 namespace allium {
 
+  /**
+   @brief The explicit Euler time integrator.
+   */
   template <typename V>
   class ExplicitEuler
     : public ExplicitIntegrator<V>

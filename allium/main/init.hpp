@@ -18,6 +18,12 @@
 #include <allium/ipc/init.hpp>
 
 namespace allium {
+  /**
+   @brief Initializes the library.
+
+   As long as this object exists the library can be used. Make sure to create
+   only one instance of Init.
+   */
   class Init {
     public:
       Init(const Init&) = delete;

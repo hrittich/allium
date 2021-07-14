@@ -21,9 +21,11 @@
 
 namespace allium {
 
-/** A class that allows cloning of objects.
- * Any class that inherits directly or indirectly from Cloneable must
- * override the clone method. Not doing so is considered a bug.
+/**
+ @brief A class that allows cloning of objects.
+
+ Any class that inherits directly or indirectly from Cloneable must
+ override the clone method. Not doing so is considered a bug.
  */
 class Cloneable {
   public:

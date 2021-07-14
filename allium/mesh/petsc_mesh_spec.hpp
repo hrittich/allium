@@ -32,6 +32,9 @@
 
 namespace allium {
 
+/**
+ @brief Specification for a PETSc mesh, which is needed to create one.
+ */
 template <int D>
 class PetscMeshSpec {};
 

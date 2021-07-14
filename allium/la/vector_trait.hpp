@@ -20,8 +20,12 @@
 
 namespace allium {
 
-  /** If += and *= are implemented, all other vector operations are
-   * automatically generated. */
+  /**
+   @brief Generates common vector operations automatically.
+
+   If += and *= are implemented, all other vector operations are
+   automatically generated.
+  */
   template <typename Derived, typename N>
   class VectorTrait
     : public CrtpTrait<Derived> {

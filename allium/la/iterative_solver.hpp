@@ -20,6 +20,9 @@
 
 namespace allium {
 
+  /**
+   @brief Base class for iterative solvers.
+   */
   template <typename N>
   class IterativeSolverBase {
     public:
@@ -37,6 +40,9 @@ namespace allium {
       real_part_t<N> m_tol;
   };
 
+  /**
+   @brief Mixin for iterative solvers, which implements the apply_matrix method.
+   */
   template <typename Base, typename V>
   class IterativeSolverMixin :
     public Base,

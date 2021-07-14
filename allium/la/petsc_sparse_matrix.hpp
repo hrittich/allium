@@ -27,6 +27,10 @@
 #include "linear_operator.hpp"
 
 namespace allium {
+
+  /**
+    @brief A sparse matrix implementation based on PETSc.
+   */
   template <typename N>
   class PetscSparseMatrixStorage;
 

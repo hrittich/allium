@@ -2,6 +2,10 @@
 
 ![Allium Logo](doc/logo_allium.png)
 
+## Documentation
+
+See [here](https://rittich2.pages.jsc.fz-juelich.de/allium).
+
 ## Developer Quickstart
 
 The easiest way to get started is to run Linux (e.g.,

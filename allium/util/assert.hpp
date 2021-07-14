@@ -19,6 +19,9 @@
 #include <allium/config.hpp>
 
 namespace allium {
+  /**
+   @brief An exception raised when an assertion fails.
+   */
   class assertion_failed : public std::logic_error {
   public:
     using std::logic_error::logic_error;

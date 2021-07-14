@@ -120,7 +120,7 @@ TYPED_TEST(LocalMatrixTest, ApplyToVector)
   v[1] = Number(6);
 
   auto w = m.apply(v);
-  EXPECT_EQ(w.nrows(), 2);
+  EXPECT_EQ(w.rows(), 2);
   EXPECT_EQ(w[0], Number(17));
   EXPECT_EQ(w[1], Number(39));
 }

@@ -19,6 +19,9 @@
 
 namespace allium {
 
+  /**
+   @brief The classical explicit Runge-Kutta method of order 4.
+   */
   template <typename V>
   class RungeKutta4
     : public ExplicitIntegrator<V>
