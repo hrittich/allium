@@ -39,9 +39,14 @@ namespace allium {
         m_tol = tolerance;
       }
 
-      void solve(VectorStorage<N>& solution, const VectorStorage<N>& rhs);
+      void solve(VectorStorage<N>& solution,
+                 const VectorStorage<N>& rhs,
+                 InitialGuess initial_guess = InitialGuess::NOT_PROVIDED);
+
+      int iteration_count() { return m_iteration_count; }
     protected:
       Real m_tol;
+      int m_iteration_count;
 
       virtual void matvec(VectorStorage<N>& out, const VectorStorage<N>& in) = 0;
   };
@@ -67,8 +72,10 @@ namespace allium {
         m_mat = mat;
       }
 
-      void solve(Vector& solution, const Vector& rhs) override {
-        CgSolverBase<Number>::solve(solution, rhs);
+      void solve(Vector& solution,
+                 const Vector& rhs,
+                 InitialGuess initial_guess = InitialGuess::NOT_PROVIDED) override {
+        CgSolverBase<Number>::solve(solution, rhs, initial_guess);
       }
 
     private:
@@ -79,6 +86,7 @@ namespace allium {
         allium_assert(dynamic_cast<const V*>(&in) != nullptr);
         allium_assert(dynamic_cast<V*>(&out) != nullptr);
         ALLIUM_RESTORE_WARNING
+        allium_assert(static_cast<bool>(m_mat), "operator provided");
 
         m_mat->apply(static_cast<V&>(out),
                      static_cast<const V&>(in));

@@ -43,7 +43,11 @@ namespace allium {
       using Real = real_part_t<N>;
       using IterativeSolverBase<N>::tolerance;
 
-      void solve(VectorStorage<N>& result, const VectorStorage<N>& rhs);
+      void solve(VectorStorage<N>& result,
+                 const VectorStorage<N>& rhs,
+                 InitialGuess initial_guess);
+
+      int iteration_count() { return m_iteration_count; }
     private:
       bool inner_solve(VectorStorage<N>& result,
                        const VectorStorage<N>& residual,
@@ -51,6 +55,7 @@ namespace allium {
                        real_part_t<N> abs_tol);
 
       size_t m_max_krylov_size;
+      int m_iteration_count;
   };
 
   /**

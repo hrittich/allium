@@ -16,6 +16,7 @@
 #define ALLIUM_UTIL_ASSERT_HPP
 
 #include <stdexcept>
+#include <sstream>
 #include <allium/config.hpp>
 
 namespace allium {
@@ -24,7 +25,16 @@ namespace allium {
    */
   class assertion_failed : public std::logic_error {
   public:
-    using std::logic_error::logic_error;
+    assertion_failed(const std::string& assertion_desc)
+      : logic_error(format_msg(assertion_desc))
+    {}
+
+  private:
+    static std::string format_msg(const std::string& assertion_desc) {
+      std::stringstream os;
+      os << "Assertion violated: " << assertion_desc << std::endl;
+      return os.str();
+    }
   };
 }
 

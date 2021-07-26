@@ -16,6 +16,7 @@
 #define ALLIUM_LA_LINEAR_SOLVER_HPP
 
 #include <memory>
+#include "vector_storage.hpp"
 #include "linear_operator.hpp"
 
 namespace allium {
@@ -24,6 +25,14 @@ namespace allium {
    @defgroup linear_solver Linear Solver
    @{
   */
+
+  /**
+   @brief Behavior for the initial guess.
+   */
+  enum class InitialGuess {
+    NOT_PROVIDED, ///< Initialize with zero.
+    PROVIDED ///< Use the value from the solution vector.
+  };
 
   /**
    @brief Linear solver interface.
@@ -39,7 +48,9 @@ namespace allium {
       using Vector = V;
 
       virtual void setup(std::shared_ptr<Matrix> mat) = 0;
-      virtual void solve(Vector& solution, const Vector& rhs) = 0;
+      virtual void solve(Vector& solution,
+                         const Vector& rhs,
+                         InitialGuess initial_guess = InitialGuess::NOT_PROVIDED) = 0;
   };
 
   /// @}

@@ -199,12 +199,17 @@ namespace allium {
   }
 
   template <typename N>
-  void GmresSolverBase<N>::solve(VectorStorage<N>& x, const VectorStorage<N>& rhs)
+  void GmresSolverBase<N>::solve(VectorStorage<N>& x,
+                                 const VectorStorage<N>& rhs,
+                                 InitialGuess initial_guess)
   {
     auto tmp1 = allocate_like(rhs);
 
     m_max_krylov_size = 30;
-    set_zero(x);
+
+    if (initial_guess == InitialGuess::NOT_PROVIDED) {
+      set_zero(x);
+    }
 
     // residual = rhs - mat * x
     auto residual = allocate_like(rhs);
@@ -215,6 +220,7 @@ namespace allium {
 
     Real abs_tol = tolerance() * rhs.l2_norm();
 
+    m_iteration_count = 0;
     while (true) {
       if (residual_norm <= abs_tol)
         break;
@@ -257,6 +263,8 @@ namespace allium {
          i_iteration < m_max_krylov_size && !success;
          ++i_iteration)
     {
+      m_iteration_count++;
+
       auto v_hat = allocate_like(residual);
       this->apply_matrix(*v_hat, *krylov_base.at(i_iteration));
 

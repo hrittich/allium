@@ -41,13 +41,17 @@ TEST(ImexEuler, TestEquation)
     set_zero(out);
   };
 
-  auto f_im = [alpha, spec](Vector& out, double t, const Vector& in) {
+  auto f_im = [alpha](Vector& out, double t, const Vector& in) {
     out.assign(in);
     out *= alpha;
   };
 
   // solves y - a * f_im(t, y) = r
-  auto f_solve = [alpha, spec](Vector& out, double t, double a, const Vector& r) {
+  auto f_solve = [alpha](Vector& out,
+                         double t,
+                         double a,
+                         const Vector& r,
+                         InitialGuess initial_guess) {
     // out = (1 / (1 - alpha * a)) * r
     out.assign(r);
     out *= (1.0 / (1 - alpha * a));

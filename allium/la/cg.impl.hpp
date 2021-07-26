@@ -23,13 +23,23 @@ namespace allium {
   {}
 
   template <typename N>
-  void CgSolverBase<N>::solve(VectorStorage<N>& solution, const VectorStorage<N>& rhs)
+  void CgSolverBase<N>::solve(VectorStorage<N>& solution,
+                              const VectorStorage<N>& rhs,
+                              InitialGuess initial_guess)
   {
     auto residual = allocate_like(rhs);
     auto new_residual = allocate_like(rhs);
     auto x = allocate_like(rhs);
     auto tmp1 = allocate_like(rhs);
-    set_zero(*x);
+
+    switch (initial_guess) {
+      case InitialGuess::NOT_PROVIDED:
+        set_zero(*x);
+      break;
+      case InitialGuess::PROVIDED:
+        x->assign(solution);
+      break;
+    }
 
     //residual = rhs - m_mat * x;
     matvec(*tmp1, *x);
@@ -42,10 +52,13 @@ namespace allium {
 
     Real abs_tol = rhs.l2_norm() * m_tol;
 
+    m_iteration_count = 0;
     if (sqrt(residual_norm_sq) > abs_tol)
     {
       auto Ap = allocate_like(rhs);
       while (true) {
+        m_iteration_count++;
+
         matvec(*Ap, *p);
 
         Real alpha = std::real(residual->dot(*residual)) / std::real(p->dot(*Ap));

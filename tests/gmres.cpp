@@ -200,3 +200,32 @@ TEST(GMRES, solve2)
   }
 }
 
+TEST(GMRES, initial_guess)
+{
+  using Number = std::complex<double>;
+
+  VectorSpec spec(Comm::world(), 1, 1);
+  DefaultVector<Number> v(spec);
+
+  LocalCooMatrix<Number> coo;
+  coo.add(0, 0, 5);
+
+  auto mat = std::make_shared<DefaultSparseMatrix<Number>>(spec, spec);
+  mat->set_entries(coo);
+
+  local_slice(v) = { 1.0 };
+
+  DefaultVector<Number> w(spec);
+  GmresSolver<DefaultSparseMatrix<Number>::Vector> solver;
+  solver.setup(mat);
+
+  local_slice(w) = { 0.2 };
+  solver.solve(w, v, InitialGuess::PROVIDED);
+
+  EXPECT_EQ(solver.iteration_count(), 0);
+  { auto loc = local_slice(w);
+    EXPECT_EQ(loc[0], 0.2);
+  }
+}
+   
+

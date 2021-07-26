@@ -40,7 +40,8 @@ namespace allium {
       virtual void solve_implicit(VectorStorage<Number>& out,
                           Real t,
                           Number a,
-                          const VectorStorage<Number>& r) = 0;
+                          const VectorStorage<Number>& r,
+                          InitialGuess initial_guess) = 0;
 
       Real m_dt;
   };
@@ -92,10 +93,13 @@ namespace allium {
       void solve_implicit(VectorStorage<Number>& out,
                           Real t,
                           Number a,
-                          const VectorStorage<Number>& r) override {
+                          const VectorStorage<Number>& r,
+                          InitialGuess initial_guess) override {
         m_solve_im(static_cast<Vector&>(out),
-                 t, a,
-                 static_cast<const Vector&>(r));
+                   t,
+                   a,
+                   static_cast<const Vector&>(r),
+                   initial_guess);
       }
   };
 

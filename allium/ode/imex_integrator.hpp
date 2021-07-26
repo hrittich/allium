@@ -19,6 +19,7 @@
 #include <memory>
 #include <allium/la/linear_operator.hpp>
 #include <allium/util/numeric.hpp>
+#include <allium/la/iterative_solver.hpp>
 
 namespace allium {
 
@@ -49,7 +50,8 @@ namespace allium {
       using ImplicitSolve = std::function<void(Vector& y,
                                                real_part_t<Number> t,
                                                Number a,
-                                               const Vector& r)>;
+                                               const Vector& r,
+                                               InitialGuess initial_guess)>;
 
       virtual ~ImexIntegrator() {}
 

@@ -92,7 +92,12 @@ void apply_shifted_laplace(Mesh& f, Problem pb, Number a, const Mesh& u)
 /**
  Solves y - a f_i(t, y) = r, where f_i(t, y) = Δy.
 */
-void solve_f_impl(Mesh& y, Problem pb, Real t, Number a, const Mesh& r) {
+void solve_f_impl(Mesh& y,
+                  Problem pb,
+                  Real t,
+                  Number a,
+                  const Mesh& r,
+                  InitialGuess initial_guess) {
   using namespace std::placeholders;
 
   // rhs = (1/a) r + Δ^b u^b
@@ -104,7 +109,7 @@ void solve_f_impl(Mesh& y, Problem pb, Real t, Number a, const Mesh& r) {
   CgSolver<Mesh> solver;
   auto op = std::bind(apply_shifted_laplace, _1, pb, 1.0/a, _2);
   solver.setup(shared_copy(make_linear_operator<Mesh>(op)));
-  solver.solve(y, rhs);
+  solver.solve(y, rhs, initial_guess);
 }
 
 /** The explicit part of the ODE, f_e(y) = 0 */
@@ -152,7 +157,7 @@ int main(int argc, char** argv)
   ImexEuler<Mesh> integrator;
   integrator.setup(f_expl,
                    [](Mesh& out, double t, const Mesh& in) {}, // not needed for Euler
-                   std::bind(solve_f_impl, _1, pb, _2, _3, _4));
+                   std::bind(solve_f_impl, _1, pb, _2, _3, _4, _5));
 
   double t0 = 0;
   set_solution(u, pb, t0);

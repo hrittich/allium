@@ -15,6 +15,8 @@
 #ifndef ALLIUM_LA_ITERATIVE_SOLVER_HPP
 #define ALLIUM_LA_ITERATIVE_SOLVER_HPP
 
+#include <allium/util/numeric.hpp>
+#include "vector_storage.hpp"
 #include "linear_solver.hpp"
 #include "linear_operator.hpp"
 
@@ -58,8 +60,10 @@ namespace allium {
         m_mat = mat;
       }
 
-      void solve(V& solution, const V& rhs) override {
-        Base::solve(solution, rhs);
+      void solve(V& solution,
+                 const V& rhs,
+                 InitialGuess initial_guess = InitialGuess::NOT_PROVIDED) override {
+        Base::solve(solution, rhs, initial_guess);
       }
 
     private:

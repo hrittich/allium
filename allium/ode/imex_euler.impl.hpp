@@ -39,11 +39,13 @@ namespace allium {
       *rhs *= h;
       *rhs += *y_old;
 
-      // solve y_new - h * f_im(t_new, y_new) = rhs
-      solve_implicit(*y_new, t_new, h, *rhs);
+      // y_old is a good initial guess to the solver
+      y_new->assign(*y_old);
 
-      // @todo implement efficient swap
-      y_old->assign(*y_new);
+      // solve y_new - h * f_im(t_new, y_new) = rhs
+      solve_implicit(*y_new, t_new, h, *rhs, InitialGuess::PROVIDED);
+
+      y_old.swap(y_new);
       t_old = t_new;
     }
 
