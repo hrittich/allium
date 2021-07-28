@@ -104,7 +104,7 @@ void Heat::simulate() {
 
   double t0 = 0;
   set_solution(u, t0);
-  integrator.initial_values(t0, u);
+  integrator.initial_value(t0, u);
   integrator.dt(1e-4);
 
   auto filename = [](int frame) {
@@ -116,22 +116,20 @@ void Heat::simulate() {
   write_vtk(filename(0), u);
 
   for (int i = 0; i < 200; ++i) {
-    double t0 = i * 2e-4;
     double t1 = (i+1)*2e-4;
-    integrator.initial_values(t0, u);
     integrator.integrate(u, t1);
 
-    write_vtk(filename(i+1), u);
+    write_vtk(filename(i+1), integrator.current_value());
 
     // error = exact - u
     set_solution(error, t1);
-    error.add_scaled(-1.0, u);
+    error.add_scaled(-1.0, integrator.current_value());
 
     auto e = error.l2_norm();
     if (comm.rank() == 0) {
       std::cout << "t = " << t1 << ", ‖e‖ = " << e << std::endl;
     }
-  } 
+  }
 }
 
 /**

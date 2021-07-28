@@ -58,11 +58,12 @@ TEST(ImexEuler, TestEquation)
   };
 
   integrator.setup(f_ex, f_im, f_solve);
-  integrator.initial_values(0, y0);
+  integrator.initial_value(0, y0);
   integrator.dt(dt);
 
   integrator.integrate(y1, dt);
 
+  integrator.initial_value(0, y0);
   integrator.dt(dt/2);
   integrator.integrate(y2, dt/2);
 

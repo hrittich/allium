@@ -20,6 +20,7 @@
 #include <allium/la/linear_operator.hpp>
 #include <allium/util/numeric.hpp>
 #include <allium/la/iterative_solver.hpp>
+#include "integrator.hpp"
 
 namespace allium {
 
@@ -36,10 +37,11 @@ namespace allium {
    *Experimental interface*; this interface might change.
    */
   template <typename V>
-  class ImexIntegrator {
+  class ImexIntegrator : public Integrator<V> {
     public:
-      using Vector = V;
-      using Number = typename V::Number;
+      using typename Integrator<V>::Vector;
+      using typename Integrator<V>::Number;
+      using typename Integrator<V>::Real;
 
       using ExplicitF = std::function<void(Vector&,
                                            real_part_t<Number>,
@@ -83,7 +85,7 @@ namespace allium {
       /**
        @brief Set the initial values of the ODE to solve.
        */
-      virtual void initial_values(real_part_t<Number> t0, const Vector& y0) = 0;
+      virtual void initial_value(real_part_t<Number> t0, const Vector& y0) = 0;
   };
 
   /// @}

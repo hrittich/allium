@@ -17,39 +17,32 @@
 namespace allium {
 
   template <typename N>
-  void ImexEulerBase<N>::integrate(Vector& y1, Real t0, const Vector& y0, Real t1) {
+  void ImexEulerBase<N>::integrate(Real t1) {
+    allium_assert(t1 >= m_t_cur, "new time value larger than old");
 
-    auto y_old = allocate_like(y0);
-    auto y_new = allocate_like(y0);
-    auto rhs = allocate_like(y0);
-    auto shift = allocate_like(y0);
+    auto y_new = allocate_like(*m_y_cur);
+    auto rhs = allocate_like(*m_y_cur);
 
-    y_old->assign(y0);
-
-    Real t_old = t0;
-
-    while (t_old < t1) {
-      Real t_new = t_old + m_dt;
+    while (m_t_cur < t1) {
+      Real t_new = m_t_cur + m_dt;
       t_new = std::min(t1, t_new);
 
-      Real h = t_new - t_old;
+      Real h = t_new - m_t_cur;
 
-      // rhs = y_old + h * f_ex(t_old, y_old);
-      apply_f_ex(*rhs, t_old, *y_old);
+      // rhs = y_cur + h * f_ex(t_cur, y_cur);
+      apply_f_ex(*rhs, m_t_cur, *m_y_cur);
       *rhs *= h;
-      *rhs += *y_old;
+      *rhs += *m_y_cur;
 
-      // y_old is a good initial guess to the solver
-      y_new->assign(*y_old);
+      // y_cur is a good initial guess to the solver
+      y_new->assign(*m_y_cur);
 
       // solve y_new - h * f_im(t_new, y_new) = rhs
       solve_implicit(*y_new, t_new, h, *rhs, InitialGuess::PROVIDED);
 
-      y_old.swap(y_new);
-      t_old = t_new;
+      m_y_cur.swap(y_new);
+      m_t_cur = t_new;
     }
-
-    y1.assign(*y_old);
   }
 
 }

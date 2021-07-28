@@ -15,7 +15,9 @@
 #ifndef ALLIUM_ODE_EXPLICIT_INTEGRATOR_HPP
 #define ALLIUM_ODE_EXPLICIT_INTEGRATOR_HPP
 
+#include <allium/util/numeric.hpp>
 #include <functional>
+#include "integrator.hpp"
 
 namespace allium {
 
@@ -29,18 +31,17 @@ namespace allium {
    @brief Base class for explicit time integrators.
    */
   template <typename V>
-  class ExplicitIntegrator {
+  class ExplicitIntegrator : public Integrator<V> {
     public:
       using Vector = V;
       using Number = typename Vector::Number;
-      using Real = real_part_t<Number>;
+      using typename Integrator<V>::Real;
       using F = std::function<void(Vector&, Real, const Vector&)>;
 
       virtual ~ExplicitIntegrator() {}
 
       virtual void setup(F f) = 0;
-      virtual void initial_values(Real t0, const Vector& y0) = 0;
-      virtual void integrate(Vector& y1, Real t1) = 0;
+      virtual void initial_value(Real t0, const Vector& y0) = 0;
   };
 
   /// @}

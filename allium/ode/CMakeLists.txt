@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 add_library(allium_ode
+  integrator.hpp
   explicit_euler.hpp
   explicit_integrator.hpp
   imex_euler.cpp imex_euler.impl.hpp imex_euler.hpp

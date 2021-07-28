@@ -33,8 +33,10 @@ namespace allium {
       void dt(real_part_t<Number> dt) { m_dt = dt; }
 
     protected:
-      void integrate(Vector& y1, Real t0, const Vector& y0, Real t1);
+      void integrate(Real t1);
 
+      real_part_t<Number> m_t_cur;
+      std::unique_ptr<Vector> m_y_cur;
     private:
       virtual void apply_f_ex(Vector& out, Real t, const Vector& in) = 0;
       virtual void solve_implicit(VectorStorage<Number>& out,
@@ -70,20 +72,23 @@ namespace allium {
         m_solve_im = solve_im;
       }
 
-      void initial_values(real_part_t<Number> t0, const Vector& y0) override {
-        m_t0 = t0;
-
-        m_y0 = allocate_like(y0);
-        m_y0->assign(y0);
+      void initial_value(real_part_t<Number> t0, const Vector& y0) override {
+        this->m_t_cur = t0;
+        this->m_y_cur = clone(y0);
       }
 
-      void integrate(Vector& y1, real_part_t<Number> t1) {
-        integrate(y1, m_t0, *m_y0, t1);
+      const Vector& current_value() const override {
+        return static_cast<const Vector&>(*this->m_y_cur);
+      }
+
+      Real current_argument() const { return this->m_t_cur; }
+
+      using ImexIntegrator<Vector>::integrate;
+      void integrate(real_part_t<Number> t1) override {
+        ImexEulerBase<Number>::integrate(t1);
       }
 
     private:
-      real_part_t<Number> m_t0;
-      std::unique_ptr<Vector> m_y0;
       ExplicitF m_f_ex;
       ImplicitSolve m_solve_im;
 

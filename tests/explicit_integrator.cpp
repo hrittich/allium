@@ -43,11 +43,12 @@ TEST(ExplicitIntegrator, Euler)
   };
 
   integrator.setup(f);
-  integrator.initial_values(0, y0);
 
+  integrator.initial_value(0, y0);
   integrator.dt(dt);
   integrator.integrate(y1, dt);
 
+  integrator.initial_value(0, y0);
   integrator.dt(dt/2);
   integrator.integrate(y2, dt/2);
 
@@ -93,11 +94,12 @@ TEST(ExplicitIntegrator, RungeKutta4)
   };
 
   integrator.setup(f);
-  integrator.initial_values(0, y0);
 
+  integrator.initial_value(0, y0);
   integrator.dt(dt);
   integrator.integrate(y1, dt);
 
+  integrator.initial_value(0, y0);
   integrator.dt(dt/2);
   integrator.integrate(y2, dt/2);
 
@@ -152,11 +154,12 @@ TEST(ExplicitIntegrator, RungeKutta4DrivenExp)
   };
 
   integrator.setup(f);
-  integrator.initial_values(0, y0);
 
+  integrator.initial_value(0, y0);
   integrator.dt(dt);
   integrator.integrate(y1, dt);
 
+  integrator.initial_value(0, y0);
   integrator.dt(dt/2);
   integrator.integrate(y2, dt/2);
 
