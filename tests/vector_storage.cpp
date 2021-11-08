@@ -63,7 +63,7 @@ TYPED_TEST(VectorStorageTest, Create) {
   TypeParam v(this->spec_1d);
 }
 
-TYPED_TEST(VectorStorageTest, Fill) {
+TYPED_TEST(VectorStorageTest, ReadWrite) {
   auto comm = Comm::world();
 
   VectorSpec vspec(comm, 1, 1);
@@ -85,6 +85,21 @@ TYPED_TEST(VectorStorageTest, Fill) {
     EXPECT_ANY_THROW(v_loc[1] = 1);
   }
   #endif
+}
+
+TYPED_TEST(VectorStorageTest, Fill) {
+  auto comm = Comm::world();
+
+  VectorSpec vspec(comm, 2, 2);
+  TypeParam v(vspec);
+
+  v.fill(42.0);
+
+  {
+    auto v_loc = LocalSlice<TypeParam*>(&v);
+    EXPECT_EQ(v_loc[0], 42.0);
+    EXPECT_EQ(v_loc[1], 42.0);
+  }
 }
 
 TYPED_TEST(VectorStorageTest, InitializerLists) {

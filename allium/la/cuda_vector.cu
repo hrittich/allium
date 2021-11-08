@@ -202,6 +202,11 @@ namespace allium {
   }
 
   template <typename N>
+  void CudaVector<N>::fill(N value) {
+    cuda_map(cuda_op::SetValue<N>(value), this->spec().local_size(), m_device_data.ptr());
+  }
+
+  template <typename N>
   auto CudaVector<N>::aquire_data_ptr() -> Number*
   {
     cudaError_t err;

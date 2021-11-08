@@ -56,6 +56,8 @@ namespace allium {
       N dot(const CudaMesh& rhs) const;
       Real l2_norm() const override;
 
+      void fill(N value) override;
+
       /** Apply a five point stencil */
       void apply_five_point(CudaMesh& out, std::array<Number, 5> coeff) const;
 

@@ -116,6 +116,13 @@ namespace allium {
         return result;
       }
 
+      void fill(PetscScalar value) override {
+        allium_assert(!m_dirty);
+
+        PetscErrorCode ierr;
+        ierr = VecSet(m_ptr, value); petsc::chkerr(ierr);
+      }
+
       void native(PetscObjectPtr<Vec> ptr) { m_ptr = ptr; }
       PetscObjectPtr<Vec> native() const { return m_ptr; }
     protected:
@@ -233,6 +240,10 @@ namespace allium {
 
       Real l2_norm() const override {
         return narrow_number<Real, PetscReal>()(m_native.l2_norm());
+      }
+
+      void fill(N value) override {
+        m_native.fill(value);
       }
 
       void native(PetscObjectPtr<Vec> v) { m_native.native(v); }

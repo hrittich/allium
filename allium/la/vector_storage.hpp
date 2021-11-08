@@ -59,6 +59,7 @@ namespace allium {
       virtual void add_scaled(Number factor, const VectorStorage& other) = 0;
       virtual Real l2_norm() const = 0;
       virtual Number dot(const VectorStorage& rhs) const = 0;
+      virtual void fill(N value) = 0;
 
       VectorSpec spec() const { return m_spec; }
     private:
@@ -283,10 +284,7 @@ namespace allium {
   template <typename V>
   enable_if_vector_t<V> fill(V& vec, typename V::Number value)
   {
-    auto loc = LocalSlice<V*>(&vec);
-    for (size_t i_loc=0; i_loc < loc.size(); ++i_loc) {
-      loc[i_loc] = value;
-    }
+    vec.fill(value);
   }
 
   template <typename N>

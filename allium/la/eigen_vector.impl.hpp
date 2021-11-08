@@ -63,6 +63,12 @@ namespace allium {
   }
 
   template <typename N>
+    void EigenVectorStorage<N>::fill(N value)
+  {
+    vec = BaseVector::Constant(this->spec().global_size(), value);
+  }
+
+  template <typename N>
     auto EigenVectorStorage<N>::aquire_data_ptr() -> Number*
   {
     return vec.data();

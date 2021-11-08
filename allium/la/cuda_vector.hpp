@@ -19,32 +19,9 @@
 #ifdef ALLIUM_USE_CUDA
 
 #include "vector_storage.hpp"
+#include "cuda_array.hpp"
 
 namespace allium {
-
-  /**
-   * Stores an array on the GPU. Memory is automatically managed.
-   */
-  template <typename T>
-  class CudaArray final {
-    public:
-      CudaArray(size_t element_count=0);
-
-      CudaArray(const CudaArray&) = delete;
-      CudaArray& operator= (const CudaArray&) = delete;
-
-      CudaArray(CudaArray&& other);
-      CudaArray& operator= (CudaArray&& other);
-
-      ~CudaArray();
-
-      void resize(size_t element_count);
-
-      T* ptr() { return m_ptr; }
-      const T* ptr() const { return m_ptr; }
-    private:
-      T* m_ptr;
-  };
 
   /**
    * Vector which performs all computations on the GPU.
@@ -74,6 +51,8 @@ namespace allium {
       using VectorStorageTrait<CudaVector, N>::dot;
       N dot(const CudaVector& rhs) const;
       Real l2_norm() const override;
+
+      void fill(N value) override;
 
     protected:
       Number* aquire_data_ptr() override;

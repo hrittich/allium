@@ -122,6 +122,12 @@ auto CudaMesh<N, 2>::l2_norm() const -> Real
 }
 
 template <typename N>
+void CudaMesh<N, 2>::fill(N value) {
+  const auto layout = data_layout(*this);
+  cuda_mesh_fill(m_device_data.ptr(), layout, value);
+}
+
+template <typename N>
 void CudaMesh<N, 2>::apply_five_point(CudaMesh& out, std::array<Number, 5> coeff) const
 {
   cuda_mesh_five_point(out.m_device_data.ptr(),
@@ -171,8 +177,9 @@ void CudaMesh<N,2>::fill_ghost_points(Number value)
   };
 
   cuda_mesh_fill(m_device_data.ptr(), right, value);
-
 }
+
+
 
 template <typename N>
 auto CudaMesh<N, 2>::aquire_data_ptr() -> Number*

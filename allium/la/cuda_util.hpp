@@ -82,6 +82,18 @@ namespace allium {
       private:
         N m_factor;
     };
+
+    template <typename N>
+    class SetValue {
+      public:
+        SetValue(N v) : m_value(v) {}
+
+        __device__ N operator() (N) {
+          return m_value;
+        }
+      private:
+        N m_value;
+    };
   }
 
   const size_t partial_map_reduce_block_size = 512;

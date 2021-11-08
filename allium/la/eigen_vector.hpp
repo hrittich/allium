@@ -49,6 +49,8 @@ namespace allium {
       N dot(const EigenVectorStorage& rhs) const;
       Real l2_norm() const override;
 
+      void fill(N value) override;
+
       BaseVector& native() { return vec; }
       const BaseVector& native() const { return vec; }
 

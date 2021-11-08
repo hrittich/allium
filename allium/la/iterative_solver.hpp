@@ -69,7 +69,7 @@ namespace allium {
     private:
       std::shared_ptr<Matrix> m_mat;
 
-      void apply_matrix(VectorStorage<Number>& out, const VectorStorage<Number>& in)
+      void apply_matrix(VectorStorage<Number>& out, const VectorStorage<Number>& in) override
       {
         ALLIUM_NO_NONNULL_WARNING
         allium_assert(dynamic_cast<const V*>(&in) != nullptr);
