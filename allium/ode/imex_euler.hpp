@@ -81,7 +81,7 @@ namespace allium {
         return static_cast<const Vector&>(*this->m_y_cur);
       }
 
-      Real current_argument() const { return this->m_t_cur; }
+      Real current_argument() const override { return this->m_t_cur; }
 
       using ImexIntegrator<Vector>::integrate;
       void integrate(real_part_t<Number> t1) override {

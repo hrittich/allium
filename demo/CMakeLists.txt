@@ -27,6 +27,9 @@ if(ALLIUM_USE_PETSC)
 
   add_executable(heat_periodic2 heat_periodic2.cpp)
   target_link_libraries(heat_periodic2 ${ALLIUM_LIBRARIES} ${LIBRARIES})
+
+  add_executable(phase_field2 phase_field2.cpp)
+  target_link_libraries(phase_field2 ${ALLIUM_LIBRARIES} ${LIBRARIES})
 endif()
 
 if(ALLIUM_USE_CUDA)
