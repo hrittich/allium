@@ -112,3 +112,21 @@ TEST(Range, RangeSize)
   EXPECT_EQ(range.size(), 6);
 }
 
+TEST(Range, Intersects)
+{
+  Range<2> r1{{1,1}, {3,3}};
+  Range<2> r2{{2,2}, {4,4}};
+  Range<2> r3{{2,3}, {5,4}};
+  Range<2> r4{{3,0}, {4,4}};
+
+  EXPECT_TRUE(r1.intersects(r2));
+  EXPECT_TRUE(r2.intersects(r1));
+  EXPECT_FALSE(r1.intersects(r3));
+  EXPECT_FALSE(r3.intersects(r1));
+  EXPECT_TRUE(r2.intersects(r3));
+  EXPECT_TRUE(r3.intersects(r2));
+
+  EXPECT_FALSE(r1.intersects(r4));
+  EXPECT_FALSE(r4.intersects(r1));
+}
+

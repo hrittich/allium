@@ -39,6 +39,7 @@ namespace allium {
                 && m_end_pos == other.m_end_pos;
       }
 
+      /** True if the given point p is inside the range. */
       bool in(Point<int, D> p) {
         for (int i = 0; i < D; ++i) {
           if (p[i] < m_begin_pos[i] || p[i] >= m_end_pos[i])
@@ -54,6 +55,17 @@ namespace allium {
           idx = (p[i] - m_begin_pos[i]) + dim_size * idx;
         }
         return idx;
+      }
+
+      /** Returns true if the two ranges intersect. */
+      bool intersects(const Range<D>& other) {
+        for (size_t i = 0; i < D; ++i) {
+          if (other.m_begin_pos[i] >= m_end_pos[i]
+              || other.m_end_pos[i] <= m_begin_pos[i]) {
+            return false;
+          }
+        }
+        return true;
       }
 
       Point<int, D> begin_pos() const { return m_begin_pos; }
