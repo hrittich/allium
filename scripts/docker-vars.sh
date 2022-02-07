@@ -5,13 +5,11 @@
 DOCKER=${DOCKER:-docker}
 
 # Check if we need root
-if $DOCKER version &> /dev/null; then
-  SUDO=""
-else
-  SUDO="sudo"
+if ! $DOCKER version &> /dev/null; then
+  DOCKER="sudo \"$DOCKER"\"
 
   # Check if we have access with sudo
-  if ! $SUDO $DOCKER version &> /dev/null; then
+  if ! $DOCKER version &> /dev/null; then
     echo "Cannot access Docker"
     exit 1
   fi

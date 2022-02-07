@@ -15,6 +15,7 @@
 set(GOOGLETEST_VERSION 1.10.0)
 set(EIGEN_VERSION 3.3.7)
 set(PYBIND11_VERSION 2.5.0)
+set(DOXYGEN_AWESOME_VERSION 1.6.1)
 
 function(UNPACK_SOURCE ARCHIVE DIRECTORY TARGET)
 
@@ -45,5 +46,7 @@ UNPACK_SOURCE(eigen-${EIGEN_VERSION}.tar.gz
 UNPACK_SOURCE(pybind11-${PYBIND11_VERSION}.tar.gz
               pybind11-${PYBIND11_VERSION}
               pybind11)
-
+UNPACK_SOURCE(doxygen-awesome-css-${DOXYGEN_AWESOME_VERSION}.tar.gz
+              doxygen-awesome-css-${DOXYGEN_AWESOME_VERSION}
+              doxygen-awesome-css)
 

@@ -1,0 +1,16 @@
+name: publish-gh-pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hrittich/allium-full
+    steps:
+      - uses: actions/checkout@v2
+      - run: cat /etc/os-release
+      - run: ./scripts/publish-gh-pages.sh

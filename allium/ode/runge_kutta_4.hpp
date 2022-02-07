@@ -20,6 +20,9 @@
 
 namespace allium {
 
+  /// @ingroup ode
+  /// @{
+
   /**
    @brief The classical explicit Runge-Kutta method of order 4.
    */
@@ -100,6 +103,7 @@ namespace allium {
     }
   }
 
+  /// @}}}
 }
 
 #endif

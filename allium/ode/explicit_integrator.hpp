@@ -24,8 +24,10 @@ namespace allium {
   /**
    @defgroup ode ODE
    @brief Ordinary differential equation solvers.
-   @{
    */
+
+  /// @ingroup ode
+  /// @{
 
   /**
    @brief Base class for explicit time integrators.

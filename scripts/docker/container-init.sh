@@ -1,21 +1,23 @@
 #!/bin/bash
-USER_UID=${USER_UID:-1000}
-USER_GID=${USER_GID:-1000}
 MAKE_JOBS=${MAKE_JOBS:-1}
 
-groupadd -g "$USER_GID" developer
-useradd -g "$USER_GID" -u "$USER_UID" developer
-chown developer:developer /home/developer
-sudo -u developer cp -rn /etc/skel/. /home/developer/
+# Create a user owning the /work directory
+USER_UID=$(stat -c '%u' /work)
+USER_GID=$(stat -c '%g' /work)
+if [ "$USER_UID" -ne 0 ]
+then
+  groupadd -g "$USER_GID" developer
+  useradd -m -g "$USER_GID" -u "$USER_UID" developer
+fi
 
-cd /home/developer
+cd /work
 
 case "$1" in
   shell)
-    exec sudo -HE -u developer bash
+    exec sudo -HE -u "#$USER_UID" bash
   ;;
   tests)
-    exec sudo -HE -u developer container-tests.sh "$2"
+    exec sudo -HE -u "#$USER_UID" container-tests.sh "$2"
   ;;
   sh|bash)
     # This section is needed for GitLab-CI and allows for execution of

@@ -1,4 +1,4 @@
-# Style Guide
+@page style_guide Style Guide
 
 ## Synopsis
 
@@ -83,8 +83,6 @@ The script `scripts/stub.py` can be used to generate new files.
       if (a == b)
         {
           x = 42;
-
-## Naming Conventions
 
 
 ## Function Parameters

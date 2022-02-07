@@ -14,4 +14,3 @@ sudo apt-get install -y \
   libgsl-dev \
   pkg-config \
   texlive-latex-base
-

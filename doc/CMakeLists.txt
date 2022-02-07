@@ -11,4 +11,19 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-add_subdirectory(api)
+
+if(Doxygen_FOUND)
+  if(ALLIUM_INTERNAL_DOCS)
+    set(INTERNAL_DOCS "YES")
+    set(ENABLED_SECTIONS "INTERNAL")
+  else()
+    set(INTERNAL_DOCS "NO")
+    set(ENABLED_SECTIONS "")
+  endif()
+  get_property(DOXYGEN_EXECUTABLE
+               TARGET Doxygen::doxygen
+               PROPERTY IMPORTED_LOCATION)
+  configure_file(Doxyfile.in Doxyfile)
+  add_custom_target(api-docs
+    COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
+endif()

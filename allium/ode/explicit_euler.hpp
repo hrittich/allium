@@ -20,6 +20,9 @@
 
 namespace allium {
 
+  /// @ingroup ode
+  /// @{
+
   /**
    @brief The explicit Euler time integrator.
    */
@@ -72,6 +75,8 @@ namespace allium {
       m_t_cur = t_new;
     }
   }
+
+  /// @}
 
 }
 
