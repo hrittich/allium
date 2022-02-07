@@ -39,10 +39,10 @@ api_docs:
     - make api-docs
     - mkdir public
     - ls public
-    - cp -vr doc/api/html -T public
+    - cp -vr doc/html -T public
   artifacts:
     paths:
-      - doc/api/html
+      - doc/html
     expire_in: 15 days
 
 pages:
@@ -51,7 +51,7 @@ pages:
     - master
     - pages
   script:
-    - cp -vr doc/api/html -T public
+    - cp -vr doc/html -T public
   artifacts:
     paths:
       - public

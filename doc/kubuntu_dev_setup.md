@@ -1,4 +1,4 @@
-# Kubuntu Development Setup
+@page kubuntu_dev_setup Kubuntu Development Setup
 
 This guide describes how to setup your system to work on the library. This
 guide has been tested with [Kubuntu] 20.04. These instructions, however,

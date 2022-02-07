@@ -40,8 +40,4 @@ lost, when you exit the container**.
 
 See [Kubuntu Developer Setup](doc/kubuntu_dev_setup.md).
 
-## Installation
-
-See [Installation](INSTALL.md).
-
 

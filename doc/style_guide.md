@@ -1,4 +1,4 @@
-# Style Guide
+@page style_guide Style Guide
 
 ## Synopsis
 

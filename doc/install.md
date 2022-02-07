@@ -1,4 +1,4 @@
-# Installation
+@page install Installation
 
 *@ToDo: Complete the installation instructions*
 
