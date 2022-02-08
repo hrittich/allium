@@ -14,6 +14,6 @@ jobs:
       - run: ls
       - run: echo ${{ github.workspace }}
       - run: ./scripts/publish-gh-pages.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
-          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        #        env:
+        #  GITHUB_TOKEN: ${{ secrets.github_token }}
+        #  DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

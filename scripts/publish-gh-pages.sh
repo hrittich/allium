@@ -3,20 +3,19 @@
 set -xe
 REPO="$(pwd)"
 
-cmake .
-make api-docs
+cmake -S . -B build
+make -C api-docs
 
-TMPDIR="$(mktemp -d --tmpdir gh-pagesXXXXXXXX)"
-cp -r doc/html/ -T "$TMPDIR"
+if [ -z "$(git config --get user.name)" ]
+then
+  git config --global user.email "publish@bots.github.com"
+  git config --global user.name "Publish Bot"
+fi
 
-cd "$TMPDIR"
-git config --global user.email "publish@bots.github.com"
-git config --global user.name "Publish Bot"
-git init .
 git switch -c gh-pages
-git add .
-git commit -m 'Publish'
-git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+git add build/doc/
+git commit -m 'Publish Pages'
+#git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 git push --force --set-upstream origin gh-pages
 
 
