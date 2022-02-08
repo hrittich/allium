@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt-get install -qy openmpi-bin
+      - run: sudo apt-get install -qy openmpi-bin doxygen
       - run: ls
       - run: echo ${{ github.workspace }}
       - run: ./scripts/publish-gh-pages.sh
