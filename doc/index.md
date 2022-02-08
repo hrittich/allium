@@ -4,6 +4,13 @@
 
 @image{inline} html logo_allium.png
 
+Allium is a library containing routines for scientific computations,
+especially linear algebra routines and solvers for ordinary differential
+equations.
+
+**WARNING**: The library is still in the *alpha* stage. Expect things to
+break!
+
 ## Developer Quickstart
 
 The easiest way to get started is to run Linux (e.g.,
