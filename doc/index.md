@@ -2,7 +2,7 @@
 
 <h1>Allium - <em>Al</em>gorithm <em>Li</em>brary for <em>U</em>pscaling <em>M</em>athematics</h1>
 
-![](logo_allium.png)
+@image{inline} html logo_allium.png
 
 ## Developer Quickstart
 
