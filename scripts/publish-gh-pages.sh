@@ -1,8 +1,6 @@
 #!/bin/bash
 set -xe
 
-git switch -c gh-pages
-
 cmake -S . -B build
 make -C build api-docs
 
@@ -14,8 +12,9 @@ fi
 
 git add --force build/doc/
 git commit -m 'Publish Pages'
+git subtree split --branch=gh-pages --prefix=build/doc/
 #git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-#git push --force --set-upstream origin gh-pages
-git subtree push --force --prefix gh-pages origin gh-pages
+git push --force origin gh-pages
+#git subtree push --force --prefix gh-pages origin gh-pages
 
 
