@@ -16,5 +16,5 @@ git init .
 git switch -c gh-pages
 git add .
 git commit -m 'Publish'
-git remote add origin "https://x-access-token:${DEPLOY_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 git push -u origin gh-pages
