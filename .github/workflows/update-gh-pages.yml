@@ -1,0 +1,16 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches:
+      - improve-doc
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - run: ./scripts/publish-gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
