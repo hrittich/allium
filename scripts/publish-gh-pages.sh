@@ -13,6 +13,6 @@ then
 fi
 
 git add --force build/doc/html
-git commit -m "Adds documentation for $commit."
+git commit -m "Documentation for $commit."
 git subtree split --branch=gh-pages --prefix=build/doc/html
 git push --force origin gh-pages
