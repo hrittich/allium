@@ -1,6 +1,8 @@
 #!/bin/bash
 set -xe
 
+commit="$(git log -1 --format="%h")"
+
 cmake -S . -B build
 make -C build api-docs
 
@@ -11,10 +13,6 @@ then
 fi
 
 git add --force build/doc/html
-git commit -m 'Publish Pages'
+git commit -m "Adds documentation for $commit."
 git subtree split --branch=gh-pages --prefix=build/doc/html
-#git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 git push --force origin gh-pages
-#git subtree push --force --prefix gh-pages origin gh-pages
-
-
