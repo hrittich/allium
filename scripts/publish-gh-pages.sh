@@ -16,6 +16,6 @@ git add --force build/doc/
 git commit -m 'Publish Pages'
 #git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 #git push --force --set-upstream origin gh-pages
-git subtree push -P gh-pages origin gh-pages
+git subtree push --force --prefix gh-pages origin gh-pages
 
 
