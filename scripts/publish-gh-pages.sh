@@ -4,7 +4,7 @@ set -xe
 REPO="$(pwd)"
 
 cmake -S . -B build
-make -C api-docs
+make -C build api-docs
 
 if [ -z "$(git config --get user.name)" ]
 then
