@@ -4,7 +4,7 @@
 
 ## Documentation
 
-See [here](https://rittich2.pages.jsc.fz-juelich.de/allium).
+See [Website](https://hrittich.github.io/allium/).
 
 ## Developer Quickstart
 
