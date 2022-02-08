@@ -1,4 +1,4 @@
-name: GitHub Pages
+name: Publish GitHub Pages
 
 on:
   push:
@@ -11,9 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: sudo apt-get install -qy openmpi-bin doxygen
-      - run: ls
-      - run: echo ${{ github.workspace }}
       - run: ./scripts/publish-gh-pages.sh
-        #        env:
-        #  GITHUB_TOKEN: ${{ secrets.github_token }}
-        #  DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
