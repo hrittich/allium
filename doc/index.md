@@ -4,8 +4,7 @@
 
 ![Allium Logo](logo_allium.png)
 
-
-
+- @subpage download
 - @subpage install
 - @subpage demos
 
