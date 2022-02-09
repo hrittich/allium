@@ -28,4 +28,3 @@ case "$CMD" in
     install
   ;;
 esac
-

@@ -5,7 +5,3 @@ source "$SCRIPTDIR/docker-vars.sh"
 
 $DOCKER build $DOCKER_BUILD_FLAGS -f "$DOCKERDIR/minimal_dev.dockerfile" -t allium-minimal "$SCRIPTDIR" &&
 $DOCKER build $DOCKER_BUILD_FLAGS -f "$DOCKERDIR/full_dev.dockerfile" -t allium-full "$SCRIPTDIR"
-
-#CID=$($SUDO docker create allium)
-#$SUDO docker cp $CID:/var/cache/apt apt-cache
-#$SUDO docker rm $CID

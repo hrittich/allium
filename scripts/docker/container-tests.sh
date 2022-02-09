@@ -15,6 +15,7 @@ case "$TYPE" in
 esac
 
 cd $HOME
+ln -s /work source
 git clone source build &&
 cd build &&
 cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" . &&
