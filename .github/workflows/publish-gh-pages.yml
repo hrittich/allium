@@ -12,5 +12,5 @@ jobs:
       image: ghcr.io/hrittich/allium-full
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt-get install -qy openmpi-bin doxygen
+      - run: cat /etc/os-release
       - run: ./scripts/publish-gh-pages.sh
