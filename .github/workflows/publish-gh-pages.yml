@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hrittich/allium-full
     steps:
       - uses: actions/checkout@v2
       - run: sudo apt-get install -qy openmpi-bin doxygen
