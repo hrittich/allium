@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye
 ENV SCRIPTDIR=/usr/local/share/container/scripts
 
 # Update APT cache and install basic tools

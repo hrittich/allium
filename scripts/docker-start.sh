@@ -28,5 +28,5 @@ ARGS+=" --volume $SOURCEDIR:/home/developer/source"
 TYPE=$1
 shift
 
-$SUDO $DOCKER run --rm -ti $ARGS allium-$TYPE $@
+$DOCKER run --rm -ti $ARGS allium-$TYPE $@
 
