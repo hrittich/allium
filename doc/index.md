@@ -1,6 +1,6 @@
 @mainpage Allium
 
-<h1>Allium - <em>Al</em>gorithm <em>Li</em>brary for <em>U</em>pscaling <em>M</em>athematics</h1>
+<h2><em>Al</em>gorithm <em>Li</em>brary for <em>U</em>pscaling <em>M</em>athematics</h2>
 
 @image{inline} html logo_allium.png
 
@@ -8,8 +8,7 @@ Allium is a library containing routines for scientific computations,
 especially linear algebra routines and solvers for ordinary differential
 equations.
 
-**WARNING**: The library is still in the *alpha* stage. Expect things to
-break!
+**WARNING**: The library is still in *alpha* stage. Expect things to break!
 
 ## Developer Quickstart
 
