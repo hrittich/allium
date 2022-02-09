@@ -10,41 +10,41 @@ equations.
 
 **WARNING**: The library is still in *alpha* stage. Expect things to break!
 
-## Developer Quickstart
+## Quickstart
 
-The easiest way to get started is to run Linux (e.g.,
-[Debian](https://debian.org) or [Ubuntu](https://ubuntu.com)) and use a
-[Docker](https://www.docker.com/) image.
-(For more information about the Docker images, see the [Docker
-Section](doc/docker.md) of the documentation.) Executing
+Using the Allium build environment [Docker] image on Linux is the easiest way
+to get started. For this guide, I am assuming that you have installed [Git]
+and Docker and are familiar with their basics.
 
-    $ scripts/docker-build.sh
+From a directory of your choice run the following two commands to
+download the source files of Allium and the build environment Docker image.
 
-in a shell from the main source directory, builds the required images. You
-can then run the command
+    $ git clone https://github.com/hrittich/allium.git
+    $ docker pull ghcr.io/hrittich/allium-full
 
-    $ scripts/docker-start.sh full shell
+If you get a permission denied error, you might have to prepend `sudo` to the
+Docker command.
 
-to get shell access to a build environment. The source code is mounted into
-the `source` directory of the user's home directory of this environment.
-Hence, you can build the framework using the following commands:
+Running
 
-    $ cd source
-    $ cmake .
-    $ make
+    $ docker run --rm -tiv $PWD/allium:/work ghcr.io/hrittich/allium-full shell
 
-Then, you can execute the first demo program, by executing
-
-    $ demo/poisson 100
-
-Note that **everything you store outside of the `source` directory will be
+from your choosen directory starts and enters a development container.
+Note that **everything you store outside of the `/work` directory will be
 lost, when you exit the container**.
 
-## Full Developer Setup
+When you are inside a development container, you can build Allium and run
+your first demo application with the following commands.
 
-See [Kubuntu Developer Setup](doc/kubuntu_dev_setup.md).
+    cmake .
+    make
+    demo/poisson 128
+
+[Docker]: https://www.docker.com/
+[Git]: https://git-scm.com/
+
+## Further Reading
 
 - @subpage download
 - @subpage install
 - @subpage demos
-

@@ -45,6 +45,7 @@ namespace allium {
   template <typename To, typename From, typename Enabled = void>
   struct narrow_number {};
 
+  /// @cond INTERNAL
   template <>
   struct narrow_number<float, double> {
     float operator() (double x) { return x; }
@@ -71,6 +72,7 @@ namespace allium {
       return narrow_number<To, From>()(x.real());
     }
   };
+  /// @endcond
 
   /**
    Computes `a <= b`, where a comparison between signed and unsigned types is
