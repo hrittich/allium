@@ -84,7 +84,7 @@ Installing the library on your system can be done by running:
 
     $ sudo make install
 
-For changing the installation destination consult the description of the
+For changing the installation destination, consult the description of the
 `CMAKE_INSTALL_PREFIX` option above.
 
 ## Next Step

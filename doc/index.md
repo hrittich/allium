@@ -23,7 +23,7 @@ image.
     $ git clone https://github.com/hrittich/allium.git
     $ docker pull ghcr.io/hrittich/allium-full
 
-If you get a permission denied error, you might have to prepend `sudo` to the
+If you get a permission-denied error, you might have to prepend `sudo` to the
 Docker command.
 
 Running

@@ -1,6 +1,6 @@
 @page download Download
 
-There are two options for obtaining the source code of Allium; you
+There are two options for obtaining the source code of Allium: you
 can clone the Git repository, or you can download the code as a zip file.
 
 ## Git

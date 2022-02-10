@@ -84,8 +84,6 @@ The script `scripts/stub.py` can be used to generate new files.
         {
           x = 42;
 
-## Naming Conventions
-
 
 ## Function Parameters
 

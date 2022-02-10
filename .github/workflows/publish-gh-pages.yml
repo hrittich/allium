@@ -3,7 +3,7 @@ name: publish-gh-pages
 on:
   push:
     branches:
-      - improve-doc
+      - main
 
 jobs:
   build:
