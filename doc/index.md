@@ -10,7 +10,7 @@ equations.
 
 **WARNING**: The library is still in *alpha* stage. Expect things to break!
 
-## Quickstart
+@section quickstart Quickstart
 
 Using the Allium build environment [Docker] image is the easiest way to get
 started. For this guide, I am assuming that you have installed [Git] and
