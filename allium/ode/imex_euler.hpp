@@ -18,6 +18,9 @@
 
 namespace allium {
 
+  /// @ingroup ode
+  /// @{
+
   /**
    @brief Base for the IMEX Euler integrator.
    */
@@ -107,6 +110,8 @@ namespace allium {
                    initial_guess);
       }
   };
+
+  /// @}
 
   #define ALLIUM_IMEX_EULER_DECL(extern, N) \
     extern template class ImexEulerBase<N>;

@@ -19,6 +19,9 @@
 
 namespace allium {
 
+  /// @ingroup ode
+  /// @{
+
   /**
    @brief Interface for all ODE integrators.
    */
@@ -62,6 +65,8 @@ namespace allium {
         y1.assign(current_value());
       }
   };
+
+  /// @}
 
 }
 

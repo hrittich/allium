@@ -1,5 +1,8 @@
 @page demos Demo Applications
 
+Allium contains demo applications to illustrate the usage of the library.
+The following demo applications are available.
+
 - @subpage poisson
 - @subpage poisson2
 - @subpage poisson2_cuda
