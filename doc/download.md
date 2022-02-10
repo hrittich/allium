@@ -8,7 +8,7 @@ can clone the Git repository, or you can download the code as a zip file.
 The source code of Allium is managed in a repository on GitHub, which is
 reachible via the following URL.
 
-- <https://github.com/hrittich/>
+- <https://github.com/hrittich/allium/>
 
 To clone the Git repository, you can run the following command.
 
