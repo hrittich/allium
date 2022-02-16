@@ -22,7 +22,7 @@ consider using the build environment Docker image, as described in the
   - [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface), e.g.,
     [OpenMPI](https://www.open-mpi.org/)
 - Optional
-  - [PETSc](https://www.python.org/)
+  - [PETSc](https://petsc.org/)
   - [Nvidia CUDA](https://developer.nvidia.com/cuda-zone)
   - [GSL](https://www.gnu.org/software/gsl/)
   - [Python 3](https://www.python.org/)
