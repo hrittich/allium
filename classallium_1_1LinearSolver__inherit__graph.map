@@ -1,0 +1,5 @@
+<map id="allium::LinearSolver&lt; V &gt;" name="allium::LinearSolver&lt; V &gt;">
+<area shape="rect" id="node1" title="Linear solver interface." alt="" coords="98,5,289,32"/>
+<area shape="rect" id="node2" href="$classallium_1_1CgSolver.html" title="The conjugate gradient method, solves ." alt="" coords="5,87,173,114"/>
+<area shape="rect" id="node3" href="$classallium_1_1IterativeSolverMixin.html" title="Mixin for iterative solvers, which implements the apply_matrix method." alt="" coords="197,80,400,121"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="allium::IterativeSolverMixin&lt; Base, V &gt;" name="allium::IterativeSolverMixin&lt; Base, V &gt;">
+<area shape="rect" id="node1" title="Mixin for iterative solvers, which implements the apply_matrix method." alt="" coords="5,80,208,121"/>
+<area shape="rect" id="node2" title=" " alt="" coords="6,5,61,32"/>
+<area shape="rect" id="node3" href="$classallium_1_1LinearSolver.html" title="Linear solver interface." alt="" coords="85,5,275,32"/>
+</map>

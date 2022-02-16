@@ -1,0 +1,4 @@
+<map id="allium::FunctorLinearOperator&lt; V, F &gt;" name="allium::FunctorLinearOperator&lt; V, F &gt;">
+<area shape="rect" id="node1" title="Wraps a functor into a linear operator." alt="" coords="5,80,221,121"/>
+<area shape="rect" id="node2" href="$classallium_1_1LinearOperator.html" title="Linear operator for the use in iterative linear solvers." alt="" coords="10,5,217,32"/>
+</map>

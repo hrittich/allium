@@ -1,0 +1,5 @@
+<map id="allium::LocalVector&lt; N &gt;" name="allium::LocalVector&lt; N &gt;">
+<area shape="rect" id="node1" title="Implements a (mathematical) vector in the mathematical sense, which is stored locally,..." alt="" coords="5,184,192,211"/>
+<area shape="rect" id="node2" href="$classallium_1_1VectorTrait.html" title=" " alt="" coords="6,95,191,136"/>
+<area shape="rect" id="node3" href="$structallium_1_1CrtpTrait.html" title="Trait that implements the self helper routine for the curiously recurring template pattern." alt="" coords="30,5,167,47"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="73,5,128,32"/>
+<area shape="rect" id="node2" href="$classallium_1_1IterativeSolverMixin.html" title="Mixin for iterative solvers, which implements the apply_matrix method." alt="" coords="244,11,447,53"/>
+<area shape="rect" id="node3" href="$classallium_1_1CgSolverBase.html" title=" " alt="" coords="20,107,181,149"/>
+<area shape="rect" id="node4" href="$classallium_1_1CgSolver.html" title="The conjugate gradient method, solves ." alt="" coords="261,89,429,116"/>
+<area shape="rect" id="node5" href="$classallium_1_1LinearSolver.html" title="Linear solver interface." alt="" coords="5,56,196,83"/>
+</map>

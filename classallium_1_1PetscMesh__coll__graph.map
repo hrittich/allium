@@ -1,0 +1,9 @@
+<map id="allium::PetscMesh&lt; N, D &gt;" name="allium::PetscMesh&lt; N, D &gt;">
+<area shape="rect" id="node1" title="A mesh implementation based on PETSc." alt="" coords="236,363,388,404"/>
+<area shape="rect" id="node2" href="$classallium_1_1PetscAbstractVectorStorage.html" title="A vector based on a PETSc vector." alt="" coords="103,273,305,315"/>
+<area shape="rect" id="node3" href="$classallium_1_1VectorStorageTrait.html" title=" " alt="" coords="95,169,313,225"/>
+<area shape="rect" id="node4" href="$classallium_1_1VectorStorage.html" title="Abstract base class for any vector storage." alt="" coords="5,87,208,114"/>
+<area shape="rect" id="node5" href="$classallium_1_1Cloneable.html" title="A class that allows cloning of objects." alt="" coords="39,5,175,32"/>
+<area shape="rect" id="node6" href="$structallium_1_1CrtpTrait.html" title="Trait that implements the self helper routine for the curiously recurring template pattern." alt="" coords="233,80,370,121"/>
+<area shape="rect" id="node7" href="$classallium_1_1IPetscMesh.html" title="Interface to PETSc based meshes." alt="" coords="329,281,514,307"/>
+</map>

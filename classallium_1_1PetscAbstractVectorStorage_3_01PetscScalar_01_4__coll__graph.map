@@ -1,0 +1,8 @@
+<map id="allium::PetscAbstractVectorStorage&lt; PetscScalar &gt;" name="allium::PetscAbstractVectorStorage&lt; PetscScalar &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="759,90,960,131"/>
+<area shape="rect" id="node2" href="$classallium_1_1VectorStorageTrait.html" title=" " alt="" coords="443,27,668,83"/>
+<area shape="rect" id="node3" href="$classallium_1_1VectorStorage.html" title="Abstract base class for any vector storage." alt="" coords="191,5,393,32"/>
+<area shape="rect" id="node4" href="$classallium_1_1Cloneable.html" title="A class that allows cloning of objects." alt="" coords="5,5,141,32"/>
+<area shape="rect" id="node5" href="$structallium_1_1CrtpTrait.html" title="Trait that implements the self helper routine for the curiously recurring template pattern." alt="" coords="223,57,361,98"/>
+<area shape="rect" id="node6" href="$classallium_1_1PetscObjectPtr.html" title=" " alt="" coords="472,107,639,149"/>
+</map>

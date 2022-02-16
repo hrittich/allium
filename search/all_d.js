@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['petscabstractvectorstorage_64',['PetscAbstractVectorStorage',['../classallium_1_1PetscAbstractVectorStorage.html',1,'allium']]],
+  ['petscabstractvectorstorage_3c_20petscscalar_20_3e_65',['PetscAbstractVectorStorage&lt; PetscScalar &gt;',['../classallium_1_1PetscAbstractVectorStorage_3_01PetscScalar_01_4.html',1,'allium']]],
+  ['petsclocalmesh_66',['PetscLocalMesh',['../classallium_1_1PetscLocalMesh.html',1,'allium']]],
+  ['petscmesh_67',['PetscMesh',['../classallium_1_1PetscMesh.html',1,'allium']]],
+  ['petscmeshspec_68',['PetscMeshSpec',['../classallium_1_1PetscMeshSpec.html',1,'allium']]],
+  ['petscmeshspec_3c_202_20_3e_69',['PetscMeshSpec&lt; 2 &gt;',['../classallium_1_1PetscMeshSpec_3_012_01_4.html',1,'allium']]],
+  ['petscmeshvalues_70',['PetscMeshValues',['../classallium_1_1PetscMeshValues.html',1,'allium']]],
+  ['petscmeshvalues_3c_20petscscalar_2c_202_2c_20is_5fmutable_20_3e_71',['PetscMeshValues&lt; PetscScalar, 2, is_mutable &gt;',['../classallium_1_1PetscMeshValues_3_01PetscScalar_00_012_00_01is__mutable_01_4.html',1,'allium']]],
+  ['petscobjectptr_72',['PetscObjectPtr',['../classallium_1_1PetscObjectPtr.html',1,'allium']]],
+  ['petscobjectptr_3c_20dm_20_3e_73',['PetscObjectPtr&lt; DM &gt;',['../classallium_1_1PetscObjectPtr.html',1,'allium']]],
+  ['petscobjectptr_3c_20mat_20_3e_74',['PetscObjectPtr&lt; Mat &gt;',['../classallium_1_1PetscObjectPtr.html',1,'allium']]],
+  ['petscobjectptr_3c_20vec_20_3e_75',['PetscObjectPtr&lt; Vec &gt;',['../classallium_1_1PetscObjectPtr.html',1,'allium']]],
+  ['petscsparsematrixstorage_76',['PetscSparseMatrixStorage',['../classallium_1_1PetscSparseMatrixStorage.html',1,'allium']]],
+  ['petscsparsematrixstorage_3c_20petscscalar_20_3e_77',['PetscSparseMatrixStorage&lt; PetscScalar &gt;',['../classallium_1_1PetscSparseMatrixStorage_3_01PetscScalar_01_4.html',1,'allium']]],
+  ['petscvectorstorage_78',['PetscVectorStorage',['../classallium_1_1PetscVectorStorage.html',1,'allium']]],
+  ['phase_2dfield_20equation_79',['Phase-Field Equation',['../phase_field2.html',1,'demos']]],
+  ['point_80',['Point',['../classallium_1_1Point.html',1,'allium']]],
+  ['point_3c_20int_2c_20d_20_3e_81',['Point&lt; int, D &gt;',['../classallium_1_1Point.html',1,'allium']]],
+  ['poisson_20equation_82',['Poisson Equation',['../poisson.html',1,'demos']]],
+  ['poisson_20equation_20in_202d_83',['Poisson Equation in 2D',['../poisson2.html',1,'demos']]],
+  ['poisson_20equation_20in_202d_20with_20cuda_84',['Poisson Equation in 2D with CUDA',['../poisson2_cuda.html',1,'demos']]],
+  ['polynomial_85',['Polynomial',['../classallium_1_1Polynomial.html',1,'allium::Polynomial&lt; N &gt;'],['../classallium_1_1Polynomial.html#a4485bbfa8314f91140c0aae30c521566',1,'allium::Polynomial::Polynomial()']]],
+  ['provided_86',['PROVIDED',['../group__linear__solver.html#gga5a723b6f08ab1d18c4810e9cf7677c48a490a2aaad8b6908b4bd55f03d265a801',1,'allium']]]
+];

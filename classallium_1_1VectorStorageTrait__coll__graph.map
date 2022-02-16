@@ -1,0 +1,6 @@
+<map id="allium::VectorStorageTrait&lt; Derived, N &gt;" name="allium::VectorStorageTrait&lt; Derived, N &gt;">
+<area shape="rect" id="node1" title="Implements a set of common vector operations." alt="" coords="109,169,299,211"/>
+<area shape="rect" id="node2" href="$classallium_1_1VectorStorage.html" title="Abstract base class for any vector storage." alt="" coords="5,87,208,114"/>
+<area shape="rect" id="node3" href="$classallium_1_1Cloneable.html" title="A class that allows cloning of objects." alt="" coords="39,5,175,32"/>
+<area shape="rect" id="node4" href="$structallium_1_1CrtpTrait.html" title="Trait that implements the self helper routine for the curiously recurring template pattern." alt="" coords="233,80,370,121"/>
+</map>

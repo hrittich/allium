@@ -1,0 +1,4 @@
+<map id="allium::GmresSolverBase&lt; N &gt;" name="allium::GmresSolverBase&lt; N &gt;">
+<area shape="rect" id="node1" title="Implementation of the GMRES algorithm (Saad and Schultz, 1986)." alt="" coords="11,80,238,107"/>
+<area shape="rect" id="node2" href="$classallium_1_1IterativeSolverBase.html" title="Base class for iterative solvers." alt="" coords="5,5,244,32"/>
+</map>
